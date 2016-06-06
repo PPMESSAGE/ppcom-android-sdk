@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ppcomlib_group_member_name">@color/pp_conversations_item_user_name</color>
+</resources>

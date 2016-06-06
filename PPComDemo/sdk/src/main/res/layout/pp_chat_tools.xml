@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/pp_chat_tools_horizontal_divider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="5dp" >
+
+        <ImageView
+            android:id="@+id/pp_chat_tools_voice_btn"
+            android:layout_width="@dimen/pp_chat_tools_img_btn_width"
+            android:layout_height="@dimen/pp_chat_tools_img_btn_width"
+            android:clickable="true"
+            android:contentDescription="@string/pp_common_content_desc"
+            android:src="@drawable/pp_chat_tools_voice"
+            android:visibility="gone" />
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_weight="1" >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/pp_chat_tools_hold_voice_bg"
+                android:padding="4dp" >
+
+                <EditText
+                    android:id="@+id/pp_chat_tools_input_et"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@null"
+                    android:inputType="textMultiLine"
+                    android:maxLines="3"
+                    android:paddingEnd="3dp"
+                    android:paddingLeft="3dp"
+                    android:paddingRight="3dp"
+                    android:paddingStart="3dp" >
+                </EditText>
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/pp_chat_tools_hold_voice_btn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/pp_chat_tools_hold_voice_bg"
+                android:gravity="center"
+                android:text="@string/pp_chat_tools_hold_voice_hold_to_talk"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" >
+
+            <!-- For future use send picture -->
+            <!--<ImageView-->
+                <!--android:id="@+id/pp_chat_tools_more_btn"-->
+                <!--android:layout_width="@dimen/pp_chat_tools_img_btn_width"-->
+                <!--android:layout_height="@dimen/pp_chat_tools_img_btn_width"-->
+                <!--android:clickable="true"-->
+                <!--android:contentDescription="@string/pp_common_content_desc"-->
+                <!--android:src="@drawable/pp_icon_photo_camera_black_24dp"-->
+                <!--android:visibility="visible" />-->
+
+            <TextView
+                android:id="@+id/pp_chat_tools_send_btn"
+                android:layout_width="38dp"
+                android:layout_height="@dimen/pp_chat_tools_img_btn_width"
+                android:layout_gravity="bottom"
+                android:background="@drawable/pp_chat_tools_send"
+                android:gravity="center"
+                android:text="@string/pp_chat_tools_send"
+                android:textColor="@android:color/white" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/pp_chat_tools_horizontal_divider" />
+
+    <GridView
+        android:id="@+id/pp_chat_tools_emoji_gv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="7"
+        android:visibility="gone" >
+    </GridView>
+
+</LinearLayout>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="pp_chat_item_text_size">18sp</dimen>
+    <dimen name="pp_chat_item_user_avatar_width">38dp</dimen>
+    <dimen name="pp_chat_item_welcome_icon_width">42dp</dimen>
+    <dimen name="pp_chat_item_file_attachment_width">24dp</dimen>
+    <dimen name="pp_chat_tools_img_btn_width">32dp</dimen>
+    <dimen name="pp_chat_tools_img_emoji_btn_width">24dp</dimen>
+    <dimen name="pp_create_conversations_btn_radius">3dp</dimen>
+    <dimen name="pp_create_conversations_btn_height">35dp</dimen>
+    <dimen name="pp_fab_size_normal">56dp</dimen>
+    <dimen name="pp_fab_size_mini">40dp</dimen>
+    <dimen name="pp_fab_shadow_size">12dp</dimen>
+    <dimen name="fab_size_normal">56dp</dimen>
+    <dimen name="fab_size_mini">40dp</dimen>
+    <dimen name="fab_icon_size">24dp</dimen>
+    <dimen name="fab_plus_icon_size">14dp</dimen>
+    <dimen name="fab_plus_icon_stroke">2dp</dimen>
+    <dimen name="fab_shadow_offset">3dp</dimen>
+    <dimen name="fab_shadow_radius">9dp</dimen>
+    <dimen name="fab_stroke_width">1dp</dimen>
+    <dimen name="fab_actions_spacing">16dp</dimen>
+    <dimen name="fab_labels_margin">8dp</dimen>
+    <dimen name="image_thumbnail_size">100dp</dimen>
+
+</resources>

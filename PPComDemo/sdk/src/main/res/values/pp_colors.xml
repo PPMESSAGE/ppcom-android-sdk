@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="pp_launcher_border_color">#FFEEEEEE</color>
+
+    <color name="pp_base_text_color">#ff607d8b</color>
+    
+    <color name="pp_conversations_item_right_text_color">@android:color/white</color>
+    <color name="pp_conversations_item_left_text_color">@color/pp_base_text_color</color>
+    <color name="pp_conversations_item_container_normal">@android:color/white</color>
+    <color name="pp_conversations_item_container_pressed">#ffeceff1</color>
+    <color name="pp_conversations_header_title_text">@color/pp_base_text_color</color>
+    <color name="pp_conversations_item_divider">#ffdcdcdc</color>
+    <color name="pp_conversations_item_user_name">#ff455a64</color>
+    
+    <color name="pp_no_conversations">@color/pp_base_text_color</color>
+    <color name="pp_right_bubble_backgruond_color">#ff0288d1</color>
+    <color name="pp_chat_item_file_attach_divider">#ffdcdcdc</color>
+    
+    <color name="pp_chat_tools_horizontal_divider">#ffdcdcdc</color>
+    <!-- wechat:#ff45c01a(green) sina:#ff00a8ff(blue) intercom:#ffb0bec5-->
+    <color name="pp_chat_tools_send_btn_normal">#ff0071b2</color>
+    <!-- wechat:#ff298409(green) sina:#ff0091e4(blue) intercom:#ff0071b2 -->
+    <color name="pp_chat_tools_send_btn_pressed">#ff085d8d</color>
+    <color name="pp_chat_tools_send_btn_disabled">#ffb0bec5</color>
+    
+    <color name="pp_create_conversations_btn_normal">#ff00a8ff</color>
+    <color name="pp_create_conversations_btn_pressed">#ff0091e4</color>
+    
+    <color name="pp_chat_item_extra">@color/pp_base_text_color</color>
+    <color name="pp_chat_item_extra_error">#ffff0000</color>
+    <color name="pp_chat_item_welcome_info">@color/pp_base_text_color</color>
+    
+
+</resources>

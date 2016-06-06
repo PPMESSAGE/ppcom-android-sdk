@@ -1,0 +1,63 @@
+<resources>
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/pp_styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/pp_styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+    </style>
+
+    <style name="pp_chat_item_left_bubble_bg_style">
+        <item name="android:background">@drawable/pp_messages_left_bubble</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingTop">10dp</item>
+    </style>
+
+    <style name="pp_chat_item_right_bubble_bg_style">
+        <item name="android:background">@drawable/pp_messages_right_bubble</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingTop">10dp</item>
+    </style>
+
+    <style name="pp_chat_item_left_bubble_image_bg_style" parent="pp_chat_item_left_bubble_bg_style">
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:paddingEnd">4dp</item>
+        <item name="android:paddingLeft">9dp</item>
+        <item name="android:paddingRight">4dp</item>
+        <item name="android:paddingStart">9dp</item>
+        <item name="android:paddingTop">4dp</item>
+    </style>
+
+    <style name="pp_chat_item_right_bubble_image_bg_style" parent="pp_chat_item_right_bubble_bg_style">
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:paddingEnd">9dp</item>
+        <item name="android:paddingRight">9dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingTop">4dp</item>
+    </style>
+
+    <style name="pp_chat_item_right_useravatar_style">
+        <item name="android:layout_marginStart">5dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+    </style>
+
+</resources>

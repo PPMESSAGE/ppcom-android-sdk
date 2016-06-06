@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp" >
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="@dimen/pp_chat_item_welcome_icon_width"
+        android:layout_height="@dimen/pp_chat_item_welcome_icon_width"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@null"
+        android:src="@drawable/pp_welcome_informatino_icon" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="@string/pp_chat_item_welcome_info"
+        android:textColor="@color/pp_chat_item_welcome_info" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginTop="10dp"
+        android:background="@color/pp_conversations_item_divider" >
+    </View>
+
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:contentDescription="@null"
+            android:src="@drawable/pp_logo_gray_197" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/pp_chat_item_welcome_info"
+            android:text="@string/pp_powered_by" />
+
+        <TextView
+            android:id="@+id/pp_chat_item_welcome_powered_by"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/pp_chat_item_welcome_info"
+            android:text="@string/pp_powered_by_company_name" />
+
+    </LinearLayout>
+
+</LinearLayout>

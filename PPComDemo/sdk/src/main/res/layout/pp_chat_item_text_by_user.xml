@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp" >
+
+    <!-- android:background="@drawable/pp_icon_text_chat_right_bubble" -->
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_gravity="end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/pp_chat_item_text_by_user_message_body"
+            style="@style/pp_chat_item_right_bubble_bg_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="@string/pp_chat_item_text_body"
+            android:textColor="@color/pp_conversations_item_right_text_color"
+            android:clickable="true"
+            android:textSize="@dimen/pp_chat_item_text_size" />
+
+        <com.ppmessage.sdk.core.ui.view.CircularImageView
+            android:id="@+id/pp_chat_item_user_avatar"
+            android:layout_width="@dimen/pp_chat_item_user_avatar_width"
+            android:layout_height="@dimen/pp_chat_item_user_avatar_width"
+            style="@style/pp_chat_item_right_useravatar_style"
+            android:src="@drawable/pp_icon_avatar" />
+
+    </LinearLayout>
+
+    <include
+        android:id="@+id/pp_chat_item_text_by_user_message_extra"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginEnd="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        layout="@layout/pp_chat_item_extra" />
+
+</LinearLayout>

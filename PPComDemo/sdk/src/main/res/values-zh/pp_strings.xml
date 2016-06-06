@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="pp_name">PP消息</string>
+    <string name="pp_create_conversation">创建会话</string>
+    <string name="pp_conversations_label">会话列表</string>
+
+    <string name="pp_chat_item_extra_time_format">MM-dd HH:mm</string>
+    <string name="pp_chat_item_extra_send_error">发送失败</string>
+    <string name="pp_chat_tools_send">发送</string>
+
+    <!-- 已复制到剪贴板 -->
+    <string name="pp_copy_message_success_hint">已复制到剪贴板</string>
+
+    <string name="no_network_connection_toast">No network connection found</string>
+
+    <string name="pp_init_loading_label">加载中</string>
+    <string name="pp_create_conversations_loading">请等待…</string>
+
+    <string name="pp_message_error">发送失败</string>
+
+    <string name="pp_message_summary_txt">[长文本]</string>
+    <string name="pp_message_summary_image">[图片]</string>
+    <string name="pp_message_summary_file">[文件]</string>
+    <string name="pp_message_summary_unknown"> </string>
+
+    <string name="pp_no_more_history">无更多历史消息</string>
+
+</resources>

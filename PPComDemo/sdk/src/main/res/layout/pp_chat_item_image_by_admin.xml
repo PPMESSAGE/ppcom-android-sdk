@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="10dp" >
+
+    <com.ppmessage.sdk.core.ui.view.CircularImageView
+        android:id="@+id/pp_chat_item_image_by_admin_user_avatar"
+        android:layout_width="@dimen/pp_chat_item_user_avatar_width"
+        android:layout_height="@dimen/pp_chat_item_user_avatar_width"
+        android:src="@drawable/pp_icon_avatar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/pp_chat_item_image_by_admin_message_body"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            style="@style/pp_chat_item_left_bubble_image_bg_style"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/pp_common_content_desc" />
+
+        <include
+            android:id="@+id/pp_chat_item_image_by_admin_message_extra"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            layout="@layout/pp_chat_item_extra" />
+    </LinearLayout>
+
+</LinearLayout>

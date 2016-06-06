@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pp_conversations_item_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/pp_conversations_item_bg"
+    android:paddingEnd="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingStart="10dp"
+    android:paddingTop="10dp" >
+
+    <com.ppmessage.sdk.core.ui.view.CircularImageView
+        android:id="@+id/pp_conversations_content_item_user_avatar"
+        android:layout_width="@dimen/pp_chat_item_user_avatar_width"
+        android:layout_height="@dimen/pp_chat_item_user_avatar_width"
+        android:src="@drawable/pp_icon_avatar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/pp_conversations_content_item_user_avatar"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_toEndOf="@+id/pp_conversations_content_item_user_avatar"
+        android:layout_toRightOf="@+id/pp_conversations_content_item_user_avatar"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/pp_conversations_content_item_user_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:singleLine="true"
+                android:text="@string/pp_conversations_content_item_user_name"
+                android:textColor="@color/pp_conversations_item_user_name"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/pp_conversations_content_item_message_timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:singleLine="true"
+                android:text="@string/pp_conversations_content_item_message_timestamp"
+                android:textColor="#ff90a4ae"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/pp_conversations_content_item_message_summary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:minLines="2"
+            android:text="@string/pp_conversations_content_item_message_summary"
+            android:textColor="#ff69808b"
+            android:textSize="15sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginTop="10dp"
+            android:background="@color/pp_conversations_item_divider" >
+        </View>
+    </LinearLayout>
+
+</RelativeLayout>

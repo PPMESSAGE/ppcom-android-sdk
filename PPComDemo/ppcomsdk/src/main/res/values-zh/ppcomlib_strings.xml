@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pp_com_sdk_startup_error">初始化失败</string>
+    <string name="pp_com_sdk_loading_dialog_content">加载中</string>
+
+    <string name="ppcom_sdk_conversation_members_activity_name">会话成员</string>
+</resources>

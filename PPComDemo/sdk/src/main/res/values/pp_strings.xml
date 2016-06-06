@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="pp_name">PPMessage</string>
+    <string name="pp_create_conversation">Create Conversation</string>
+    <string name="pp_conversations_label">Conversations</string>
+    <string name="pp_conversations_action_create_conversation">Create Conversation</string>
+    <string name="pp_conversations_action_close">Close Conversations</string>
+    <string name="pp_conversations_content_item_user_name">User Name</string>
+    <string name="pp_conversations_content_item_message_timestamp">Timestamp</string>
+    <string name="pp_conversations_content_item_message_summary">Message body</string>
+    <string name="pp_no_conversations">No Conversations</string>
+    <string name="pp_chat_activity_title">Chat</string>
+    <string name="pp_chat_item_text_body">Text Message Body</string>
+    <string name="pp_chat_item_extra">Extra</string>
+    <string name="pp_chat_item_file_fname">File Name</string>
+    <string name="pp_common_content_desc"></string>
+    <string name="pp_chat_tools_hold_voice_hold_to_talk">Hold to Talk</string>
+    <string name="pp_chat_tools_hold_voice_release_to_send">Release to Send</string>
+    <string name="pp_chat_tools_hold_voice_release_to_cancel">Release to Cancel</string>
+    <string name="pp_error_user_not_avaliable">Service not available</string>
+    <string name="pp_error_create_conversation_error">Failed to create conversation, Please try again later.</string>
+    <string name="pp_error_forget_init_fragmentmanager">mCacheManager = PPCacheManager.getInstance(getFragmentManager());</string>
+
+    <string-array name="pp_chat_photo_picker_items">
+        <item>Take a Picture</item>
+        <item>Gallery</item>
+    </string-array>
+
+    <string-array name="pp_chat_file_long_click">
+        <item>Download</item>
+    </string-array>
+
+    <string-array name="pp_chat_text_long_click">
+        <item>Copy</item>
+    </string-array>
+
+    <string-array name="pp_chat_image_long_click">
+        <item>Save</item>
+    </string-array>
+    <string name="pp_chat_image_long_click_dialog_title">Image</string>
+
+    <string name="pp_chat_image_long_click_save_storage_not_avaliable">External storage not available</string>
+    <string name="pp_chat_image_long_click_save_storage_file_not_exist">Save image failed: original file not exit</string>
+    <string name="pp_chat_image_long_click_save_illegal_path">Save image failed: illegal save path</string>
+    <string name="pp_chat_image_long_click_save_succ">The image has successfully saved to %s.</string>
+    <string name="pp_chat_image_long_click_save_failed">Save image failed: unknown error</string>
+
+    <string name="pp_file_download_update_title">%s</string>
+    <string name="pp_file_download_description">%s</string>
+    <string name="pp_chat_item_extra_time_format">MM-dd HH:mm</string>
+    <string name="pp_chat_item_extra_send_error">Send Error</string>
+    <string name="pp_chat_item_welcome_info">Leave us your question or feedback, one of us will get back in touch as soon as we can.</string>
+    <string name="pp_chat_tools_send">Send</string>
+    <string name="pp_powered_by">Powered by&#160;</string>
+    <string name="pp_powered_by_company_name"> <u>PPMessage</u></string>
+
+    <!-- 已复制到剪贴板 -->
+    <string name="pp_copy_message_success_hint">Copied to the clipboard</string>
+
+    <string name="no_network_connection_toast">No network connection found</string>
+
+    <string name="pp_init_loading_label">Initialize&#8230;</string>
+    <string name="pp_create_conversations_loading">Please wait&#8230;</string>
+
+    <string name="pp_message_error">Error</string>
+
+    <string name="pp_message_summary_txt">[Large Txt]</string>
+    <string name="pp_message_summary_image">[Image]</string>
+    <string name="pp_message_summary_file">[File]</string>
+    <string name="pp_message_summary_unknown"> </string>
+
+    <string name="pp_no_more_history">No more messages history</string>
+
+</resources>

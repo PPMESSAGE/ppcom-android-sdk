@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pp_no_conversations_swipe_refresh_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="100dp" >
+
+            <TextView
+                android:id="@+id/pp_no_conversations_description_tv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawableTop="@drawable/pp_icon_error"
+                android:gravity="center"
+                android:drawablePadding="5dp"
+                android:text="@string/pp_no_conversations"
+                android:textColor="@color/pp_no_conversations" />
+        </FrameLayout>
+    </ScrollView>
+
+</android.support.v4.widget.SwipeRefreshLayout>

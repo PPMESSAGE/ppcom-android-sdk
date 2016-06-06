@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- <style name="PPTheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@android:color/white</item>
+        <item name="android:textColorPrimary">@color/pp_conversations_header_title_text</item>
+        <item name="android:windowBackground">@android:color/white</item>
+    </style> -->
+
+</resources>
