@@ -1,1 +1,1 @@
-ppcomsdk/README.md
+./PPComDemo/ppcomsdk/README.md
