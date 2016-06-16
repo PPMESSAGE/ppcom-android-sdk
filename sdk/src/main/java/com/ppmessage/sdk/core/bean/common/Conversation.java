@@ -1,5 +1,9 @@
 package com.ppmessage.sdk.core.bean.common;
 
+import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.bean.message.PPMessage;
@@ -11,21 +15,54 @@ import org.json.JSONObject;
 /**
  * Created by ppmessage on 5/6/16.
  */
-public class Conversation implements Comparable<Conversation> {
+public class Conversation implements Comparable<Conversation>, Parcelable {
+
+    public static final String TYPE_S2S = "S2S";
+    public static final String TYPE_P2S = "P2S";
 
     private String conversationUUID;
     private String conversationIcon;
     private String conversationName;
     private String assignedUUID;
     private String groupUUID;
+    private String userUUID;
     private String conversationSummary;
     private long updateTimestamp;
     private String conversationType;
     private boolean isGroupType;
+    private int unreadCount;
+    private String status;
 
     public Conversation() {
 
     }
+
+    protected Conversation(Parcel in) {
+        conversationUUID = in.readString();
+        conversationIcon = in.readString();
+        conversationName = in.readString();
+        assignedUUID = in.readString();
+        groupUUID = in.readString();
+        userUUID = in.readString();
+        conversationSummary = in.readString();
+        updateTimestamp = in.readLong();
+        conversationType = in.readString();
+        isGroupType = in.readByte() != 0;
+        unreadCount = in.readInt();
+        status = in.readString();
+    }
+
+    public static final Creator<Conversation> CREATOR = new Creator<Conversation>() {
+        @Override
+        public Conversation createFromParcel(Parcel in) {
+            return new Conversation(in);
+        }
+
+        @Override
+        public Conversation[] newArray(int size) {
+            return new Conversation[size];
+        }
+    };
 
     public String getConversationUUID() {
         return conversationUUID;
@@ -99,12 +136,37 @@ public class Conversation implements Comparable<Conversation> {
         this.isGroupType = isGroupType;
     }
 
+    public int getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(int unreadCount) {
+        this.unreadCount = unreadCount;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getUserUUID() {
+        return userUUID;
+    }
+
+    public void setUserUUID(String userUUID) {
+        this.userUUID = userUUID;
+    }
+
     public static Conversation parse(PPMessageSDK sdk, JSONObject jsonObject) {
         if (jsonObject.has("error_code")) {
             try {
                 if (jsonObject.getInt("error_code") != 0) return null;
             } catch (JSONException e) {
                 L.e(e);
+                return null;
             }
         }
 
@@ -122,11 +184,10 @@ public class Conversation implements Comparable<Conversation> {
 
             if (jsonObject.has("conversation_data")) {
                 JSONObject conversationData = jsonObject.getJSONObject("conversation_data");
-                conversationUUID = conversationData.getString("conversation_uuid");
-                conversationIcon = Utils.getFileDownloadUrl(conversationData.getString("conversation_icon"));
-                conversationName = conversationData.getString("conversation_name");
+                conversationUUID = conversationData.optString("conversation_uuid", null);
+                conversationIcon = Utils.getFileDownloadUrl(conversationData.optString("conversation_icon"));
+                conversationName = conversationData.optString("conversation_name", null);
             } else {
-
                 conversationIcon = jsonObject.has("conversation_icon") ? Utils.getFileDownloadUrl(jsonObject.getString("conversation_icon")) :
                         (jsonObject.has("group_icon") ? Utils.getFileDownloadUrl(jsonObject.getString("group_icon")) : null);
                 conversationName = jsonObject.has("conversation_name") ? jsonObject.getString("conversation_name") :
@@ -157,12 +218,31 @@ public class Conversation implements Comparable<Conversation> {
             conversation.setAssignedUUID(jsonObject.has("assigned_uuid") ? jsonObject.getString("assigned_uuid") : null);
             conversation.setGroupUUID(jsonObject.has("group_uuid") ? jsonObject.getString("group_uuid") : null);
             conversation.setConversationType(jsonObject.has("conversation_type") ? jsonObject.getString("conversation_type") : null);
-            conversation.setUpdateTimestamp(updatetime);
             conversation.setIsGroupType(isGroupType);
             conversation.setGroupUUID(groupUUID);
             conversation.setAssignedUUID(assignedUUID);
+            conversation.setUserUUID(Utils.safeNull(jsonObject.optString("user_uuid", null)));
 
-            tryParseConversationSummary(sdk, conversation, jsonObject);
+            PPMessage latestMessage = tryParseConversationLatestMessage(sdk, conversation, jsonObject);
+            conversation.setConversationSummary(tryParseConversationSummary(latestMessage, sdk.getContext(), jsonObject));
+            if (latestMessage != null) {
+                // Try fix conversation's timestamp with message's timestamp
+                // Because conversation's timestamp not an unix timestamp
+                updatetime = latestMessage.getTimestamp() > 0 ? latestMessage.getTimestamp() : updatetime;
+            }
+            conversation.setUpdateTimestamp(updatetime);
+
+            // Sometimes, We can not get the conversation_name -_-||
+            if (null == conversation.getConversationName()) {
+                if (conversation.getConversationType() != null && conversation.getConversationType().equals("P2S")) {
+                    if (jsonObject.has("from_user")) {
+                        User fromUser = User.parse(jsonObject.getJSONObject("from_user"));
+                        if (fromUser != null) {
+                            conversation.setConversationName(fromUser.getName());
+                        }
+                    }
+                }
+            }
 
         } catch (JSONException e) {
             L.e(e);
@@ -171,7 +251,7 @@ public class Conversation implements Comparable<Conversation> {
         return conversation;
     }
 
-    private static void tryParseConversationSummary(final PPMessageSDK sdk, final Conversation conversation, JSONObject jsonObject) {
+    private static PPMessage tryParseConversationLatestMessage(final PPMessageSDK messageSDK, final Conversation conversation, JSONObject jsonObject) {
         String jsonMessageBody = null;
         try {
 
@@ -183,16 +263,22 @@ public class Conversation implements Comparable<Conversation> {
             }
 
             if (jsonMessageBody != null) {
-                PPMessage message = PPMessage.parse(sdk, new JSONObject(jsonMessageBody));
-                    conversation.setConversationSummary(PPMessage.summary(sdk.getContext(), message));
-            } else if (jsonObject.has("group_desc")) {
-                conversation.setConversationSummary(jsonObject.getString("group_desc"));
+                PPMessage message = PPMessage.parse(messageSDK, new JSONObject(jsonMessageBody));
+                return message;
             }
 
         } catch (JSONException e) {
             L.e(e);
         }
 
+        return null;
+    }
+
+    private static String tryParseConversationSummary(final PPMessage latestMessage, Context context, JSONObject jsonObject) {
+        if (latestMessage != null) {
+            return PPMessage.summary(context, latestMessage);
+        }
+        return jsonObject.optString("group_desc", null);
     }
 
 //    {
@@ -245,5 +331,26 @@ public class Conversation implements Comparable<Conversation> {
                 ", conversationType='" + conversationType + '\'' +
                 ", isGroupType=" + isGroupType +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(conversationUUID);
+        dest.writeString(conversationIcon);
+        dest.writeString(conversationName);
+        dest.writeString(assignedUUID);
+        dest.writeString(groupUUID);
+        dest.writeString(userUUID);
+        dest.writeString(conversationSummary);
+        dest.writeLong(updateTimestamp);
+        dest.writeString(conversationType);
+        dest.writeByte((byte) (isGroupType ? 1 : 0));
+        dest.writeInt(unreadCount);
+        dest.writeString(status);
     }
 }

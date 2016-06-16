@@ -167,4 +167,44 @@ public interface IAPI {
      */
     void getConversationUserList(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
 
+    /**
+     * Login
+     *
+     * @param requestParam
+     * @param completedCallback
+     */
+    void login(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
+
+    /**
+     * Logout
+     *
+     * @param requestParam
+     * @param completedCallback
+     */
+    void logout(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
+
+    /**
+     * Get service user list
+     *
+     * @param requestParam
+     * @param completedCallback
+     */
+    void getServiceUserList(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
+
+    /**
+     * Page conversations list
+     *
+     * @param requestParam
+     * @param completedCallback
+     */
+    void pageConversationList(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
+
+    /**
+     * Create conversation
+     *
+     * @param requestParam
+     * @param completedCallback
+     */
+    void createConversation(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
+
 }

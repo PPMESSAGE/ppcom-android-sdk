@@ -50,6 +50,18 @@ public class Token extends BaseHttpRequest implements IToken {
                 makeResponse(completedCallback));
     }
 
+    @Override
+    public void clearCachedToken() {
+        if (cachedToken != null) {
+            cachedToken = null;
+        }
+    }
+
+    @Override
+    public String getCachedToken() {
+        return cachedToken;
+    }
+
     private String getURL() {
         return String.format(Locale.getDefault(), "%s%s", HostConstants.HTTP_HOST, PPAUTH_URL_SEGMENT);
     }

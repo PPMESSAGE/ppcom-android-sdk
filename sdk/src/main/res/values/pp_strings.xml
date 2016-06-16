@@ -71,5 +71,6 @@
     <string name="pp_message_summary_unknown"> </string>
 
     <string name="pp_no_more_history">No more messages history</string>
+    <string name="loading">Loading...</string>
 
 </resources>

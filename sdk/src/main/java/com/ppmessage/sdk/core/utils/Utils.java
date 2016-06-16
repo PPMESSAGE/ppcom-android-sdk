@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
@@ -30,7 +31,9 @@ import java.util.UUID;
  */
 public final class Utils {
 
-    private static final String MMDD_HHMM_TIMESTAMP_FORMAT = "MM-dd hh:mm";
+    private static final String HHMM_AA_TIMESTAMP_FORMAT = "hh:mm aa";
+    private static final String MMDDYY_TIMESTAMP_FORMAT = "MM/dd/yy";
+    private static final String MMDDYY_HHMM_AA_TIMESTAMP_FORMAT = "MM/dd/yy hh:mm aa";
 
     /**
      * Download host
@@ -93,9 +96,41 @@ public final class Utils {
     }
 
     public static String formatTimestamp(long messageTimestamp) {
+        return formatTimestamp(messageTimestamp, false);
+    }
+
+    public static String formatTimestamp(long messageTimestamp, boolean simpleStyle) {
+
+        Calendar now = Calendar.getInstance();
+
+        Calendar other = Calendar.getInstance();
         Date dt = new Date(messageTimestamp);
-        SimpleDateFormat sdf = new SimpleDateFormat(MMDD_HHMM_TIMESTAMP_FORMAT, Locale.getDefault());
+        other.setTime(dt);
+
+        String format = null;
+
+        // Today: [13:44 PM]
+        if (sameDay(now, other)) {
+            format = HHMM_AA_TIMESTAMP_FORMAT;
+        }
+
+        if (format == null) {
+            if (simpleStyle) {
+                // Normal: [06/15/16] ==> 2016.06.15
+                format = MMDDYY_TIMESTAMP_FORMAT;
+            } else {
+                // Normal: [06/15/16 13:44 PM] ==> 2016.06.15 13:44 PM
+                format = MMDDYY_HHMM_AA_TIMESTAMP_FORMAT;
+            }
+        }
+
+        SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.US);
         return sdf.format(dt);
+    }
+
+    private static boolean sameDay(Calendar c1, Calendar c2) {
+        return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) &&
+                c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
     }
 
     public static void makeToast(Context context, String text) {
@@ -143,6 +178,15 @@ public final class Utils {
         try {
             if (jsonResponse.getInt("error_code") != 0) return false;
             if (jsonResponse.length() > 3) return false;
+        } catch (JSONException e) {
+            L.e(e);
+        }
+        return true;
+    }
+
+    public static boolean isJsonResponseError(JSONObject jsonObject) {
+        try {
+            return jsonObject.getInt("error_code") != 0;
         } catch (JSONException e) {
             L.e(e);
         }

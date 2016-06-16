@@ -1,15 +1,14 @@
 package com.ppmessage.sdk.core.ws;
 
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
 
 import com.koushikdutta.async.callback.CompletedCallback;
+import com.koushikdutta.async.callback.WritableCallback;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.WebSocket;
 import com.ppmessage.sdk.core.L;
-import com.ppmessage.sdk.core.api.BaseHttpRequest;
 import com.ppmessage.sdk.core.api.HostConstants;
 
 /**
@@ -82,6 +81,11 @@ public class AndroidAsyncWebSocketImpl implements IWebSocket, AsyncHttpClient.We
     }
 
     @Override
+    public boolean isOpen() {
+        return webSocket != null && webSocket.isOpen();
+    }
+
+    @Override
     public void onCompleted(Exception ex, WebSocket webSocket) {
         if (ex != null) {
             L.e(ex);
@@ -100,7 +104,9 @@ public class AndroidAsyncWebSocketImpl implements IWebSocket, AsyncHttpClient.We
         webSocket.setClosedCallback(new CompletedCallback() {
             @Override
             public void onCompleted(Exception ex) {
-                L.e(ex);
+                if (ex != null) {
+                    L.e(ex);
+                }
                 dispatch(HANDLER_EVENT_CLOSED);
             }
         });

@@ -1,5 +1,6 @@
 package com.ppmessage.sdk.core.query;
 
+import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.api.OnAPIRequestCompleted;
 import com.ppmessage.sdk.core.bean.common.User;
@@ -24,11 +25,11 @@ class APIQuery implements IQuery {
 
         JSONObject param = new JSONObject();
         try {
-            param.put("app_uuid", this.sdk.getAppUUID());
+            param.put("app_uuid", this.sdk.getNotification().getConfig().getAppUUID());
             param.put("user_uuid", this.sdk.getNotification().getConfig().getActiveUser().getUuid());
             param.put("conversation_uuid", conversationUUID);
         } catch (JSONException e) {
-            e.printStackTrace();
+            L.e(e);
         }
 
         sdk.getAPI().getConversationInfo(param, new OnAPIRequestCompleted() {
@@ -64,7 +65,7 @@ class APIQuery implements IQuery {
             param.put("app_uuid", this.sdk.getNotification().getConfig().getAppUUID());
             param.put("user_uuid", this.sdk.getNotification().getConfig().getActiveUser().getUuid());
         } catch (JSONException e) {
-            e.printStackTrace();
+            L.e(e);
         }
 
         sdk.getAPI().getUserDetailInfo(param, new OnAPIRequestCompleted() {

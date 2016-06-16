@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ppmessage.sdk.R;
-import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.bean.common.User;
 import com.ppmessage.sdk.core.bean.message.PPMessage;
@@ -26,16 +23,15 @@ import com.ppmessage.sdk.core.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by ppmessage on 5/12/16.
  */
 public class MessageAdapter extends BaseAdapter {
 
-    private static final double MAX_FILE_WIDTH_RATIO = 0.7;
-    private static final double MAX_TEXT_BUBBLE_RATIO = 0.7;
-    private static final double MAX_IMAGE_WIDTH_RATIO = 0.9;
+    private static final double MAX_FILE_WIDTH_RATIO = 0.6;
+    private static final double MAX_TEXT_BUBBLE_RATIO = 0.6;
+    private static final double MAX_IMAGE_WIDTH_RATIO = 0.8;
     private static final double MAX_IMAGE_HEIGHT_RATIO = 0.3;
 
     private static final int DEFAULT_AVATAR_WIDTH = 48;
@@ -141,8 +137,14 @@ public class MessageAdapter extends BaseAdapter {
     }
 
     public void setMessages(List<PPMessage> mChatMessages) {
+        setMessages(mChatMessages, true);
+    }
+
+    public void setMessages(List<PPMessage> mChatMessages, boolean autoNotify) {
         this.mChatMessages = mChatMessages;
-        this.notifyDataSetChanged();
+        if (autoNotify) {
+            this.notifyDataSetChanged();
+        }
     }
 
     /**
@@ -165,7 +167,7 @@ public class MessageAdapter extends BaseAdapter {
                                          PPMessage message) {
         ViewHolderRightFileMessage holder = null;
         View v = convertView;
-        if (v == null) {
+        if (v == null || v.getTag().getClass() != ViewHolderRightFileMessage.class) {
             v = mInflater.inflate(R.layout.pp_chat_item_file_by_user,
                     parent, false);
             holder = new ViewHolderRightFileMessage();
@@ -191,7 +193,7 @@ public class MessageAdapter extends BaseAdapter {
                                         PPMessage message) {
         ViewHolderLeftFileMessage holder = null;
         View v = convertView;
-        if (v == null) {
+        if (v == null || v.getTag().getClass() != ViewHolderLeftFileMessage.class) {
             holder = new ViewHolderLeftFileMessage();
 
             v = mInflater.inflate(
@@ -207,8 +209,10 @@ public class MessageAdapter extends BaseAdapter {
         }
 
         PPMessageFileMediaItem fileMediaItem = (PPMessageFileMediaItem) message.getMediaItem();
+        if (fileMediaItem != null) {
+            holder.fileNameTv.setText(fileMediaItem.getName());
+        }
 
-        holder.fileNameTv.setText(fileMediaItem.getName());
         setMessageItemExtraInfo(holder.timestampTv, message);
         loadAvatar(v, message, holder.avatar);
         holder.fileNameTv.setMaxWidth(getMaxFileBubbleWidth());
@@ -221,7 +225,7 @@ public class MessageAdapter extends BaseAdapter {
                                           PPMessage message) {
         ViewHolderRightImageMessage holder = null;
         View v = convertView;
-        if (v == null) {
+        if (v == null || v.getTag().getClass() != ViewHolderRightImageMessage.class) {
             v = mInflater.inflate(
                     R.layout.pp_chat_item_image_by_user, parent, false);
             holder = new ViewHolderRightImageMessage();
@@ -252,7 +256,7 @@ public class MessageAdapter extends BaseAdapter {
                                          PPMessage message) {
         ViewHolderLeftImageMessage holder = null;
         View v = convertView;
-        if (v == null) {
+        if (v == null || v.getTag().getClass() != ViewHolderLeftImageMessage.class) {
             holder = new ViewHolderLeftImageMessage();
             v = mInflater.inflate(
                     R.layout.pp_chat_item_image_by_admin, parent, false);
@@ -267,14 +271,15 @@ public class MessageAdapter extends BaseAdapter {
         PPMessageImageMediaItem imageMediaItem = (PPMessageImageMediaItem) message.getMediaItem();
         setMessageItemExtraInfo(holder.timestampTv, message);
         loadAvatar(v, message, holder.avatar);
-        calcAndSetImageViewFinalTargetSize(holder.imgBody, imageMediaItem.getOrigWidth(), imageMediaItem.getOrigHeight());
-
-        sdk.getImageLoader().loadImage(
-                imageMediaItem.getOrigUrl(),
-                imageMediaItem.getOrigWidth(),
-                imageMediaItem.getOrigHeight(),
-                new ColorDrawable(Color.GRAY),
-                holder.imgBody);
+        if (imageMediaItem != null) {
+            calcAndSetImageViewFinalTargetSize(holder.imgBody, imageMediaItem.getOrigWidth(), imageMediaItem.getOrigHeight());
+            sdk.getImageLoader().loadImage(
+                    imageMediaItem.getOrigUrl(),
+                    imageMediaItem.getOrigWidth(),
+                    imageMediaItem.getOrigHeight(),
+                    new ColorDrawable(Color.GRAY),
+                    holder.imgBody);
+        }
 
         return v;
     }
@@ -283,7 +288,7 @@ public class MessageAdapter extends BaseAdapter {
                                          PPMessage message) {
         ViewHolderRightTextMessage holder = null;
         View v = convertView;
-        if (v == null) {
+        if (v == null || v.getTag().getClass() != ViewHolderRightTextMessage.class) {
             v = mInflater.inflate(R.layout.pp_chat_item_text_by_user,
                     parent, false);
             holder = new ViewHolderRightTextMessage();
@@ -308,7 +313,7 @@ public class MessageAdapter extends BaseAdapter {
                                         PPMessage message) {
         ViewHolderLeftTextMessage holder = null;
         View v = convertView;
-        if (v == null) {
+        if (v == null || convertView.getTag().getClass() != ViewHolderLeftTextMessage.class) {
             v = mInflater.inflate(R.layout.pp_chat_item_text_by_admin,
                     parent, false);
             holder = new ViewHolderLeftTextMessage();

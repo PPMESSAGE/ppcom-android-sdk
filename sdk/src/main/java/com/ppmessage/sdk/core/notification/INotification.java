@@ -8,6 +8,8 @@ import com.ppmessage.sdk.core.ws.IWebSocket;
 
 import org.json.JSONObject;
 
+import java.util.List;
+
 /**
  * Send and receive message from {@link IWebSocket}
  *
@@ -232,6 +234,8 @@ public interface INotification {
     void addListener(OnNotificationEvent event);
 
     void removeListener(OnNotificationEvent event);
+
+    List<OnNotificationEvent> listeners();
 
     /**
      *

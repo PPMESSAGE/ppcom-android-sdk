@@ -9,7 +9,7 @@ final class PPMessageSDKContract {
 
     public PPMessageSDKContract() {}
 
-    public static abstract class ConversationEntry implements BaseColumns {
+    static abstract class ConversationEntry implements BaseColumns {
         public static final String TABLE_NAME = "conversations";
 
         public static final String COLUMN_NAME_CONVERSATION_UUID = "conversation_uuid";
@@ -24,7 +24,7 @@ final class PPMessageSDKContract {
 
     }
 
-    public static abstract class UserEntry implements BaseColumns {
+    static abstract class UserEntry implements BaseColumns {
         public static final String TABLE_NAME = "device_users";
 
         public static final String COLUMN_NAME_USER_UUID = "user_uuid";

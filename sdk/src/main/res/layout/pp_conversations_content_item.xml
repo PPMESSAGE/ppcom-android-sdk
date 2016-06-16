@@ -10,20 +10,34 @@
     android:paddingStart="10dp"
     android:paddingTop="10dp" >
 
-    <com.ppmessage.sdk.core.ui.view.CircularImageView
-        android:id="@+id/pp_conversations_content_item_user_avatar"
-        android:layout_width="@dimen/pp_chat_item_user_avatar_width"
-        android:layout_height="@dimen/pp_chat_item_user_avatar_width"
-        android:src="@drawable/pp_icon_avatar" />
+    <FrameLayout
+        android:id="@+id/pp_conversation_content_item_avatar_container"
+        android:layout_width="42dp"
+        android:layout_height="42dp">
+
+        <com.ppmessage.sdk.core.ui.view.CircularImageView
+            android:id="@+id/pp_conversations_content_item_user_avatar"
+            android:layout_width="@dimen/pp_chat_item_user_avatar_width"
+            android:layout_height="@dimen/pp_chat_item_user_avatar_width"
+            android:src="@drawable/pp_icon_avatar" />
+
+        <com.ppmessage.sdk.core.ui.view.BadgeView
+            android:id="@+id/pp_conversations_content_item_unread"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:textSize="12sp"
+            android:layout_gravity="top|end" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/pp_conversations_content_item_user_avatar"
+        android:layout_alignTop="@+id/pp_conversation_content_item_avatar_container"
         android:layout_marginLeft="10dp"
         android:layout_marginStart="10dp"
-        android:layout_toEndOf="@+id/pp_conversations_content_item_user_avatar"
-        android:layout_toRightOf="@+id/pp_conversations_content_item_user_avatar"
+        android:layout_toEndOf="@+id/pp_conversation_content_item_avatar_container"
+        android:layout_toRightOf="@+id/pp_conversation_content_item_avatar_container"
         android:orientation="vertical" >
 
         <LinearLayout

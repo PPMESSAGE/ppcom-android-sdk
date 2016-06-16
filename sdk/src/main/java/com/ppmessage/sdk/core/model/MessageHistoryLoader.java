@@ -62,4 +62,16 @@ public class MessageHistoryLoader {
         return this.historysModel;
     }
 
+    public MessageHistorysModel.MessageHistoryRequestParam buildNextHistoryLoaderRequestParam(String conversationUUID) {
+        HistoryPageIndex pageIndex = getLastHistoryPageIndex(conversationUUID);
+        MessageHistorysModel.MessageHistoryRequestParam requestParam = null;
+        if (pageIndex == null) {
+            requestParam = new MessageHistorysModel.MessageHistoryRequestParam(conversationUUID, null, 0);
+        } else {
+            requestParam = new MessageHistorysModel.MessageHistoryRequestParam(conversationUUID, pageIndex.getMaxUUID(),
+                    pageIndex.getPageOffset() + 1); // Load the next Page
+        }
+        return requestParam;
+    }
+
 }

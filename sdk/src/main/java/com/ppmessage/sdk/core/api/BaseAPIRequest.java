@@ -21,7 +21,6 @@ public class BaseAPIRequest extends BaseHttpRequest {
 
     private IToken token;
     private boolean useAppUUIDGetAccessToken;
-    protected String cachedAccessToken;
 
     public BaseAPIRequest(PPMessageSDK sdk) {
         this.sdk = sdk;
@@ -36,14 +35,10 @@ public class BaseAPIRequest extends BaseHttpRequest {
     }
 
     public void post(String urlSegment, String requestString, OnAPIRequestCompleted completedCallback) {
-        if (cachedAccessToken != null) {
-            finalPost(urlSegment, requestString, completedCallback);
+        if (useAppUUIDGetAccessToken) {
+            token.getApiToken(sdk.getAppUUID(), onGetAccessToken(urlSegment, requestString, completedCallback));
         } else {
-            if (useAppUUIDGetAccessToken) {
-                token.getApiToken(sdk.getAppUUID(), onGetAccessToken(urlSegment, requestString, completedCallback));
-            } else {
-                token.getApiToken(sdk.getUserEmail(), sdk.getUserPassword(), onGetAccessToken(urlSegment, requestString, completedCallback));
-            }
+            token.getApiToken(sdk.getUserEmail(), sdk.getUserPassword(), onGetAccessToken(urlSegment, requestString, completedCallback));
         }
     }
 
@@ -51,9 +46,9 @@ public class BaseAPIRequest extends BaseHttpRequest {
     protected void setup(HttpURLConnection conn) {
         super.setup(conn);
 
-        if (cachedAccessToken != null) {
+        if (token.getCachedToken() != null) {
             conn.addRequestProperty("Content-Type", "application/json;charset=utf-8");
-            conn.addRequestProperty("Authorization", String.format(Locale.getDefault(), "OAuth %s", cachedAccessToken));
+            conn.addRequestProperty("Authorization", String.format(Locale.getDefault(), "OAuth %s", token.getCachedToken()));
         }
 
     }
@@ -62,7 +57,6 @@ public class BaseAPIRequest extends BaseHttpRequest {
         return new IToken.OnRequestTokenEvent() {
             @Override
             public void onGetToken(String accessToken) {
-                cachedAccessToken = accessToken;
                 L.d(GET_API_ACCESS_TOKEN_FORMAT, accessToken);
                 finalPost(urlSegment, requestString, completedCallback);
             }
@@ -79,7 +73,7 @@ public class BaseAPIRequest extends BaseHttpRequest {
                 try {
                     jsonResponse = new JSONObject(response);
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    L.e(e);
                 }
                 if (completedCallback != null) completedCallback.onResponse(jsonResponse);
             }

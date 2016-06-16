@@ -14,7 +14,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by ppmessage on 5/9/16.
@@ -36,13 +38,14 @@ public class DefaultNotification implements INotification, INotificationHandler.
     private static final String WS_MESSAGE_ARRIVED_LOG = "[WebSocket] message arrived: %s";
     private static final String WS_OPEN_LOG = "[WebSocket] Open";
     private static final String WS_CLOSE_LOG = "[WebSocket] Closed";
-    private static final String WS_BROADCST_EVENT = "[WebSocket] broadcast message, current listeners: %d";
+    private static final String WS_BROADCST_EVENT = "[WebSocket] broadcast message, current listeners: %d, listener:%s";
     private static final String WS_TRY_TO_CLOSE_LOG = "[WebSocket] try to close it";
     private static final String WS_NOTIFICATION_ACTIVEUSER_LOG = "[Notification] set activeuser: %s";
+    private static final String WS_STARTED_OR_STARTING = "[WebSocket] websocket started or starting, skip re-start";
+    private static final String WS_AUTH_ACTIVE_USER_EMPTY = "[WebSocket] try auth websocket, but config.active_user == null";
 
-    public DefaultNotification(PPMessageSDK sdk, IWebSocket webSocket) {
+    public DefaultNotification(PPMessageSDK sdk) {
         this.sdk = sdk;
-        this.webSocket = webSocket;
 
         notificationHandlerFactory = new NotificationHandlerFactory(sdk);
     }
@@ -64,15 +67,20 @@ public class DefaultNotification implements INotification, INotificationHandler.
     @Override
     public boolean canSendMessage() {
         checkConfig();
-        return webSocket != null;
+        return webSocket != null && webSocket.isOpen();
     }
 
     @Override
-    public void start() {
+    public synchronized void start() {
         checkConfig();
 
+        if (isConnectingOrConnected()) {
+            L.w(WS_STARTED_OR_STARTING);
+            return;
+        }
+
         final JSONObject wsAuthObject = getWSAuthObject();
-        webSocket.setCallback(new IWebSocket.IWebSocketEvent() {
+        getWebSocket().setCallback(new IWebSocket.IWebSocketEvent() {
 
             @Override
             public void onOpen(IWebSocket webSocket) {
@@ -91,37 +99,38 @@ public class DefaultNotification implements INotification, INotificationHandler.
             public void onClose(IWebSocket webSocket) {
                 //TODO should't simply set webSocket = null here
                 L.w(WS_CLOSE_LOG);
-                webSocket = null;
+                DefaultNotification.this.webSocket = null;
             }
 
             @Override
             public void onError(IWebSocket webSocket, Exception e) {
                 L.e(WS_MEET_ERROR_LOG, e != null ? e.toString() : "null");
                 //TODO should't simply set webSocket = null here
-                webSocket = null;
+                DefaultNotification.this.webSocket = null;
             }
         });
 
         L.d(WS_OPEN_LOG);
-        webSocket.open();
+        getWebSocket().open();
     }
 
     @Override
-    public void stop() {
+    public synchronized void stop() {
         L.w(WS_TRY_TO_CLOSE_LOG);
         if (webSocket == null) return;
         webSocket.close();
+        webSocket = null;
     }
 
     @Override
     public void sendMessage(final PPMessage message) {
-        if (webSocket != null) {
+        if (webSocket != null && webSocket.isOpen()) {
             new PPMessageAdapter(sdk, message)
                     .asyncGetWSJsonObject(new OnGetJsonObjectEvent() {
 
                         @Override
                         public void onCompleted(JSONObject jsonObject) {
-                            if (webSocket != null) {
+                            if (webSocket != null && webSocket.isOpen()) {
                                 sendDataByWebSocket(jsonObject.toString());
                             } else {
                                 L.d(WS_NOT_OPEN_LOG);
@@ -159,11 +168,52 @@ public class DefaultNotification implements INotification, INotificationHandler.
         listeners.remove(event);
     }
 
+    @Override
+    public List<OnNotificationEvent> listeners() {
+        return listeners;
+    }
+
     protected void sendDataByWebSocket(String string) {
         if (webSocket != null) {
             webSocket.send(string);
             L.d(WS_SEND_MESSAGE_LOG, string);
         }
+    }
+
+    @Override
+    public void onCompleted(int eventType, Object obj) {
+        L.d(WS_BROADCST_EVENT, listeners.size(), listeners);
+
+        for (OnNotificationEvent e : listeners) {
+            int interestedEvent = e.getInterestedEvent() & eventType;
+
+            if ((interestedEvent & INotification.EVENT_AUTH) != 0) {
+                e.onAuthInfoArrived(obj);
+            } else if ((interestedEvent & INotification.EVENT_UNKNOWN) != 0) {
+                e.onUnknownInfoArrived(obj);
+            } else if ((interestedEvent & INotification.EVENT_CONVERSATION) != 0) {
+                e.onConversationInfoArrived((Conversation)obj);
+            } else if ((interestedEvent & INotification.EVENT_MESSAGE) != 0) {
+                e.onMessageInfoArrived((PPMessage)obj);
+            } else if ((interestedEvent & INotification.EVENT_ONLINE) != 0) {
+                e.onOnlineInfoArrived(obj);
+            } else if ((interestedEvent & INotification.EVENT_SYS) != 0) {
+                e.onSysInfoArrived(obj);
+            } else if ((interestedEvent & INotification.EVENT_TYPING) != 0) {
+                e.onTypingInfoArrived(obj);
+            } else if ((interestedEvent & INotification.EVENT_MSG_SEND_OK) != 0) {
+                e.onMessageSendOk((WSMessageAckNotificationHandler.MessageSendResult)obj);
+            } else if ((interestedEvent & INotification.EVENT_MSG_SEND_ERROR) != 0) {
+                e.onMessageSendError((WSMessageAckNotificationHandler.MessageSendResult)obj);
+            }
+        }
+    }
+
+    protected IWebSocket getWebSocket() {
+        if (webSocket == null) {
+            webSocket = new AndroidAsyncWebSocketImpl();
+        }
+        return webSocket;
     }
 
     private void checkConfig() {
@@ -174,6 +224,12 @@ public class DefaultNotification implements INotification, INotificationHandler.
 
     private JSONObject getWSAuthObject() {
         JSONObject wsAuthObject = new JSONObject();
+
+        if (config.getActiveUser() == null) {
+            L.w(WS_AUTH_ACTIVE_USER_EMPTY);
+            return wsAuthObject;
+        }
+
         try {
             wsAuthObject.put("api_token", config.getApiToken());
             wsAuthObject.put("user_uuid", config.getActiveUser().getUuid());
@@ -210,32 +266,7 @@ public class DefaultNotification implements INotification, INotificationHandler.
         }
     }
 
-    @Override
-    public void onCompleted(int eventType, Object obj) {
-        L.d(WS_BROADCST_EVENT, listeners.size());
-
-        for (OnNotificationEvent e : listeners) {
-            int interestedEvent = e.getInterestedEvent() & eventType;
-
-            if ((interestedEvent & INotification.EVENT_AUTH) != 0) {
-                e.onAuthInfoArrived(obj);
-            } else if ((interestedEvent & INotification.EVENT_UNKNOWN) != 0) {
-                e.onUnknownInfoArrived(obj);
-            } else if ((interestedEvent & INotification.EVENT_CONVERSATION) != 0) {
-                e.onConversationInfoArrived((Conversation)obj);
-            } else if ((interestedEvent & INotification.EVENT_MESSAGE) != 0) {
-                e.onMessageInfoArrived((PPMessage)obj);
-            } else if ((interestedEvent & INotification.EVENT_ONLINE) != 0) {
-                e.onOnlineInfoArrived(obj);
-            } else if ((interestedEvent & INotification.EVENT_SYS) != 0) {
-                e.onSysInfoArrived(obj);
-            } else if ((interestedEvent & INotification.EVENT_TYPING) != 0) {
-                e.onTypingInfoArrived(obj);
-            } else if ((interestedEvent & INotification.EVENT_MSG_SEND_OK) != 0) {
-                e.onMessageSendOk((WSMessageAckNotificationHandler.MessageSendResult)obj);
-            } else if ((interestedEvent & INotification.EVENT_MSG_SEND_ERROR) != 0) {
-                e.onMessageSendError((WSMessageAckNotificationHandler.MessageSendResult)obj);
-            }
-        }
+    private boolean isConnectingOrConnected() {
+        return webSocket != null;
     }
 }

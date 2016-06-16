@@ -62,4 +62,11 @@ public interface IWebSocket {
      */
     void setCallback(IWebSocketEvent event);
 
+    /**
+     * Query is webSocket open
+     *
+     * @return
+     */
+    boolean isOpen();
+
 }

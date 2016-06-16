@@ -1,5 +1,8 @@
 package com.ppmessage.sdk.core.bean.message;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageException;
 import com.ppmessage.sdk.core.PPMessageSDK;
@@ -20,6 +23,40 @@ public class PPMessageTxtMediaItem implements IPPMessageMediaItem {
     private String textContent;
     private String txtUrl;
     private String txtFid;
+
+    public PPMessageTxtMediaItem() {
+
+    }
+
+    protected PPMessageTxtMediaItem(Parcel in) {
+        textContent = in.readString();
+        txtUrl = in.readString();
+        txtFid = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(textContent);
+        dest.writeString(txtUrl);
+        dest.writeString(txtFid);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<PPMessageTxtMediaItem> CREATOR = new Creator<PPMessageTxtMediaItem>() {
+        @Override
+        public PPMessageTxtMediaItem createFromParcel(Parcel in) {
+            return new PPMessageTxtMediaItem(in);
+        }
+
+        @Override
+        public PPMessageTxtMediaItem[] newArray(int size) {
+            return new PPMessageTxtMediaItem[size];
+        }
+    };
 
     public String getTextContent() {
         return textContent;

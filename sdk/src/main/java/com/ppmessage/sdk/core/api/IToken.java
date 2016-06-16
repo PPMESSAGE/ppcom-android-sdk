@@ -28,4 +28,15 @@ public interface IToken {
      */
     void getApiToken(String userEmail, String userPassword, OnRequestTokenEvent completedCallback);
 
+    /**
+     * Clear cached token
+     */
+    void clearCachedToken();
+
+    /**
+     * Get cached token
+     * @return
+     */
+    String getCachedToken();
+
 }

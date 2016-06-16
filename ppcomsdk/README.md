@@ -18,7 +18,7 @@ You can download through `Maven` or `Gradle`.
 <dependency>
   <groupId>com.ppmessage</groupId>
   <artifactId>ppcomsdk</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <type>pom</type>
 </dependency>
 ```
@@ -26,7 +26,7 @@ You can download through `Maven` or `Gradle`.
 ## Gradle
 
 ```groovy
-compile 'com.ppmessage:ppcomsdk:0.0.2'
+compile 'com.ppmessage:ppcomsdk:0.0.3'
 ```
 	
 Usage

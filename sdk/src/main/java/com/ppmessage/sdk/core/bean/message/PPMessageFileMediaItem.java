@@ -1,5 +1,9 @@
 package com.ppmessage.sdk.core.bean.message;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.utils.Utils;
 
 import org.json.JSONException;
@@ -20,6 +24,31 @@ public class PPMessageFileMediaItem implements IPPMessageMediaItem {
     private long size;
     private String humanReadableSize;
     private File file;
+
+    public PPMessageFileMediaItem() {
+
+    }
+
+    protected PPMessageFileMediaItem(Parcel in) {
+        mime = in.readString();
+        name = in.readString();
+        fid = in.readString();
+        fUrl = in.readString();
+        size = in.readLong();
+        humanReadableSize = in.readString();
+    }
+
+    public static final Creator<PPMessageFileMediaItem> CREATOR = new Creator<PPMessageFileMediaItem>() {
+        @Override
+        public PPMessageFileMediaItem createFromParcel(Parcel in) {
+            return new PPMessageFileMediaItem(in);
+        }
+
+        @Override
+        public PPMessageFileMediaItem[] newArray(int size) {
+            return new PPMessageFileMediaItem[size];
+        }
+    };
 
     public String getMime() {
         return mime;
@@ -89,7 +118,7 @@ public class PPMessageFileMediaItem implements IPPMessageMediaItem {
 
             return fileMediaItem;
         } catch (JSONException e) {
-            e.printStackTrace();
+            L.e(e);
         }
 
         return null;
@@ -103,5 +132,20 @@ public class PPMessageFileMediaItem implements IPPMessageMediaItem {
     @Override
     public void asyncGetAPIJsonObject(OnGetJsonObjectEvent event) {
         // Waiting for implementation
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mime);
+        dest.writeString(name);
+        dest.writeString(fid);
+        dest.writeString(fUrl);
+        dest.writeLong(size);
+        dest.writeString(humanReadableSize);
     }
 }

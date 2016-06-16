@@ -71,7 +71,7 @@ public class PPMessageSDK {
 
     public INotification getNotification() {
         checkConfig();
-        if (notification == null) notification = new DefaultNotification(this, this.configuration.webSocket);
+        if (notification == null) notification = new DefaultNotification(this);
         return notification;
     }
 

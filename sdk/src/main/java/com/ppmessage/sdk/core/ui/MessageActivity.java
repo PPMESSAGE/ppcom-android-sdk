@@ -125,7 +125,11 @@ public class MessageActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sendButton.setEnabled(s.toString().length() > 0);
+                sendButton.setEnabled(
+                        conversation != null &&
+                                sdk != null &&
+                                s.toString().length() > 0
+                );
             }
         });
 

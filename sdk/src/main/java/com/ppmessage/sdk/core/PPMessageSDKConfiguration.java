@@ -24,7 +24,6 @@ public final class PPMessageSDKConfiguration {
     final boolean enableDebugLogging;
 
     final IImageLoader imageLoader;
-    final IWebSocket webSocket;
 
     public PPMessageSDKConfiguration(Builder builder) {
         this.builder = builder;
@@ -39,7 +38,6 @@ public final class PPMessageSDKConfiguration {
         this.enableLogging = builder.enableLogging;
 
         this.imageLoader = builder.imageLoader;
-        this.webSocket = builder.webSocket;
     }
 
     public static class Builder {
@@ -54,7 +52,6 @@ public final class PPMessageSDKConfiguration {
         private boolean enableDebugLogging;
 
         private IImageLoader imageLoader;
-        private IWebSocket webSocket;
 
         public Builder(Context context) {
             this.context = context;
@@ -63,7 +60,6 @@ public final class PPMessageSDKConfiguration {
             this.enableDebugLogging = false;
 
             this.imageLoader = new PicassoImageLoader(context);
-            this.webSocket = new AndroidAsyncWebSocketImpl();
         }
 
         public Builder setAppUUID(String appUUID) {
@@ -89,11 +85,6 @@ public final class PPMessageSDKConfiguration {
 
         public Builder setImageLoader(IImageLoader imageLoader) {
             this.imageLoader = imageLoader;
-            return this;
-        }
-
-        public Builder setWebSocket(IWebSocket webSocket) {
-            this.webSocket = webSocket;
             return this;
         }
 

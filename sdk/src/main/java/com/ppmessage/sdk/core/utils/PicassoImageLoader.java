@@ -2,6 +2,7 @@ package com.ppmessage.sdk.core.utils;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.widget.ImageView;
 
 import com.ppmessage.sdk.R;
@@ -17,6 +18,7 @@ public class PicassoImageLoader implements IImageLoader {
     private static final int DEFAULT_WIDTH = 300;
     private static final int DEFAULT_HEIGHT = 400;
 
+    private static final boolean LOG_ENABLE = false;
     private static final String IMAGE_LOAD_LOG = "Load image: %s, width: %d, height: %d";
 
     private Context context;
@@ -37,7 +39,9 @@ public class PicassoImageLoader implements IImageLoader {
 
     @Override
     public void loadImage(final String imageUri, int width, int height, int placeHolder, ImageView target) {
-        L.d(IMAGE_LOAD_LOG, imageUri, width, height);
+        if (TextUtils.isEmpty(imageUri)) return;
+        if (LOG_ENABLE) L.d(IMAGE_LOAD_LOG, imageUri, width, height);
+
         Picasso.with(context)
                 .load(imageUri)
                 .placeholder(placeHolder)
@@ -47,7 +51,7 @@ public class PicassoImageLoader implements IImageLoader {
 
                     @Override
                     public void onSuccess() {
-                        L.d("imageUri:%s load success", imageUri);
+                        if (LOG_ENABLE) L.d("imageUri:%s load success", imageUri);
                     }
 
                     @Override
@@ -60,7 +64,9 @@ public class PicassoImageLoader implements IImageLoader {
 
     @Override
     public void loadImage(final String imageUri, int width, int height, Drawable placeHolder, ImageView target) {
-        L.d(IMAGE_LOAD_LOG, imageUri, width, height);
+        if (TextUtils.isEmpty(imageUri)) return;
+        if (LOG_ENABLE) L.d(IMAGE_LOAD_LOG, imageUri, width, height);
+
         Picasso.with(context)
                 .load(imageUri)
                 .placeholder(placeHolder)
@@ -69,7 +75,7 @@ public class PicassoImageLoader implements IImageLoader {
                 .into(target, new Callback() {
                     @Override
                     public void onSuccess() {
-                        L.d("imageUri:%s load success", imageUri);
+                        if (LOG_ENABLE) L.d("imageUri:%s load success", imageUri);
                     }
 
                     @Override

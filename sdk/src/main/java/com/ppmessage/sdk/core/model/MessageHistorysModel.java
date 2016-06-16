@@ -52,7 +52,7 @@ public class MessageHistorysModel {
          * message's timestamp: => grow up from index [0] to [length - 1]
          *
          * @param pageIndex
-         * @param messageList
+         * @param messageList messageList == null meanrs: load error
          */
         void onCompleted(HistoryPageIndex pageIndex, List<PPMessage> messageList);
     }
@@ -67,8 +67,8 @@ public class MessageHistorysModel {
         final String maxUUID;
 
         public MessageHistoryRequestParam(String conversationUUID, String maxUUID, int pageSize, int pageOffset) {
-            this.conversationUUID = conversationUUID;
             this.maxUUID = maxUUID;
+            this.conversationUUID = conversationUUID;
             this.pageOffset = pageOffset;
             this.pageSize = pageSize;
         }
@@ -156,18 +156,9 @@ public class MessageHistorysModel {
         final int nextIndex = startIndex + 1;
         try {
             final JSONObject messageJsonObject = jsonArray.getJSONObject(startIndex);
-            final JSONObject messageBodyJsonObject = new JSONObject(messageJsonObject.getString("message_body"));
-            PPMessage.asyncParse(messageSDK, messageBodyJsonObject, new PPMessage.onParseListener() {
+            PPMessage.asyncParse(messageSDK, messageJsonObject, new PPMessage.onParseListener() {
                 @Override
                 public void onCompleted(PPMessage message) {
-
-                    try {
-                        User fromUser = User.parse(messageJsonObject.getJSONObject("from_user"));
-                        message.setFromUser(fromUser);
-                    } catch (JSONException e) {
-                        L.e(e);
-                    }
-
                     messageList.add(message);
                     asyncParseMessages(messageList, jsonResponse, jsonArray, requestParam, nextIndex, event);
 

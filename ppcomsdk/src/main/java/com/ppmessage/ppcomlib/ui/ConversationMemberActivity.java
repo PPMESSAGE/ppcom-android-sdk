@@ -122,7 +122,7 @@ public class ConversationMemberActivity extends AppCompatActivity {
 
     private void stopLoading() {
         if (loadingDialog != null) {
-            loadingDialog.hide();
+            loadingDialog.dismiss();
         }
     }
 

@@ -11,6 +11,7 @@ import com.ppmessage.sdk.R;
 import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.bean.common.Conversation;
+import com.ppmessage.sdk.core.ui.view.BadgeView;
 import com.ppmessage.sdk.core.ui.view.CircularImageView;
 import com.ppmessage.sdk.core.utils.IImageLoader;
 import com.ppmessage.sdk.core.utils.Utils;
@@ -77,6 +78,7 @@ public class ConversationsAdapter extends BaseAdapter {
             holder.userNameTv = (TextView) convertView.findViewById(R.id.pp_conversations_content_item_user_name);
             holder.userAvatarImg = (CircularImageView) convertView.findViewById(R.id.pp_conversations_content_item_user_avatar);
             holder.itemContainer = (ViewGroup) convertView.findViewById(R.id.pp_conversations_item_container);
+            holder.unreadView = (BadgeView) convertView.findViewById(R.id.pp_conversations_content_item_unread);
             convertView.setTag(holder);
         } else {
             holder = (PPConversationsItemViewHolder) convertView.getTag();
@@ -85,13 +87,19 @@ public class ConversationsAdapter extends BaseAdapter {
         Conversation item = getItem(position);
         if (item != null) {
             holder.messageSummaryTv.setText(item.getConversationSummary());
-            holder.messageTimestampTv.setText(Utils.formatTimestamp(item.getUpdateTimestamp()));
+            holder.messageTimestampTv.setText(Utils.formatTimestamp(item.getUpdateTimestamp(), true));
             holder.userNameTv.setText(item.getConversationName());
             imageLoader.loadImage(item.getConversationIcon(),
                     DEFAULT_WIDTH,
                     DEFAULT_HEIGHT,
                     R.drawable.pp_icon_avatar,
                     holder.userAvatarImg);
+            if (item.getUnreadCount() > 0) {
+                holder.unreadView.setVisibility(View.VISIBLE);
+                holder.unreadView.setNumber(item.getUnreadCount());
+            } else {
+                holder.unreadView.setVisibility(View.GONE);
+            }
             setItemOnClickListener(convertView, item);
         }
 
@@ -105,6 +113,10 @@ public class ConversationsAdapter extends BaseAdapter {
 
     public void setOnItemClickedListener(ConversationsAdapter.OnItemClickListener itemClickedListener) {
         this.itemClickListener = itemClickedListener;
+    }
+
+    public List<Conversation> getConversationList() {
+        return this.conversationList;
     }
 
     private void setItemOnClickListener(final View container,
@@ -133,6 +145,7 @@ public class ConversationsAdapter extends BaseAdapter {
         TextView userNameTv;
         TextView messageSummaryTv;
         TextView messageTimestampTv;
+        BadgeView unreadView;
     }
 
 }

@@ -16,7 +16,7 @@ You can download through `Maven` or `Gradle`.
 <dependency>
   <groupId>com.ppmessage</groupId>
   <artifactId>sdk</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3</version>
   <type>pom</type>
 </dependency>
 ```
@@ -24,7 +24,7 @@ You can download through `Maven` or `Gradle`.
 ## Gradle
 
 ```groovy
-compile 'com.ppmessage:sdk:0.0.2'
+compile 'com.ppmessage:sdk:0.0.3'
 ```
 
 Usage
@@ -36,7 +36,7 @@ Usage
 PPMessageSDK sdk = PPMessageSDK.getInstance();
 sdk.init(new PPMessageSDKConfiguration
 	.Builder(getContext())
-	// fir PPCom use
+	// for PPCom use
 	.setAppUUID("YOUR_APP_UUID")
 	// for PPKefu use
 	.setServiceUserInfo("SERVICE_USER_EMAIL", "SERVICE_USER_SHA1_PASSWORD")
@@ -298,9 +298,3 @@ txtUploader.upload("LARGE TEXT ...", new OnUploadingListener() {
 	void onCompleted(JSONObject response);
 });
 ```
-	
-Note
-=======
-
-This library not tested for PPKefu now :)
-

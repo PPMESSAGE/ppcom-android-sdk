@@ -113,4 +113,28 @@ public class DefaultAPIImpl extends BaseAPIRequest implements IAPI {
         super.post("/PP_GET_CONVERSATION_USER_LIST", requestParam, completedCallback);
     }
 
+    @Override
+    public void login(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
+        super.post("/PPKEFU_LOGIN", requestParam, completedCallback);
+    }
+
+    @Override
+    public void logout(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
+        super.post("/PPKEFU_LOGOUT", requestParam, completedCallback);
+    }
+
+    @Override
+    public void getServiceUserList(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
+        super.post("/PP_GET_APP_SERVICE_USER_LIST", requestParam, completedCallback);
+    }
+
+    @Override
+    public void pageConversationList(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
+        super.post("/PP_PAGE_USER_CONVERSATION", requestParam, completedCallback);
+    }
+
+    @Override
+    public void createConversation(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
+        super.post("/PP_CREATE_CONVERSATION", requestParam, completedCallback);
+    }
 }

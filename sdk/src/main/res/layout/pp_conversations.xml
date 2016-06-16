@@ -3,12 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <ListView
+    <com.ppmessage.sdk.core.ui.view.CustomListView
         android:id="@+id/pp_conversations_content_lv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@null"
         android:dividerHeight="0dp" >
-    </ListView>
+    </com.ppmessage.sdk.core.ui.view.CustomListView>
+
+    <include layout="@layout/pp_loading" android:id="@+id/pp_conversations_loading_view" ></include>
 
 </FrameLayout>

@@ -1,6 +1,8 @@
 package com.ppmessage.sdk.core.bean.message;
 
 import android.content.Context;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.ppmessage.sdk.R;
 import com.ppmessage.sdk.core.L;
@@ -17,7 +19,7 @@ import org.json.JSONObject;
 /**
  * Created by ppmessage on 5/6/16.
  */
-public class PPMessage {
+public class PPMessage implements Parcelable {
 
     private static final String LOG_FAILED_GET_CONVERSATION = "[PPMessage] can not get conversation: %s";
     private static final String LOG_FAILED_GET_FROM_USER = "[PPMessage] can not get from_user: %s";
@@ -32,6 +34,56 @@ public class PPMessage {
 
     public static final int DIRECTION_OUTGOING = 0;
     public static final int DIRECTION_INCOMING = 1;
+
+    public PPMessage() {
+
+    }
+
+    protected PPMessage(Parcel in) {
+        direction = in.readInt();
+        messageSubType = in.readString();
+        messageID = in.readString();
+        messageBody = in.readString();
+        messagePushID = in.readString();
+        error = in.readByte() != 0;
+        mediaItem = in.readParcelable(IPPMessageMediaItem.class.getClassLoader());
+        conversation = in.readParcelable(Conversation.class.getClassLoader());
+        fromUser = in.readParcelable(User.class.getClassLoader());
+        toUser = in.readParcelable(User.class.getClassLoader());
+        timestamp = in.readLong();
+    }
+
+    public static final Creator<PPMessage> CREATOR = new Creator<PPMessage>() {
+        @Override
+        public PPMessage createFromParcel(Parcel in) {
+            return new PPMessage(in);
+        }
+
+        @Override
+        public PPMessage[] newArray(int size) {
+            return new PPMessage[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(direction);
+        dest.writeString(messageSubType);
+        dest.writeString(messageID);
+        dest.writeString(messageBody);
+        dest.writeString(messagePushID);
+        dest.writeByte((byte) (error ? 1 : 0));
+        dest.writeParcelable(mediaItem, flags);
+        dest.writeParcelable(conversation, flags);
+        dest.writeParcelable(fromUser, flags);
+        dest.writeParcelable(toUser, flags);
+        dest.writeLong(timestamp);
+    }
 
     public interface onParseListener {
 
@@ -147,6 +199,10 @@ public class PPMessage {
         this.timestamp = timestamp;
     }
 
+    // ==========================
+    // Parse API
+    // ==========================
+
     /**
      * Parse jsonObject to PPmessage
      *
@@ -196,8 +252,12 @@ public class PPMessage {
      * @param parseListener
      */
     public static void asyncParse(PPMessageSDK sdk, JSONObject jsonObject, final onParseListener parseListener) {
-        final PPMessage message = parse(sdk, jsonObject);
         try {
+
+            final JSONObject messageJsonObject = jsonObject.has("message_body") ?
+                    new JSONObject(jsonObject.getString("message_body")) :
+                    jsonObject;
+            final PPMessage message = parse(sdk, messageJsonObject);
 
             // From user
             if (jsonObject.has("from_user")) {
@@ -208,7 +268,7 @@ public class PPMessage {
 
             // Async get conversation
             // Async get MediaItem
-            asyncParseMessageConversation(sdk, jsonObject, message, parseListener);
+            asyncParseMessageConversation(sdk, messageJsonObject, message, parseListener);
         } catch (JSONException e) {
             L.e(e);
         }
@@ -230,13 +290,12 @@ public class PPMessage {
                     message.setError(true);
                 }
 
-                if (!message.isError()) {
-                    try {
-                        asyncParseMessageMediaItem(sdk, jsonObject, message, parseListener);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                } else {
+                // Continue to parse, even the message has error
+                try {
+                    asyncParseMessageMediaItem(sdk, jsonObject, message, parseListener);
+                } catch (JSONException e) {
+                    L.e(e);
+
                     if (parseListener != null) {
                         parseListener.onCompleted(message);
                     }
@@ -267,7 +326,7 @@ public class PPMessage {
                     @Override
                     public void onCompleted(String text) {
                         txtMediaItem.setTextContent(text);
-                        message.setError(text == null);
+                        if (!message.isError()) message.setError(text == null);
 
                         if (text == null) L.w(LOG_FAILED_GET_TXT_CONTENT, jsonObject.toString());
 

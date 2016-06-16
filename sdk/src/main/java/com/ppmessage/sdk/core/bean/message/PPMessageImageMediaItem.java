@@ -1,5 +1,8 @@
 package com.ppmessage.sdk.core.bean.message;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.utils.Utils;
 
@@ -27,6 +30,34 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
     private int origHeight;
     private int thumWidth;
     private int thumHeight;
+
+    public PPMessageImageMediaItem() {
+
+    }
+
+    protected PPMessageImageMediaItem(Parcel in) {
+        mime = in.readString();
+        thumId = in.readString();
+        origId = in.readString();
+        thumUrl = in.readString();
+        origUrl = in.readString();
+        origWidth = in.readInt();
+        origHeight = in.readInt();
+        thumWidth = in.readInt();
+        thumHeight = in.readInt();
+    }
+
+    public static final Creator<PPMessageImageMediaItem> CREATOR = new Creator<PPMessageImageMediaItem>() {
+        @Override
+        public PPMessageImageMediaItem createFromParcel(Parcel in) {
+            return new PPMessageImageMediaItem(in);
+        }
+
+        @Override
+        public PPMessageImageMediaItem[] newArray(int size) {
+            return new PPMessageImageMediaItem[size];
+        }
+    };
 
     public String getMime() {
         return mime;
@@ -145,5 +176,23 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
     @Override
     public void asyncGetAPIJsonObject(OnGetJsonObjectEvent event) {
         // Waiting for implementation
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mime);
+        dest.writeString(thumId);
+        dest.writeString(origId);
+        dest.writeString(thumUrl);
+        dest.writeString(origUrl);
+        dest.writeInt(origWidth);
+        dest.writeInt(origHeight);
+        dest.writeInt(thumWidth);
+        dest.writeInt(thumHeight);
     }
 }

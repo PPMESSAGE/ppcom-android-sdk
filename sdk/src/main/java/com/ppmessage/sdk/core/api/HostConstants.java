@@ -32,7 +32,7 @@ public final class HostConstants {
 
             PPCOM_API_KEY = "M2E2OTRjZTQ5Mzk4ZWUxYzRjM2FlZDM2NmE4MjA4MzkzZjFjYWQyOA==";
             PPCOM_API_SECRET = "ZThmMTM1ZDM4ZmI2NjE1YWE0NWEwMGM3OGNkMzY5MzVjOTQ2MGU0NQ==";
-            PPKEFU_API_KEY = null; // not public now
+            PPKEFU_API_KEY = "MWJkZWI3NDZhZmRiN2NjNDYzZDVmZGI3YTk2YjI5NzhhOWJhNzIyZA==";
         }
     }
 

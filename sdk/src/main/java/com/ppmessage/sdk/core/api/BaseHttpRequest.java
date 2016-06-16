@@ -29,7 +29,7 @@ public class BaseHttpRequest {
     private static final int REQUEST_READ_TIMEOUT = 15000;
     private static final int REQUEST_CONNECT_TIMEOUT = 5000;
 
-    private static final String REQUEST_LOG_FORMAT = "request with url: %s, with data: %s";
+    private static final String REQUEST_LOG_FORMAT = "request with url: %s, with data: %s, with access token:%s";
     private static final String RESPONSE_LOG_FORMAT = "response with url: %s, with response code: %d, with data: %s";
 
     private final List<AsyncTask> taskList = new CopyOnWriteArrayList<>();
@@ -52,7 +52,6 @@ public class BaseHttpRequest {
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    L.d(REQUEST_LOG_FORMAT, url, anyObj);
                     return makeRequest(url, anyObj, method);
                 } catch (Exception e) {
                     L.e(e);
@@ -118,6 +117,7 @@ public class BaseHttpRequest {
         URL uri = new URL(url);
         HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
         setup(conn);
+        L.d(REQUEST_LOG_FORMAT, url, anyObj, conn.getRequestProperty("Authorization"));
         conn.setReadTimeout(REQUEST_READ_TIMEOUT);
         conn.setConnectTimeout(REQUEST_CONNECT_TIMEOUT);
         conn.setRequestMethod(method);

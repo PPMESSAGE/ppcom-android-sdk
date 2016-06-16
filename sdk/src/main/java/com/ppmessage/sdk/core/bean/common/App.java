@@ -44,6 +44,14 @@ public class App {
         this.policy = policy;
     }
 
+    @Override
+    public String toString() {
+        return "App{" +
+                "appUUID='" + appUUID + '\'' +
+                ", appName='" + appName + '\'' +
+                '}';
+    }
+
     public static App parse(JSONObject jsonObject) {
         App app = new App();
 
