@@ -20,6 +20,10 @@ public class Conversation implements Comparable<Conversation>, Parcelable {
     public static final String TYPE_S2S = "S2S";
     public static final String TYPE_P2S = "P2S";
 
+    public static final String STATUS_NEW = "NEW";
+    public static final String STATUS_OPEN = "OPEN";
+    public static final String STATUS_CLOSE = "CLOSE";
+
     private String conversationUUID;
     private String conversationIcon;
     private String conversationName;
@@ -222,6 +226,7 @@ public class Conversation implements Comparable<Conversation>, Parcelable {
             conversation.setGroupUUID(groupUUID);
             conversation.setAssignedUUID(assignedUUID);
             conversation.setUserUUID(Utils.safeNull(jsonObject.optString("user_uuid", null)));
+            conversation.setStatus(Utils.safeNull(jsonObject.optString("status", null)));
 
             PPMessage latestMessage = tryParseConversationLatestMessage(sdk, conversation, jsonObject);
             conversation.setConversationSummary(tryParseConversationSummary(latestMessage, sdk.getContext(), jsonObject));
