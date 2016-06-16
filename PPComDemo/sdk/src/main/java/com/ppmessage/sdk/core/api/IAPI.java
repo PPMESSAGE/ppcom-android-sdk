@@ -207,4 +207,12 @@ public interface IAPI {
      */
     void createConversation(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
 
+    /**
+     * Close conversation
+     *
+     * @param requestParam
+     * @param completedCallback
+     */
+    void closeConversation(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
+
 }

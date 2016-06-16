@@ -30,6 +30,7 @@ public class ConversationFragment extends Fragment {
     private ConversationsAdapter conversationsAdapter;
 
     private ConversationsAdapter.OnItemClickListener itemClickListener;
+    private ConversationsAdapter.OnItemLongClickListener itemLongClickListener;
 
     @Nullable
     @Override
@@ -69,7 +70,9 @@ public class ConversationFragment extends Fragment {
         } else {
             conversationsAdapter = createAdapter(sdk, conversationList);
             setOnItemClickListener(this.itemClickListener);
+            setOnItemLongClickListener(this.itemLongClickListener);
         }
+
         if (conversationListView != null) {
             conversationListView.setAdapter(conversationsAdapter);
         }
@@ -80,6 +83,14 @@ public class ConversationFragment extends Fragment {
 
         if (conversationsAdapter != null) {
             conversationsAdapter.setOnItemClickedListener(itemClickListener);
+        }
+    }
+
+    public void setOnItemLongClickListener(ConversationsAdapter.OnItemLongClickListener itemLongClickListener) {
+        this.itemLongClickListener = itemLongClickListener;
+
+        if (conversationsAdapter != null) {
+            conversationsAdapter.setItemOnLongClickListener(itemLongClickListener);
         }
     }
 

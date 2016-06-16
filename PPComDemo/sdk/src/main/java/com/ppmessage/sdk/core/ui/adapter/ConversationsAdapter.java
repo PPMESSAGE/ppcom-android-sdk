@@ -24,6 +24,7 @@ import java.util.List;
 public class ConversationsAdapter extends BaseAdapter {
 
     private static final String ITEM_CLICK_LOG = "[ConversationsAdapter] item clicked: %s";
+    private static final String ITEM_LONG_CLICK_LOG = "[ConversationsAdapter] item long clicked: %s";
 
     private static final int DEFAULT_WIDTH = 48;
     private static final int DEFAULT_HEIGHT = 48;
@@ -32,12 +33,17 @@ public class ConversationsAdapter extends BaseAdapter {
         void onItemClicked(View container, Conversation conversation);
     }
 
+    public interface OnItemLongClickListener {
+        void onItemLongClicked(View container, Conversation conversation);
+    }
+
     private List<Conversation> conversationList;
     private PPMessageSDK sdk;
     private LayoutInflater mInflater;
     private IImageLoader imageLoader;
 
     private OnItemClickListener itemClickListener;
+    private OnItemLongClickListener itemLongClickListener;
 
     public ConversationsAdapter(PPMessageSDK sdk, List<Conversation> conversationList) {
         this.sdk = sdk;
@@ -100,7 +106,10 @@ public class ConversationsAdapter extends BaseAdapter {
             } else {
                 holder.unreadView.setVisibility(View.GONE);
             }
+
             setItemOnClickListener(convertView, item);
+            setItemOnLongClickListener(convertView, item);
+
         }
 
         return convertView;
@@ -113,6 +122,10 @@ public class ConversationsAdapter extends BaseAdapter {
 
     public void setOnItemClickedListener(ConversationsAdapter.OnItemClickListener itemClickedListener) {
         this.itemClickListener = itemClickedListener;
+    }
+
+    public void setItemOnLongClickListener(OnItemLongClickListener itemLongClickListener) {
+        this.itemLongClickListener = itemLongClickListener;
     }
 
     public List<Conversation> getConversationList() {
@@ -129,6 +142,22 @@ public class ConversationsAdapter extends BaseAdapter {
                         L.d(ITEM_CLICK_LOG, item);
                         itemClickListener.onItemClicked(container, item);
                     }
+                }
+            });
+        }
+    }
+
+    private void setItemOnLongClickListener(final View container,
+                                            final Conversation item) {
+        if (container != null) {
+            container.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    if (itemLongClickListener != null) {
+                        L.d(ITEM_LONG_CLICK_LOG, item);
+                        itemLongClickListener.onItemLongClicked(container, item);
+                    }
+                    return true;
                 }
             });
         }

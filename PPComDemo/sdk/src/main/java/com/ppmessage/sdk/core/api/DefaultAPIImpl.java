@@ -137,4 +137,9 @@ public class DefaultAPIImpl extends BaseAPIRequest implements IAPI {
     public void createConversation(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
         super.post("/PP_CREATE_CONVERSATION", requestParam, completedCallback);
     }
+
+    @Override
+    public void closeConversation(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
+        super.post("/PP_CLOSE_CONVERSATION", requestParam, completedCallback);
+    }
 }
