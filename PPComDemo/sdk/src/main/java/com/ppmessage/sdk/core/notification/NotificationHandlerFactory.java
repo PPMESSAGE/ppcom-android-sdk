@@ -51,7 +51,7 @@ public class NotificationHandlerFactory {
             what = message.has("what") ? message.getString("what") : null;
             type = message.has("type") ? message.getString("type") : null;
         } catch (JSONException e) {
-            e.printStackTrace();
+            L.e(e);
         }
 
         if (what != null) {

@@ -57,7 +57,6 @@ public class MessageNotificationHandler implements INotificationHandler {
     private void ackMessage(PPMessage message) {
         JSONObject jsonObject = new JSONObject();
         try {
-
             JSONArray jsonArray = new JSONArray();
             jsonArray.put(message.getMessagePushID());
 

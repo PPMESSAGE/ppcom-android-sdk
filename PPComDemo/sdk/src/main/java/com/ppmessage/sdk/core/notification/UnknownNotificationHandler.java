@@ -11,7 +11,7 @@ public class UnknownNotificationHandler implements INotificationHandler {
 
     @Override
     public void handle(JSONObject message, OnNotificationHandleEvent e) {
-        L.d("[Unknown Notification]: " + message);
+        L.w("[Unknown Notification]: " + message);
         if (e != null) {
             e.onCompleted(INotification.EVENT_UNKNOWN, e);
         }

@@ -1,5 +1,9 @@
 package com.ppmessage.sdk.core.model;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+
 import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.api.OnAPIRequestCompleted;
@@ -9,6 +13,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Help you load all unacked messages
  *
@@ -17,6 +24,7 @@ import org.json.JSONObject;
 public class UnackedMessagesLoader {
 
     private PPMessageSDK messageSDK;
+    private UnackedMessagesProcessor messagesProcessor;
 
     public UnackedMessagesLoader(PPMessageSDK messageSDK) {
         this.messageSDK = messageSDK;
@@ -36,7 +44,15 @@ public class UnackedMessagesLoader {
         messageSDK.getAPI().getUnackedMessages(requestParam, new OnAPIRequestCompleted() {
             @Override
             public void onResponse(JSONObject jsonResponse) {
-                UnackedMessagesLoader.this.onResponse(jsonResponse);
+                List<String> unackedMessageJSONStringList = UnackedMessagesLoader.this.onResponse(jsonResponse);
+                if (unackedMessageJSONStringList == null || unackedMessageJSONStringList.isEmpty()) {
+                    return;
+                }
+
+                UnackedMessagesLoader.this.stop();
+
+                messagesProcessor = new UnackedMessagesProcessor(messageSDK, unackedMessageJSONStringList);
+                messagesProcessor.start();
             }
 
             @Override
@@ -50,6 +66,17 @@ public class UnackedMessagesLoader {
             }
         });
 
+    }
+
+    public void stop() {
+        if (messagesProcessor != null) {
+            messagesProcessor.stop();
+            messagesProcessor = null;
+        }
+    }
+
+    public boolean inLoading() {
+        return messagesProcessor != null && !messagesProcessor.isCompleted();
     }
 
     private JSONObject getRequestParam() {
@@ -80,27 +107,31 @@ public class UnackedMessagesLoader {
 //        "error_code":0,
 //            "size":1
 //    }
-    private void onResponse(JSONObject jsonResponse) {
+    private List<String> onResponse(JSONObject jsonResponse) {
         try {
             if (jsonResponse.getInt("error_code") != 0) {
-                return;
+                return null;
             }
 
             JSONArray jsonArray = jsonResponse.getJSONArray("list");
             JSONObject messageDictionary = jsonResponse.getJSONObject("message");
+            List<String> unackedMessages = new ArrayList<>(jsonArray.length());
             for (int i = 0; i < jsonArray.length(); i++) {
                 String pid = jsonArray.getString(i);
                 String message = messageDictionary.has(pid) ? messageDictionary.getString(pid) : null;
                 String messageWithPid = convertMessageToWSMessageStyle(message, pid);
 
                 if (messageWithPid != null) {
-                    notifyMessageArrived(messageWithPid);
+                    unackedMessages.add(messageWithPid);
                 }
             }
+            return unackedMessages;
 
         } catch (JSONException e) {
             L.e(e);
         }
+
+        return null;
     }
 
     // Add pid to message:
@@ -110,17 +141,103 @@ public class UnackedMessagesLoader {
     //
     private String convertMessageToWSMessageStyle(String message, String pid) {
         try {
+            JSONObject msgWrapper = new JSONObject();
+
             JSONObject jsonObject = new JSONObject(message);
             jsonObject.put("pid", pid);
-            return jsonObject.toString();
+
+            msgWrapper.put("type", "MSG");
+            msgWrapper.put("msg", jsonObject);
+
+            return msgWrapper.toString();
         } catch (JSONException e) {
             L.e(e);
         }
         return message;
     }
 
-    private void notifyMessageArrived(String message) {
-        messageSDK.getNotification().notify(message);
+    // ===========================================
+    // UnackedMessagesProcessor
+    //
+    // [unack-msg-1] --500ms--> [unack-msg-2] --500ms--> [unack-msg-3] --500ms--> ...
+    //
+    // ===========================================
+
+    private static class UnackedMessagesProcessor {
+
+        private static final String LOG_START = "[UnackedMessagesProcessor] start process unacked messages, count: %d";
+        private static final String LOG_NEXT = "[UnackedMessagesProcessor] next unacked message, index:%d, message:%s";
+        private static final String LOG_COMPLETED = "[UnackedMessagesProcessor] index == size, finished, total unacked messages: %d";
+
+        private static final int WHAT = 1;
+        private static final long DELAY_MILLIS = 500; // 500ms
+
+        private Handler handler;
+        private PPMessageSDK messageSDK;
+        private List<String> unackedMessages;
+        private int index;
+        private boolean completed;
+
+        public UnackedMessagesProcessor(PPMessageSDK messageSDK, final List<String> unackedMessages) {
+            this.handler = new Handler(Looper.getMainLooper()) {
+                @Override
+                public void handleMessage(Message msg) {
+                    super.handleMessage(msg);
+
+                    if (msg.what == WHAT) {
+                        int index = msg.arg1;
+                        notifyMessageArrived(unackedMessages.get(index));
+                    }
+
+                    next();
+                }
+            };
+            this.messageSDK = messageSDK;
+            this.unackedMessages = unackedMessages;
+            this.index = -1;
+            setCompleted(false);
+        }
+
+        public void start() {
+            if (unackedMessages == null ||
+                    unackedMessages.isEmpty()) {
+                setCompleted(true);
+                return;
+            }
+
+            L.d(LOG_START, unackedMessages.size());
+            next();
+        }
+
+        public void stop() {
+            handler.removeMessages(WHAT);
+            setCompleted(true);
+        }
+
+        private void next() {
+            index++;
+            if (index < unackedMessages.size()) {
+                L.d(LOG_NEXT, index, unackedMessages.get(index));
+                Message message = handler.obtainMessage(WHAT);
+                message.arg1 = index;
+                handler.sendMessageDelayed(message, DELAY_MILLIS);
+            } else {
+                L.d(LOG_COMPLETED, unackedMessages.size());
+                stop();
+            }
+        }
+
+        private void notifyMessageArrived(String message) {
+            messageSDK.getNotification().notify(message);
+        }
+
+        public boolean isCompleted() {
+            return completed;
+        }
+
+        private void setCompleted(boolean completed) {
+            this.completed = completed;
+        }
     }
 
 }
