@@ -94,4 +94,8 @@ public class ConversationFragment extends Fragment {
         }
     }
 
+    public final boolean isLoadingViewShow() {
+        return loadingView != null && loadingView.getVisibility() == View.VISIBLE;
+    }
+
 }

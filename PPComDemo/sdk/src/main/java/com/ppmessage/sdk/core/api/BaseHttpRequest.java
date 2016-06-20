@@ -5,8 +5,6 @@ import android.text.TextUtils;
 
 import com.ppmessage.sdk.core.L;
 
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -16,7 +14,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -26,8 +23,8 @@ import javax.net.ssl.HttpsURLConnection;
  */
 public class BaseHttpRequest {
 
-    private static final int REQUEST_READ_TIMEOUT = 15000;
-    private static final int REQUEST_CONNECT_TIMEOUT = 5000;
+    private static final int REQUEST_READ_TIMEOUT = 5000;
+    private static final int REQUEST_CONNECT_TIMEOUT = 15000;
 
     private static final String REQUEST_LOG_FORMAT = "request with url: %s, with data: %s, with access token:%s";
     private static final String RESPONSE_LOG_FORMAT = "response with url: %s, with response code: %d, with data: %s";
