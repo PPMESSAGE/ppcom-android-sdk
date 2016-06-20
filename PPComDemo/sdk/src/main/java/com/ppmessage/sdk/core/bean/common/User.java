@@ -139,17 +139,18 @@ public class User implements Parcelable {
         try {
             // Find userName
             String userName = null;
-            if (userJsonObject.has("user_name")) {
-                userName = Utils.safeNull(userJsonObject.getString("user_name"));
-            }
-            if (userName == null) {
-                if (userJsonObject.has("user_fullname")) {
-                    userName = Utils.safeNull(userJsonObject.getString("user_fullname"));
-                }
+            if (userJsonObject.has("user_fullname")) {
+                userName = Utils.safeNull(userJsonObject.getString("user_fullname"));
             }
             if (userName == null) {
                 if (userJsonObject.has("fullname")) {
                     userName = Utils.safeNull(userJsonObject.getString("fullname"));
+                }
+            }
+            if (userName == null) {
+                // Sometimes it will return user_email ... is this a bug ?
+                if (userJsonObject.has("user_name")) {
+                    userName = Utils.safeNull(userJsonObject.getString("user_name"));
                 }
             }
 
