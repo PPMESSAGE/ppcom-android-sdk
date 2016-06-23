@@ -251,7 +251,7 @@ public class PPMessage implements Parcelable {
      * @param jsonObject
      * @param parseListener
      */
-    public static void asyncParse(PPMessageSDK sdk, JSONObject jsonObject, final onParseListener parseListener) {
+    public static void asyncParse(final PPMessageSDK sdk, JSONObject jsonObject, final onParseListener parseListener) {
         try {
 
             final JSONObject messageJsonObject = jsonObject.has("message_body") ?
@@ -262,16 +262,59 @@ public class PPMessage implements Parcelable {
             // From user
             if (jsonObject.has("from_user")) {
                 message.setFromUser(User.parse(jsonObject.getJSONObject("from_user")));
+                // Async get conversation
+                // Async get MediaItem
+                asyncParseMessageConversation(sdk, messageJsonObject, message, parseListener);
             } else {
-                L.w(LOG_FAILED_GET_FROM_USER, jsonObject);
+                // jsonObject not contains `from_user` fileds, this will happens when the message was get from
+                // the api interface '/GET_UNACKED_MESSAGES', the message won't contain from_user, only contains
+                // `fi` fileds, so we have to try our best effort to get from_user as possible as we can.
+                asyncParseMessageFromUser(sdk, jsonObject, message, new onParseListener() {
+                    @Override
+                    public void onCompleted(PPMessage message) {
+                        try {
+                            asyncParseMessageConversation(sdk, messageJsonObject, message, parseListener);
+                        } catch (JSONException e) {
+                            L.e(e);
+                            if (parseListener != null) parseListener.onCompleted(message);
+                        }
+                    }
+                });
             }
-
-            // Async get conversation
-            // Async get MediaItem
-            asyncParseMessageConversation(sdk, messageJsonObject, message, parseListener);
         } catch (JSONException e) {
             L.e(e);
         }
+    }
+
+    // try get from user
+    private static void asyncParseMessageFromUser(final PPMessageSDK sdk,
+                                                  final JSONObject jsonObject,
+                                                  final PPMessage message,
+                                                  final onParseListener parseListener) {
+        // fromUser only contains {ci: xxx}, not contains fromName and fromIcon and so on.
+        final String userUUID = (message.getFromUser() != null ? message.getFromUser().getUuid() : null);
+        // userUUID is null
+        if (userUUID == null) {
+            L.w(LOG_FAILED_GET_FROM_USER, jsonObject);
+            if (parseListener != null) {
+                parseListener.onCompleted(message);
+            }
+            return;
+        }
+
+        sdk.getDataCenter().queryUser(userUUID, new IQuery.OnQueryCallback() {
+            @Override
+            public void onCompleted(Object object) {
+                if (object != null && object instanceof User) {
+                    message.setFromUser((User) object);
+                } else {
+                    L.w(LOG_FAILED_GET_FROM_USER, jsonObject);
+                }
+                if (parseListener != null) {
+                    parseListener.onCompleted(message);
+                }
+            }
+        });
     }
 
     private static void asyncParseMessageConversation(final PPMessageSDK sdk,

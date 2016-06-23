@@ -3,8 +3,8 @@ package com.ppmessage.sdk.core.query;
 import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.api.OnAPIRequestCompleted;
-import com.ppmessage.sdk.core.bean.common.User;
 import com.ppmessage.sdk.core.bean.common.Conversation;
+import com.ppmessage.sdk.core.bean.common.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,7 +63,7 @@ class APIQuery implements IQuery {
         JSONObject param = new JSONObject();
         try {
             param.put("app_uuid", this.sdk.getNotification().getConfig().getAppUUID());
-            param.put("user_uuid", this.sdk.getNotification().getConfig().getActiveUser().getUuid());
+            param.put("user_uuid", userUUID);
         } catch (JSONException e) {
             L.e(e);
         }
