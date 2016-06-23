@@ -16,7 +16,7 @@ You can download through `Maven` or `Gradle`.
 <dependency>
   <groupId>com.ppmessage</groupId>
   <artifactId>sdk</artifactId>
-  <version>0.0.3</version>
+  <version>0.0.5</version>
   <type>pom</type>
 </dependency>
 ```
@@ -24,7 +24,7 @@ You can download through `Maven` or `Gradle`.
 ## Gradle
 
 ```groovy
-compile 'com.ppmessage:sdk:0.0.3'
+compile 'com.ppmessage:sdk:0.0.5'
 ```
 
 Usage
@@ -153,7 +153,7 @@ sdk.getNotification().sendMessage(messageToBeSend);
 
 ### MessageActivity
 
-`MessageActivity` provided basic ui for chatting activity.
+`MessageActivity` provided basic ui for chatting activity. Don't forget to set `Conversation` and `PPMessageSDK` before send message, or it won't work as you expected.
 
 ```java
 public class MyMessageActivity extends MessageActivity {
@@ -161,6 +161,11 @@ public class MyMessageActivity extends MessageActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+        // initialize
+        final Conversation conversationInChatting = ...;
+        setConversation(conversationInChatting);
+        setMessageSDK(sdk);
 		
 		List<PPMessage> messages = new ArrayList<>();
 		MessageAdapter messageAdapter = new MessageAdapter(sdk, this, messages);
@@ -173,7 +178,7 @@ public class MyMessageActivity extends MessageActivity {
 	
 ### ConversationFragment
 
-`ConversationFragment` provided basic ui for conversation list view.
+`ConversationFragment` provided basic ui for conversation list view. Don't forget to set set the `PPMessageSDK` by call the method `fragment.setMessageSDK(sdk)`, or it won't work as you expected.
 
 ```java
 public class MyConversationsActivity extends AppCompatActivity {
@@ -182,10 +187,11 @@ public class MyConversationsActivity extends AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		List<Conversation> conversations = new ArrayList<>();
-		
+        // Initialize
 		ConversationFragment fragment = new ConversationFragment();
 		fragment.setMessageSDK(sdk);
+
+        List<Conversation> conversations = new ArrayList<>();
 		fragment.setConversationList(conversations);
 	
 		FragmentManager fragmentManager = getSupportFragmentManager();
@@ -196,6 +202,19 @@ public class MyConversationsActivity extends AppCompatActivity {
 	}
 	
 }
+```
+
+### BadgeView
+
+`BadgeView` was designed to show red badge number on a `TextView`.
+
+```xml
+<com.ppmessage.sdk.core.ui.view.BadgeView
+android:id="@+id/mBadgeView"
+android:layout_width="16dp"
+android:layout_height="16dp"
+android:textSize="12sp"
+android:layout_gravity="top|end" />
 ```
 	
 ## Bean
@@ -233,6 +252,26 @@ sdk.getNotification().sendMessage(message);
 String summary = PPMessage.summary(getContext(), message);
 ```
 
+### Conversation
+
+### User
+
+## DataCenter
+
+DataCenter was designed for inner use, to cache `Conversation` and `User` associated with messages. The implementation of DataCenter uses an in-memory sqlite database to cache `Conversation` and `User`, when it can not find from the databse, it will call api to query data.
+
+```java
+IDataCenter dataCenter = sdk.getDataCenter();
+
+// Query
+dataCenter.queryConversation('YOUR_CONVERSATION_UUID', null);
+dataCenter.queryUser('YOUR_USER_UUID', null);
+
+// Cache
+dataCenter.updateConversation(conversation);
+dataCenter.updateUser(user);
+```
+
 ## Model
 
 ### MessagesModel
@@ -262,7 +301,7 @@ historyLoader.loadHistory(requestParam, new MessageHistorysModel.OnLoadHistoryEv
 	
 ### UnackedMessagesLoader
 
-`UnackedMessagesLoader` will try get all unacked messages, and then convert them to WebSocket message style. 
+`UnackedMessagesLoader` will try get all unacked messages, and then convert them to WebSocket message style. So you must add at least one `INotification.OnNotificationEvent` listener to `Notification`, so you can receive these unacked messages.
 
 ```java
 UnackedMessagesLoader unackedMessagesLoader = new UnackedMessagesLoader(messageSDK);
@@ -295,6 +334,12 @@ txtUploader.upload("LARGE TEXT ...", new OnUploadingListener() {
 	void onError(Exception e) {}
 	
 	@Override
-	void onCompleted(JSONObject response);
+	void onCompleted(JSONObject response) {};
 });
+```
+
+### Time format
+
+```java
+String formatedTimestamp = Utils.formatTimestamp(1466680499983);
 ```
