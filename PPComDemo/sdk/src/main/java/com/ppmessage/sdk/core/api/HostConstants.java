@@ -7,7 +7,7 @@ public final class HostConstants {
 
     private HostConstants() {}
 
-    private static final boolean LOCAL_DEBUG = false;
+    private static final boolean LOCAL_DEBUG = true;
 
     public static final String HOST;
     public static final String HTTP_HOST;
@@ -18,12 +18,12 @@ public final class HostConstants {
 
     static {
         if (LOCAL_DEBUG) {
-            HOST = "192.168.0.204:8080";
+            HOST = "10.1.127.148:8945";
             HTTP_HOST = "http://" + HOST;
             WS_HOST = "ws://" + HOST + "/pcsocket/WS";
 
-            PPCOM_API_KEY = "MDZmMTZlMGM4MjFhM2IzNDNiMzg0MjU2MzQ3NGQ3NTIyYzg3OGVhMA==";
-            PPCOM_API_SECRET = "MTVhYTNhMTUyOTljYjc4OGY5ZDFkZjk2OWFiMGFhMjJmMWI2OTI1Mg==";
+            PPCOM_API_KEY = "Y2VmZTUwMjcwODNjNzcyNWIxZWJjNjI5NmRjNDBjYTA0ZGQ5ZTFjNQ==";
+            PPCOM_API_SECRET = "NjI1MzU0OWFlZjUwYWRjZTkxNzYyM2Y3YWU0MzhiZWFjZDQwMTI1Mw==";
             PPKEFU_API_KEY = "MTJkZDBmNDc0Yjg5NDIwY2RjM2M5ZjUyNGNiOTc3NGFhY2JlODllNA==";
         } else {
             HOST = "ppmessage.com";

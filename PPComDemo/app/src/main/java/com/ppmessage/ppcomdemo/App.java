@@ -11,7 +11,7 @@ import com.ppmessage.sdk.core.PPMessageSDK;
  */
 public class App extends Application {
 
-    private static final String TEST_APP_UUID = "77933ab0-f17c-11e5-8957-02287b8c0ebf";
+    private static final String TEST_APP_UUID = "604f3438-39d1-11e6-b48e-c82a1426f133";
 
     @Override
     public void onCreate() {
