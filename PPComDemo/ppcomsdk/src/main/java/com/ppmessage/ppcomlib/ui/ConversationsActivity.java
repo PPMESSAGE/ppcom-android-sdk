@@ -177,7 +177,7 @@ public class ConversationsActivity extends AppCompatActivity {
 
                     setConversationList(conversationsModel.sortedConversations());
                     loadUnackedMessages();
-                    getLoadingDialog().hide();
+                    getLoadingDialog().dismiss();
 
                 } else {
                     waiting(null);
@@ -254,7 +254,7 @@ public class ConversationsActivity extends AppCompatActivity {
     }
 
     private void cancelWaiting(final String groupUUID) {
-        getLoadingDialog().hide();
+        getLoadingDialog().dismiss();
 
         if (!inWaiting) return;
 

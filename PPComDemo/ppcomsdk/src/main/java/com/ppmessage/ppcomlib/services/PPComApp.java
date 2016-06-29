@@ -1,6 +1,7 @@
 package com.ppmessage.ppcomlib.services;
 
 import com.ppmessage.ppcomlib.PPComSDK;
+import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.api.OnAPIRequestCompleted;
 import com.ppmessage.sdk.core.bean.common.App;
@@ -61,7 +62,7 @@ public class PPComApp {
         try {
             jsonObject.put("app_uuid", appUUID);
         } catch (JSONException e) {
-            e.printStackTrace();
+            L.e(e);
         }
 
         messageSDK.getAPI().getAppInfo(jsonObject, new OnAPIRequestCompleted() {
@@ -77,7 +78,7 @@ public class PPComApp {
                         if (event != null) event.onCompleted(PPComApp.this.app);
                     }
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    L.e(e);
                 }
             }
 
