@@ -31,13 +31,19 @@ public class PPComSDK {
     private static final String CONFIG_ERROR_LOG = "[PPComSDK] can not be initialized with empty config";
     private static final String VERSION = "0.0.1";
 
-    private static final PPComSDK ourInstance = new PPComSDK();
+    private static PPComSDK ourInstance = null;
 
     private PPComSDKConfiguration configuration;
     private PPComStartupHelper startupHelper;
     private IMessageService messageService;
 
+    private PPComSDK() {
+    }
+    
     public static PPComSDK getInstance() {
+        if (ourInstance == null) {
+            ourInstance = new PPComSDK();
+        }
         return ourInstance;
     }
 

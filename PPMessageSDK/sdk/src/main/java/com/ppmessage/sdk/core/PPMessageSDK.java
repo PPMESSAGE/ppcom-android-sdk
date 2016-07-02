@@ -39,7 +39,7 @@ public class PPMessageSDK {
 
     public static final String TAG = "[" + PPMessageSDK.class.getSimpleName() + "]";
 
-    private static PPMessageSDK ourInstance = new PPMessageSDK();
+    private static PPMessageSDK ourInstance = null;
 
     private IAPI api;
     private INotification notification;
@@ -49,7 +49,13 @@ public class PPMessageSDK {
 
     private PPMessageSDKConfiguration configuration;
 
+    private PPMessageSDK() {
+    }
+
     public static PPMessageSDK getInstance() {
+        if (ourInstance == null) {
+            ourInstance = new PPMessageSDK();
+        }
         return ourInstance;
     }
 
@@ -58,44 +64,46 @@ public class PPMessageSDK {
             throw new PPMessageException(CONFIGURATION_EMPTY_LOG);
         } else {
             this.configuration = configuration;
-            this.hostInfo = new HostInfo(
-                    configuration.ppkefuApiKey,
-                    configuration.ppcomApiSecret,
-                    configuration.ppcomApiKey,
-                    configuration.host,
-                    configuration.ssl
-            );
+            this.hostInfo = new HostInfo(configuration.ppkefuApiKey,
+                                         configuration.ppcomApiSecret,
+                                         configuration.ppcomApiKey,
+                                         configuration.host,
+                                         configuration.ssl);
             L.writeLogs(this.configuration.enableLogging);
             L.writeDebugLogs(this.configuration.enableDebugLogging);
-
             L.d(HOST_INFO_LOG, this.hostInfo);
         }
     }
 
-    private PPMessageSDK() {
-    }
-
     public IAPI getAPI() {
         checkConfig();
-        if (api == null) api = new DefaultAPIImpl(this);
+        if (api == null) {
+            api = new DefaultAPIImpl(this);
+        }
         return api;
     }
 
     public INotification getNotification() {
         checkConfig();
-        if (notification == null) notification = new DefaultNotification(this);
+        if (notification == null) {
+            notification = new DefaultNotification(this);
+        }
         return notification;
     }
 
     public IToken getToken() {
         checkConfig();
-        if (token == null) token = new Token(this);
+        if (token == null) {
+            token = new Token(this);
+        }
         return token;
     }
 
     public IDataCenter getDataCenter() {
         checkConfig();
-        if (dataCenter == null) dataCenter = new DataCenter(this, this.configuration.context);
+        if (dataCenter == null) {
+            dataCenter = new DataCenter(this, this.configuration.context);
+        }
         return dataCenter;
     }
 

@@ -34,17 +34,16 @@ public final class PPComSDKConfiguration {
         this.userName = this.builder.userName;
 
         this.messageSDK = PPMessageSDK.getInstance();
-        this.messageSDK.init(new PPMessageSDKConfiguration
-                .Builder(this.context)
-                .setEnableLogging(true)
-                .setEnableDebugLogging(true)
-                .setAppUUID(this.appUUID)
-                .setHost(builder.host)
-                .setPpcomApiKey(builder.apiKey)
-                .setPpcomApiSecret(builder.apiSecret)
-                .setSsl(builder.ssl)
-                .build());
-
+        this.messageSDK.init(new PPMessageSDKConfiguration.Builder(this.context)
+                             .setEnableLogging(true)
+                             .setEnableDebugLogging(true)
+                             .setAppUUID(builder.appUUID)
+                             .setHost(builder.host)
+                             .setPpcomApiKey(builder.apiKey)
+                             .setPpcomApiSecret(builder.apiSecret)
+                             .setSsl(builder.ssl)
+                             .build());
+        
     }
 
     public Context getContext() {

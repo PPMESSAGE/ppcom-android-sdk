@@ -85,7 +85,8 @@ public class ConversationWaitingService {
                         try {
                             if (jsonResponse.has("conversation_uuid")) {
                                 String conversation_uuid = jsonResponse.getString("conversation_uuid");
-                                if (conversation_uuid != null && conversation_uuid.length() != 0) {
+                                L.d("get conversation uuid: %s", conversation_uuid);
+                                if (conversation_uuid != null && conversation_uuid != "null") {
                                     polling.cancel();
                                     messageSDK.getDataCenter().queryConversation(conversation_uuid, new IQuery.OnQueryCallback() {
                                         @Override

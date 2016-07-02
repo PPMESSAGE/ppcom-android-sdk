@@ -32,7 +32,7 @@ dependencies {
     compile 'com.android.support:support-v4:23.4.0'
 }
 
-version = "0.0.9"
+version = "0.0.10"
 
 def siteUrl = 'https://www.ppmessage.com'    // project homepage
 def gitUrl = 'https://github.com/PPMESSAGE/ppmessage.git' // project git
@@ -98,7 +98,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = "ppmessagesdk"                                                 // #CONFIG# project name in jcenter
+        name = "ppmessagesdk"
         websiteUrl = siteUrl
         vcsUrl = gitUrl
         licenses = ["MIT"]
