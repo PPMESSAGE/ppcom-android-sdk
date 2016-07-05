@@ -19,6 +19,7 @@ import com.ppmessage.sdk.core.bean.common.Conversation;
 import com.ppmessage.sdk.core.bean.common.User;
 
 import java.util.List;
+import java.util.Iterator;
 
 /**
  * Created by ppmessage on 5/13/16.
@@ -74,6 +75,15 @@ public class ConversationMemberActivity extends AppCompatActivity {
     }
 
     private void updateGridView(List<User> userList) {
+
+        User comUser = sdk.getStartupHelper().getComUser().getUser();
+        for (Iterator<User> iter = userList.listIterator(); iter.hasNext(); ) {
+            User u = iter.next();
+            if (u.getUuid().equals(comUser.getUuid())) {
+                iter.remove();
+            }
+        }
+
         final ConversationMembersAdapter conversationMembersAdapter = new ConversationMembersAdapter(sdk, userList);
         conversationMembersAdapter.setListener(new ConversationMembersAdapter.OnConversationMembersItemClickListener() {
             @Override
@@ -82,6 +92,9 @@ public class ConversationMemberActivity extends AppCompatActivity {
 
                 User comUser = sdk.getStartupHelper().getComUser().getUser();
                 if (comUser == null) return;
+
+                L.d(comUser.getUuid());
+                L.d(user.getUuid());
 
                 if (user.getUuid().equals(comUser.getUuid())) return;
 
