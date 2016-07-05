@@ -1,7 +1,6 @@
 package com.ppmessage.ppcomlib.model;
 
 import com.ppmessage.ppcomlib.PPComSDK;
-import com.ppmessage.ppcomlib.model.conversations.AppOrgGroupList;
 import com.ppmessage.ppcomlib.model.conversations.ConversationAgency;
 import com.ppmessage.ppcomlib.model.conversations.DefaultConversation;
 import com.ppmessage.ppcomlib.model.conversations.NormalConversation;

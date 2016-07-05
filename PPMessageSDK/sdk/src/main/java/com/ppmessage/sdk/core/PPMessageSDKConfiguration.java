@@ -13,22 +13,27 @@ import com.ppmessage.sdk.core.ws.IWebSocket;
  */
 public final class PPMessageSDKConfiguration {
 
-    public static final String DEFAULT_HOST = "ppmessage.com";
-    public static final String DEFAULT_PPCOM_API_KEY = "M2E2OTRjZTQ5Mzk4ZWUxYzRjM2FlZDM2NmE4MjA4MzkzZjFjYWQyOA==";
-    public static final String DEFAULT_PPCOM_API_SECRET = "ZThmMTM1ZDM4ZmI2NjE1YWE0NWEwMGM3OGNkMzY5MzVjOTQ2MGU0NQ==";
-    public static final String DEFAULT_PPKEFU_API_KEY = "MWJkZWI3NDZhZmRiN2NjNDYzZDVmZGI3YTk2YjI5NzhhOWJhNzIyZA==";
-    public static final boolean DEFAULT_SSL = true;
-
     private final Builder builder;
 
     final Context context;
 
     final String appUUID;
+
+    final String entUserType;
+    final String entUserUuid;
+    final String entUserData;
+
+    final String jpushRegistrationId;
+
+    final String userFullName;
+    final String userIcon;
+
     final String userEmail;
     final String userSha1Password;
 
     final boolean ssl;
     final String host;
+
     final String ppcomApiKey;
     final String ppcomApiSecret;
     final String ppkefuApiKey;
@@ -44,6 +49,16 @@ public final class PPMessageSDKConfiguration {
         this.context = builder.context;
 
         this.appUUID = builder.appUUID;
+
+        this.entUserType = builder.entUserType;
+        this.entUserUuid = builder.entUserUuid;
+        this.entUserData = builder.entUserData;
+
+        this.jpushRegistrationId = builder.jpushRegistrationId;
+
+        this.userFullName = builder.userFullName;
+        this.userIcon = builder.userIcon;
+
         this.userEmail = builder.userEmail;
         this.userSha1Password = builder.userSha1Password;
 
@@ -64,13 +79,25 @@ public final class PPMessageSDKConfiguration {
         private Context context;
 
         private String appUUID;
+
+        private String userIcon;
+        private String userFullName;
+
+        private String entUserUuid;
+        private String entUserData;
+        private String entUserType;
+
+        private String jpushRegistrationId;
+
         private String userEmail;
         private String userSha1Password;
 
         private boolean ssl;
         private String host;
+
         private String ppcomApiKey;
         private String ppcomApiSecret;
+
         private String ppkefuApiKey;
 
         private boolean enableLogging;
@@ -80,16 +107,8 @@ public final class PPMessageSDKConfiguration {
 
         public Builder(Context context) {
             this.context = context;
-
             this.enableLogging = true;
             this.enableDebugLogging = false;
-
-            this.ssl = DEFAULT_SSL;
-            this.host = DEFAULT_HOST;
-            this.ppcomApiKey = DEFAULT_PPCOM_API_KEY;
-            this.ppcomApiSecret = DEFAULT_PPCOM_API_SECRET;
-            this.ppkefuApiKey = DEFAULT_PPKEFU_API_KEY;
-
             this.imageLoader = new PicassoImageLoader(context);
         }
 
@@ -114,13 +133,13 @@ public final class PPMessageSDKConfiguration {
             return this;
         }
 
-        public Builder setSsl(boolean ssl) {
-            this.ssl = ssl;
-            return this;
-        }
-
-        public Builder setHost(String host) {
-            this.host = host;
+        public Builder setServerUrl(String url) {
+            this.ssl = false;
+            if (url.startsWith("https")) {
+                this.ssl = true;
+            }
+            this.host = url.substring(url.indexOf("//") + "//".length());
+            L.d(this.host);
             return this;
         }
 
@@ -141,6 +160,41 @@ public final class PPMessageSDKConfiguration {
 
         public Builder setImageLoader(IImageLoader imageLoader) {
             this.imageLoader = imageLoader;
+            return this;
+        }
+
+        public Builder setUserIcon(String userIcon) {
+            this.userIcon = userIcon;
+            return this;
+        }
+
+        public Builder setUserFullName(String userFullName) {
+            this.userFullName = userFullName;
+            return this;
+        }
+
+        public Builder setUserEmail(String userEmail) {
+            this.userEmail = userEmail;
+            return this;
+        }
+
+        public Builder setEntUserUuid(String entUserUuid) {
+            this.entUserUuid = entUserUuid;
+            return this;
+        }
+
+        public Builder setEntUserData(String entUserData) {
+            this.entUserData = entUserData;
+            return this;
+        }
+
+        public Builder setEntUserType(String entUserType) {
+            this.entUserType = entUserType;
+            return this;
+        }
+
+        public Builder setJpushRegistrationId(String jpushRegistrationId) {
+            this.jpushRegistrationId = jpushRegistrationId;
             return this;
         }
 

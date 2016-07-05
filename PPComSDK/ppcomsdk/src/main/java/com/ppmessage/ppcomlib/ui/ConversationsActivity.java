@@ -39,9 +39,9 @@ public class ConversationsActivity extends AppCompatActivity {
 
     private PPComSDK sdk;
     private PPMessageSDK messageSDK;
-    private ConversationWaitingService conversationWaitingService;
     private ConversationsModel conversationsModel;
     private UnackedMessagesLoader unackedMessagesLoader;
+    private ConversationWaitingService conversationWaitingService;
 
     private boolean inWaiting;
 
@@ -158,11 +158,9 @@ public class ConversationsActivity extends AppCompatActivity {
             @Override
             public void onCompleted(List<Conversation> conversationList) {
                 if (conversationList != null) {
-
                     setConversationList(conversationsModel.sortedConversations());
                     loadUnackedMessages();
                     getLoadingDialog().dismiss();
-
                 } else {
                     waiting();
                 }

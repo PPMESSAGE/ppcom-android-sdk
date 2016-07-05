@@ -11,27 +11,19 @@ import com.ppmessage.sdk.core.PPMessageSDK;
  */
 public class App extends Application {
 
-    //private static final String TEST_APP_UUID = "77933ab0-f17c-11e5-8957-02287b8c0ebf";
-    //private static final String TEST_APP_UUID = "a600998e-efff-11e5-9d9f-02287b8c0ebf";
-    private static final String TEST_APP_UUID = "b60fcac7-3ff7-11e6-b4d7-acbc327f19e9";
-    private static final String TEST_API_KEY = "NGQyMTdlYTBhMDg2YjhjN2JhYjQ4MzZmMGY0NmEzNTRkOGRjYTA5OA==";
-    private static final String TEST_API_SECRET = "NzRkM2M3MWQ4NGY3NjgzZWExNDdlMWFkMmEwMzA3OTkzNDFkOTU5Yg==";
-    private static final String TEST_HOST = "192.168.0.204:8945";
-    private static final boolean TEST_SSL = false;
-    
+    private static final String TEST_APP_UUID = "914feafd-42a1-11e6-bbfe-58b035f16bf4";
+    private static final String TEST_API_KEY = "MGEzNzFhOTNjMGI2ZjgyMGViYzAzNmI5NTFlYWY2M2IyMTUyODVlZg==";
+    private static final String TEST_API_SECRET = "NjM1MTY4MWU0ZDlmYWEzMzhhZWU4ZjhjNzM5YTJkZDY2N2M0YTRjNA==";
+    private static final String TEST_SERVER_URL = "http://192.168.0.51:8945";
+
     @Override
     public void onCreate() {
-        super.onCreate();
-
         PPComSDK sdk = PPComSDK.getInstance();
         sdk.init(new PPComSDKConfiguration.Builder(this)
                  .setAppUUID(TEST_APP_UUID)
                  .setApiKey(TEST_API_KEY)
                  .setApiSecret(TEST_API_SECRET)
-                 .setHost(TEST_HOST)
-                 .setSsl(TEST_SSL)
+                 .setServerUrl(TEST_SERVER_URL)
                  .build());
-        
     }
-
 }

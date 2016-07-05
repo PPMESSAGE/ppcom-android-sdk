@@ -25,7 +25,6 @@ public class MainActivity extends ConversationsActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         startUp();
     }
 

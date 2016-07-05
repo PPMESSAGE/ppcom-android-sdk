@@ -17,9 +17,9 @@ import org.json.JSONObject;
  * 1. get anonymous / email user
  * 2. update user info // We don't care the update result
  * 3. create and update device // We also don't care the result
- *
+ * <p/>
  * Example:
- *
+ * <p/>
  * <pre>
  *
  *     1. -Async get ppcom user
@@ -37,7 +37,7 @@ import org.json.JSONObject;
  *     2. -get ppcom cached user
  *     User user = ppcomUser.getUser();
  * </pre>
- *
+ * <p/>
  * Created by ppmessage on 5/13/16.
  */
 public final class PPComUser {
@@ -49,6 +49,7 @@ public final class PPComUser {
 
     private static final String LOG_UPDATE_USER_INFO_ERROR = "[PPComUser] update user info failed";
     private static final String LOG_GET_DEVICE_UUID_ERROR = "[PPComUser] get device_uuid failed";
+    private static final String LOG_CREATE_USER_INFO_ERROR = "[PPComUser] create user info failed";
 
     public interface OnGetPPComUserEvent {
         void onCompleted(User user);
@@ -75,15 +76,18 @@ public final class PPComUser {
             if (event != null) event.onCompleted(user);
             return;
         }
-
         createUser(event);
     }
 
     private void createUser(final OnGetPPComUserEvent event) {
         if (isAnonymousUser()) {
             createAnonymousUser(getAnonymousUserTraceUUID(), event);
-        } else {
+        } else if (isEntUser()) {
+            createEntUser(event);
+        } else if (isEmailUser()) {
             createEmailUser(event);
+        } else {
+            L.w(LOG_CREATE_USER_INFO_ERROR);
         }
     }
 
@@ -96,6 +100,8 @@ public final class PPComUser {
         try {
             params.put("app_uuid", appUUID);
             params.put("ppcom_trace_uuid", traceUUID);
+            params.put("ent_user_data", sdk.getConfiguration().getEntUserData());
+            params.put("ent_user_type", sdk.getConfiguration().getEntUserType());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -135,7 +141,9 @@ public final class PPComUser {
             jsonObject.put("app_uuid", sdk.getConfiguration().getAppUUID());
             jsonObject.put("user_icon", sdk.getConfiguration().getUserIcon());
             jsonObject.put("user_email", sdk.getConfiguration().getUserEmail());
-            jsonObject.put("user_fullname", sdk.getConfiguration().getUserName());
+            jsonObject.put("user_fullname", sdk.getConfiguration().getUserFullName());
+            jsonObject.put("ent_user_data", sdk.getConfiguration().getEntUserData());
+            jsonObject.put("ent_user_type", sdk.getConfiguration().getEntUserType());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -150,7 +158,7 @@ public final class PPComUser {
                     e.printStackTrace();
                 }
 
-                getEmailUserDetailInfo(userUUID, event);
+                getUserDetailInfo(userUUID, event);
             }
 
             @Override
@@ -165,7 +173,46 @@ public final class PPComUser {
         });
     }
 
-    private void getEmailUserDetailInfo(String userUUID, final OnGetPPComUserEvent event) {
+    private void createEntUser(final OnGetPPComUserEvent event) {
+        final JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("app_uuid", sdk.getConfiguration().getAppUUID());
+            jsonObject.put("user_icon", sdk.getConfiguration().getUserIcon());
+            jsonObject.put("user_email", sdk.getConfiguration().getUserEmail());
+            jsonObject.put("user_fullname", sdk.getConfiguration().getUserFullName());
+            jsonObject.put("ent_user_uuid", sdk.getConfiguration().getEntUserUuid());
+            jsonObject.put("ent_user_data", sdk.getConfiguration().getEntUserData());
+            jsonObject.put("ent_user_type", sdk.getConfiguration().getEntUserType());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        messageSDK.getAPI().getUserUUID(jsonObject, new OnAPIRequestCompleted() {
+            @Override
+            public void onResponse(JSONObject jsonResponse) {
+                String userUUID = null;
+                try {
+                    userUUID = jsonResponse.getString("user_uuid");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                getUserDetailInfo(userUUID, event);
+            }
+
+            @Override
+            public void onCancelled() {
+                if (event != null) event.onCompleted(PPComUser.this.user);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                if (event != null) event.onCompleted(PPComUser.this.user);
+            }
+        });
+    }
+
+    private void getUserDetailInfo(String userUUID, final OnGetPPComUserEvent event) {
 
         final JSONObject jsonObject = new JSONObject();
         try {
@@ -211,9 +258,12 @@ public final class PPComUser {
         JSONObject jsonObject = new JSONObject();
 
         String userUUID = user.getUuid();
-        String userName = sdk.getConfiguration().getUserName() != null ? sdk.getConfiguration().getUserName() : user.getName();
+        String userName = sdk.getConfiguration().getUserFullName() != null ? sdk.getConfiguration().getUserFullName() : user.getName();
         String userIcon = sdk.getConfiguration().getUserIcon() != null ? sdk.getConfiguration().getUserIcon() : user.getIcon();
         String userEmail = sdk.getConfiguration().getUserEmail();
+        String entUserUuid = sdk.getConfiguration().getEntUserUuid();
+        String entUserData = sdk.getConfiguration().getEntUserData();
+        String entUserType = sdk.getConfiguration().getEntUserType();
 
         try {
             jsonObject.put("app_uuid", sdk.getConfiguration().getAppUUID());
@@ -221,6 +271,10 @@ public final class PPComUser {
             jsonObject.put("user_fullname", userName);
             jsonObject.put("user_icon", userIcon);
             jsonObject.put("user_email", userEmail);
+            jsonObject.put("ent_user_uuid", entUserUuid);
+            jsonObject.put("ent_user_data", entUserData);
+            jsonObject.put("ent_user_type", entUserType);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -251,6 +305,7 @@ public final class PPComUser {
             jsonObject.put("app_uuid", sdk.getConfiguration().getAppUUID());
             jsonObject.put("user_uuid", user.getUuid());
             jsonObject.put("device_ostype", DEVICE_OS_TYPE);
+            jsonObject.put("jpush_registration_id", sdk.getConfiguration().getJpushRegistrationId());
             jsonObject.put("ppcom_trace_uuid", getAnonymousUserTraceUUID());
             jsonObject.put("device_id", deviceUUID);
         } catch (JSONException e) {
@@ -290,6 +345,7 @@ public final class PPComUser {
         try {
             jsonObject.put("device_uuid", deviceUUID);
             jsonObject.put("device_ostype", DEVICE_OS_TYPE);
+            jsonObject.put("jpush_registration_id", sdk.getConfiguration().getJpushRegistrationId());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -297,7 +353,16 @@ public final class PPComUser {
     }
 
     private boolean isAnonymousUser() {
-        return sdk.getConfiguration().getUserEmail() == null;
+        return (sdk.getConfiguration().getUserEmail() == null
+                && sdk.getConfiguration().getEntUserUuid() == null);
+    }
+
+    private boolean isEntUser() {
+        return (sdk.getConfiguration().getEntUserUuid() != null);
+    }
+
+    private boolean isEmailUser() {
+        return (sdk.getConfiguration().getUserEmail() != null);
     }
 
     public String getAnonymousUserTraceUUID() {

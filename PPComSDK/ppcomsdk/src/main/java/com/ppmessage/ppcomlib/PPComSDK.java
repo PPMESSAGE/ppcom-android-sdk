@@ -47,17 +47,19 @@ public class PPComSDK {
         return ourInstance;
     }
 
-    public synchronized void init(PPComSDKConfiguration config) {
-        if (config == null) throw new PPComSDKException(CONFIG_ERROR_LOG);
-        this.configuration = config;
+    public String getVersion() {
+        return VERSION;
     }
 
     public PPComSDKConfiguration getConfiguration() {
         return configuration;
     }
 
-    public String getVersion() {
-        return VERSION;
+    public synchronized void init(PPComSDKConfiguration config) {
+        if (config == null) {
+            throw new PPComSDKException(CONFIG_ERROR_LOG);
+        }
+        this.configuration = config;
     }
 
     public PPComStartupHelper getStartupHelper() {

@@ -39,10 +39,10 @@ public class ConversationMemberActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ppcomlib_conversation_member_activity);
         gridView = (GridView) findViewById(R.id.gridView);
+
         setTitle(R.string.ppcom_sdk_conversation_members_activity_name);
 
         sdk = PPComSDK.getInstance();
-
         conversationUUID = (String) getIntent().getStringExtra(EXTRA_CONVERSATION_UUID);
     }
 
@@ -80,9 +80,10 @@ public class ConversationMemberActivity extends AppCompatActivity {
             public void onClicked(User user, int position, View convertView) {
                 if (user.getUuid() == null) return;
 
-                User activeUser = sdk.getConfiguration().getMessageSDK().getNotification().getConfig().getActiveUser();
-                if (activeUser == null) return;
-                if (user.getUuid().equals(activeUser.getUuid())) return;
+                User comUser = sdk.getStartupHelper().getComUser().getUser();
+                if (comUser == null) return;
+
+                if (user.getUuid().equals(comUser.getUuid())) return;
 
                 chattingWithUser(user);
             }
