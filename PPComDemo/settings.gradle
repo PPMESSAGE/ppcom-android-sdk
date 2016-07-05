@@ -1,6 +1,4 @@
 include ':app'
-include ':ppmessagesdk'
-project(':ppmessagesdk').projectDir = new File(settingsDir, '../PPMessageSDK/sdk')
 include ':ppcomsdk'
 project(':ppcomsdk').projectDir = new File(settingsDir, '../PPComSDK/ppcomsdk')
 

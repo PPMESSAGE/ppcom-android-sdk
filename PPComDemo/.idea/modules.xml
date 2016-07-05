@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PPComDemo.iml" filepath="$PROJECT_DIR$/PPComDemo.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../PPComSDK/ppcomsdk/ppcomsdk.iml" filepath="$PROJECT_DIR$/../PPComSDK/ppcomsdk/ppcomsdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../PPMessageSDK/sdk/ppmessagesdk.iml" filepath="$PROJECT_DIR$/../PPMessageSDK/sdk/ppmessagesdk.iml" />
     </modules>
   </component>
 </project>
