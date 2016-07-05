@@ -1,0 +1,3 @@
+include ':ppmessagesdk'
+project(':ppmessagesdk').projectDir = new File(settingsDir, '../PPMessageSDK/sdk')
+

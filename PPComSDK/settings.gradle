@@ -1,7 +1,3 @@
-include ':app'
+include ':app', ':ppcomsdk', ':sdk'
+project(':sdk').projectDir = new File(settingsDir, '../PPMessageSDK/sdk')
 
-include ':ppmessagesdk'
-project(':ppmessagesdk').projectDir = new File(settingsDir, '../PPMessageSDK/sdk')
-
-include ':ppcomsdk'
-project(':ppcomsdk').projectDir = new File(settingsDir, './ppcomsdik')
