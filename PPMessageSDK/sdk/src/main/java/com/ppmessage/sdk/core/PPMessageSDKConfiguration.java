@@ -130,11 +130,15 @@ public final class PPMessageSDKConfiguration {
 
         private IImageLoader imageLoader;
 
-        public Builder(Context context) {
-            this.context = context;
+        public Builder() {
             this.enableLogging = true;
             this.enableDebugLogging = false;
+        }
+
+        public Builder setContext(Context context) {
+            this.context = context;
             this.imageLoader = new PicassoImageLoader(context);
+            return this;
         }
 
         public Builder setAppUUID(String appUUID) {

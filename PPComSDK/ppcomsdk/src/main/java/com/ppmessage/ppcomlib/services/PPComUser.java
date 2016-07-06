@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.ppmessage.ppcomlib.PPComSDK;
+import com.ppmessage.ppcomlib.PPComSDKException;
 import com.ppmessage.sdk.core.L;
+import com.ppmessage.sdk.core.PPMessageException;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.api.OnAPIRequestCompleted;
 import com.ppmessage.sdk.core.bean.common.User;
@@ -49,6 +51,7 @@ public final class PPComUser {
 
     private static final String LOG_UPDATE_USER_INFO_ERROR = "[PPComUser] update user info failed";
     private static final String LOG_GET_DEVICE_UUID_ERROR = "[PPComUser] get device_uuid failed";
+    private static final String LOG_UPDATE_DEVICE_INFO_ERROR = "[PPComUser] update device info failed";
     private static final String LOG_CREATE_USER_INFO_ERROR = "[PPComUser] create user info failed";
 
     public interface OnGetPPComUserEvent {
@@ -372,6 +375,10 @@ public final class PPComUser {
     }
 
     public void updateUserInfo(JSONObject jsonObject) {
+        if (sdk.getStartupHelper().getComUser().getUser() == null) {
+            throw new PPMessageException(LOG_UPDATE_USER_INFO_ERROR);
+        }
+
         try {
             jsonObject.put("app_uuid", sdk.getConfiguration().getAppUUID());
             jsonObject.put("user_uuid", sdk.getStartupHelper().getComUser().getUser().getUuid());
@@ -383,6 +390,10 @@ public final class PPComUser {
     }
 
     public void updateDeviceJpushRegistrationId() {
+        if (sdk.getStartupHelper().getComUser().getUser() == null) {
+            throw new PPMessageException(LOG_UPDATE_DEVICE_INFO_ERROR);
+        }
+
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("device_uuid", sdk.getStartupHelper().getComUser().getUser().getDeviceUUID());
@@ -391,6 +402,7 @@ public final class PPComUser {
             e.printStackTrace();
         }
         messageSDK.getAPI().updateDevice(jsonObject, null);
+        return;
     }
 
 }

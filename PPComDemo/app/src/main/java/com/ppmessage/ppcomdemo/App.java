@@ -18,12 +18,16 @@ public class App extends Application {
 
     @Override
     public void onCreate() {
+
         PPComSDK sdk = PPComSDK.getInstance();
-        sdk.init(new PPComSDKConfiguration.Builder(this)
-                 .setAppUUID(TEST_APP_UUID)
-                 .setApiKey(TEST_API_KEY)
-                 .setApiSecret(TEST_API_SECRET)
-                 .setServerUrl(TEST_SERVER_URL)
-                 .build());
+        PPComSDKConfiguration.Builder builder = new PPComSDKConfiguration.Builder();
+        sdk.init(builder.setContext(this)
+                .setAppUUID(TEST_APP_UUID)
+                .setApiKey(TEST_API_KEY)
+                .setApiSecret(TEST_API_SECRET)
+                .setServerUrl(TEST_SERVER_URL)
+                .build());
+
+        super.onCreate();
     }
 }

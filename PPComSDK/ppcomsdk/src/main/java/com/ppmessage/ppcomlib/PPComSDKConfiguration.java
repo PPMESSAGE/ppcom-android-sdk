@@ -15,7 +15,7 @@ import org.json.JSONObject;
  */
 public final class PPComSDKConfiguration {
 
-    private final Builder builder;
+    final Builder builder;
 
     final Context context;
 
@@ -25,13 +25,11 @@ public final class PPComSDKConfiguration {
     final String serverUrl;
     final String userEmail;
     final String entUserUUID;
+    final String entUserType;
 
     private String entUserData;
-    private String entUserType;
-
     private String userIcon;
     private String userFullName;
-
     private String jpushRegistrationId;
 
     public PPComSDKConfiguration(PPComSDKConfiguration.Builder builder) {
@@ -136,26 +134,6 @@ public final class PPComSDKConfiguration {
         return jpushRegistrationId;
     }
 
-    public void setEntUserData(String entUserData) {
-        this.entUserData = entUserData;
-    }
-
-    public void setEntUserType(String entUserType) {
-        this.entUserType = entUserType;
-    }
-
-    public void setUserIcon(String userIcon) {
-        this.userIcon = userIcon;
-    }
-
-    public void setUserFullName(String userFullName) {
-        this.userFullName = userFullName;
-    }
-
-    public void setJpushRegistrationId(String jpushRegistrationId) {
-        this.jpushRegistrationId = jpushRegistrationId;
-    }
-
     public static class Builder {
 
         private Context context;
@@ -177,8 +155,12 @@ public final class PPComSDKConfiguration {
         private String apiKey;
         private String apiSecret;
 
-        public Builder(Context context) {
+        public Builder() {
+        }
+
+        public PPComSDKConfiguration.Builder setContext(Context context) {
             this.context = context;
+            return this;
         }
 
         public PPComSDKConfiguration.Builder setAppUUID(String appUUID) {

@@ -76,6 +76,9 @@ public class PPComSDK {
     }
 
     public PPMessageSDK getPPMessageSDK() {
+        if (this.ppMessageSDK == null) {
+            this.ppMessageSDK = PPMessageSDK.getInstance();
+        }
         return this.ppMessageSDK;
     }
 
@@ -98,11 +101,12 @@ public class PPComSDK {
             this.ppMessageSDK = PPMessageSDK.getInstance();
         }
 
-        PPMessageSDKConfiguration.Builder builder = new PPMessageSDKConfiguration.Builder(configuration.getContext());
+        PPMessageSDKConfiguration.Builder builder = new PPMessageSDKConfiguration.Builder();
         builder.setEnableLogging(true).setEnableDebugLogging(true);
 
         this.ppMessageSDK.init(builder
 
+                .setContext(configuration.getContext())
                 .setAppUUID(configuration.getAppUUID())
                 .setServerUrl(configuration.getServerUrl())
                 .setPpcomApiKey(configuration.getApiKey())
@@ -127,7 +131,7 @@ public class PPComSDK {
             throw new PPComSDKException(CONFIG_ERROR_LOG);
         }
 
-        PPMessageSDKConfiguration.Builder builder = new PPMessageSDKConfiguration.Builder(getConfiguration().getContext());
+        PPMessageSDKConfiguration.Builder builder = new PPMessageSDKConfiguration.Builder();
 
         if (builder.getEntUserData() != null) {
             builder.setEntUserData(builder.getEntUserData());
