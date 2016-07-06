@@ -10,7 +10,7 @@ PPComSDK which depends on PPMessageSDK.
 
 ### Two steps to use PPComSDK
 
-1. Create and initialize PPComSDK after getting basic information ready.
+* Create and initialize PPComSDK after getting basic information ready.
 
 
 ```
@@ -42,7 +42,7 @@ if user email is set, the user is identified by email.
 If you want to set the user type, must set here, not update() of PPComSDK.
 
 
-2. Extend ConversationsActivity to start conversation
+* Extend ConversationsActivity to start conversation
 
 > sdk.update() is optional and only user full name, user icon url and ent user data could be update.
 If you want to clear data, set it to an empty string.
