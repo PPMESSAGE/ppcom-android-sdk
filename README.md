@@ -47,6 +47,8 @@ If you want to set the user type, must set here, not update() of PPComSDK.
 > sdk.update() is optional and only user full name, user icon url and ent user data could be update.
 If you want to clear data, set it to an empty string.
 
+sdk.update() must called after sdk.init() success, otherwise runtime exception will be throwed.
+
 
 ```
 public class MainActivity extends ConversationsActivity {
