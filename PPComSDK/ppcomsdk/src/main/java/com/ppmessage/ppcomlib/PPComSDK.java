@@ -4,10 +4,13 @@ import com.ppmessage.ppcomlib.services.PPComStartupHelper;
 import com.ppmessage.ppcomlib.services.message.IMessageService;
 import com.ppmessage.ppcomlib.services.message.MessageService;
 import com.ppmessage.sdk.core.L;
+import com.ppmessage.sdk.core.PPMessageSDK;
+import com.ppmessage.sdk.core.PPMessageSDKConfiguration;
+import com.ppmessage.sdk.core.bean.message.PPMessage;
 
 /**
  * Example:
- *
+ * <p>
  * <pre>
  *     PPComSDK sdk = PPComSDK.getInstance();
  *     sdk.init(new PPComSDKConfiguration.Builder().setAppUUID("YOUR_APP_UUID").build());
@@ -23,7 +26,7 @@ import com.ppmessage.sdk.core.L;
  *         }
  *     });
  * </pre>
- *
+ * <p>
  * Created by ppmessage on 5/13/16.
  */
 public class PPComSDK {
@@ -33,13 +36,14 @@ public class PPComSDK {
 
     private static PPComSDK ourInstance = null;
 
+    private PPMessageSDK ppMessageSDK = null;
     private PPComSDKConfiguration configuration;
     private PPComStartupHelper startupHelper;
     private IMessageService messageService;
 
     private PPComSDK() {
     }
-    
+
     public static PPComSDK getInstance() {
         if (ourInstance == null) {
             ourInstance = new PPComSDK();
@@ -60,6 +64,19 @@ public class PPComSDK {
             throw new PPComSDKException(CONFIG_ERROR_LOG);
         }
         this.configuration = config;
+        initPPMessageSDK(config);
+    }
+
+    public synchronized void update(PPComSDKConfiguration configuration) {
+        if (configuration == null) {
+            throw new PPComSDKException(CONFIG_ERROR_LOG);
+        }
+        this.configuration.update(configuration);
+        updatePPMessageSDK(configuration);
+    }
+
+    public PPMessageSDK getPPMessageSDK() {
+        return this.ppMessageSDK;
     }
 
     public PPComStartupHelper getStartupHelper() {
@@ -76,4 +93,58 @@ public class PPComSDK {
         return messageService;
     }
 
+    private void initPPMessageSDK(PPComSDKConfiguration configuration) {
+        if (this.ppMessageSDK == null) {
+            this.ppMessageSDK = PPMessageSDK.getInstance();
+        }
+
+        PPMessageSDKConfiguration.Builder builder = new PPMessageSDKConfiguration.Builder(configuration.getContext());
+        builder.setEnableLogging(true).setEnableDebugLogging(true);
+
+        this.ppMessageSDK.init(builder
+
+                .setAppUUID(configuration.getAppUUID())
+                .setServerUrl(configuration.getServerUrl())
+                .setPpcomApiKey(configuration.getApiKey())
+                .setPpcomApiSecret(configuration.getApiSecret())
+
+                .setEntUserUUID(configuration.getEntUserUUID())
+                .setEntUserData(configuration.getEntUserData())
+                .setEntUserType(configuration.getEntUserType())
+
+                .setUserEmail(configuration.getUserEmail())
+                .setUserFullName(configuration.getUserFullName())
+                .setUserIcon(configuration.getUserIcon())
+
+                .setJpushRegistrationId(configuration.getJpushRegistrationId())
+
+                .build());
+
+    }
+
+    private void updatePPMessageSDK(PPComSDKConfiguration configuration) {
+        if (this.ppMessageSDK == null || this.configuration == null) {
+            throw new PPComSDKException(CONFIG_ERROR_LOG);
+        }
+
+        PPMessageSDKConfiguration.Builder builder = new PPMessageSDKConfiguration.Builder(getConfiguration().getContext());
+
+        if (builder.getEntUserData() != null) {
+            builder.setEntUserData(builder.getEntUserData());
+        }
+
+        if (configuration.getUserFullName() != null) {
+            builder.setUserFullName(configuration.getUserFullName());
+        }
+
+        if (configuration.getUserIcon() != null) {
+            builder.setUserIcon(configuration.getUserIcon());
+        }
+
+        if (configuration.getJpushRegistrationId() != null) {
+            builder.setJpushRegistrationId(configuration.getJpushRegistrationId());
+        }
+
+        this.ppMessageSDK.update(builder.build());
+    }
 }

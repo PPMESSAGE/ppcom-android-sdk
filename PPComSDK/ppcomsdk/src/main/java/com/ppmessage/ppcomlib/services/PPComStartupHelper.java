@@ -127,7 +127,7 @@ public class PPComStartupHelper {
     }
 
     private void buildWebSocketConnection(final User user, final OnStartupCallback event) {
-        PPMessageSDK messageSDK = sdk.getConfiguration().getMessageSDK();
+        PPMessageSDK messageSDK = sdk.getPPMessageSDK();
         final INotification notification = messageSDK.getNotification();
 
         messageSDK.getToken().getApiToken(sdk.getConfiguration().getAppUUID(), new IToken.OnRequestTokenEvent() {
@@ -172,7 +172,7 @@ public class PPComStartupHelper {
     }
 
     private boolean isInnerStateOk() {
-        return sdk.getConfiguration().getMessageSDK().getNotification().canSendMessage();
+        return sdk.getPPMessageSDK().getNotification().canSendMessage();
     }
 
     private void publishState(StartupState state) {

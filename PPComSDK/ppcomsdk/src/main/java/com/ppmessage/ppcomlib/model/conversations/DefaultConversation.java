@@ -42,7 +42,7 @@ public class DefaultConversation {
 
     public DefaultConversation(PPComSDK sdk) {
         this.sdk = sdk;
-        this.messageSDK = sdk.getConfiguration().getMessageSDK();
+        this.messageSDK = sdk.getPPMessageSDK();
         this.startupHelper = sdk.getStartupHelper();
     }
 

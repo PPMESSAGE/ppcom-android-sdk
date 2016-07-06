@@ -58,7 +58,7 @@ public class PPComMessageActivity extends MessageActivity {
         swipeRefreshLayout.setEnabled(true);
 
         sdk = PPComSDK.getInstance();
-        messageSDK = sdk.getConfiguration().getMessageSDK();
+        messageSDK = sdk.getPPMessageSDK();
         messagesModel = sdk.getMessageService().getMessagesModel();
         historyLoader = messagesModel.getHistoryLoader();
 

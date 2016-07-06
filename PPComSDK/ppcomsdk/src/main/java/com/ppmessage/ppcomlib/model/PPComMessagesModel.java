@@ -10,7 +10,7 @@ import com.ppmessage.sdk.core.model.MessagesModel;
 public class PPComMessagesModel extends MessagesModel {
 
     public PPComMessagesModel(PPComSDK sdk) {
-        super(sdk.getConfiguration().getMessageSDK());
+        super(sdk.getPPMessageSDK());
     }
 
 }

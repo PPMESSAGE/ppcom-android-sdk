@@ -20,13 +20,14 @@ public final class PPMessageSDKConfiguration {
     final String appUUID;
 
     final String entUserType;
-    final String entUserUuid;
-    final String entUserData;
+    final String entUserUUID;
 
-    final String jpushRegistrationId;
+    private String entUserData;
 
-    final String userFullName;
-    final String userIcon;
+    private String jpushRegistrationId;
+
+    private String userFullName;
+    private String userIcon;
 
     final String userEmail;
     final String userSha1Password;
@@ -51,7 +52,7 @@ public final class PPMessageSDKConfiguration {
         this.appUUID = builder.appUUID;
 
         this.entUserType = builder.entUserType;
-        this.entUserUuid = builder.entUserUuid;
+        this.entUserUUID = builder.entUserUUID;
         this.entUserData = builder.entUserData;
 
         this.jpushRegistrationId = builder.jpushRegistrationId;
@@ -74,6 +75,30 @@ public final class PPMessageSDKConfiguration {
         this.imageLoader = builder.imageLoader;
     }
 
+    public void update(PPMessageSDKConfiguration configuration) {
+        Builder builder = configuration.getBuilder();
+
+        if (builder.getEntUserData() != null) {
+            this.entUserData = builder.getEntUserData();
+        }
+
+        if (builder.getJpushRegistrationId() != null) {
+            this.jpushRegistrationId = builder.getJpushRegistrationId();
+        }
+
+        if (builder.getUserIcon() != null) {
+            this.userIcon = builder.getUserIcon();
+        }
+
+        if (builder.getUserFullName() != null) {
+            this.userFullName = builder.getUserFullName();
+        }
+    }
+
+    public Builder getBuilder() {
+        return builder;
+    }
+
     public static class Builder {
 
         private Context context;
@@ -83,7 +108,7 @@ public final class PPMessageSDKConfiguration {
         private String userIcon;
         private String userFullName;
 
-        private String entUserUuid;
+        private String entUserUUID;
         private String entUserData;
         private String entUserType;
 
@@ -178,8 +203,8 @@ public final class PPMessageSDKConfiguration {
             return this;
         }
 
-        public Builder setEntUserUuid(String entUserUuid) {
-            this.entUserUuid = entUserUuid;
+        public Builder setEntUserUUID(String entUserUUID) {
+            this.entUserUUID = entUserUUID;
             return this;
         }
 
@@ -196,6 +221,22 @@ public final class PPMessageSDKConfiguration {
         public Builder setJpushRegistrationId(String jpushRegistrationId) {
             this.jpushRegistrationId = jpushRegistrationId;
             return this;
+        }
+
+        public String getUserIcon() {
+            return userIcon;
+        }
+
+        public String getUserFullName() {
+            return userFullName;
+        }
+
+        public String getEntUserData() {
+            return entUserData;
+        }
+
+        public String getJpushRegistrationId() {
+            return jpushRegistrationId;
         }
 
         public PPMessageSDKConfiguration build() {

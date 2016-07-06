@@ -47,7 +47,7 @@ public class NormalConversation {
     public NormalConversation(PPComSDK sdk) {
         this.sdk = sdk;
         this.startupHelper = sdk.getStartupHelper();
-        this.messageSDK = sdk.getConfiguration().getMessageSDK();
+        this.messageSDK = sdk.getPPMessageSDK();
 
         conversationList = new ArrayList<>();
     }

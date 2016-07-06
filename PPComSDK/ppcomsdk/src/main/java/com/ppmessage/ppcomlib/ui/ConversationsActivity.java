@@ -56,7 +56,7 @@ public class ConversationsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         sdk = PPComSDK.getInstance();
-        messageSDK = sdk.getConfiguration().getMessageSDK();
+        messageSDK = sdk.getPPMessageSDK();
         conversationWaitingService = new ConversationWaitingService(sdk);
         conversationsModel = sdk.getMessageService().getConversationsModel();
         unackedMessagesLoader = new UnackedMessagesLoader(messageSDK);
@@ -110,7 +110,7 @@ public class ConversationsActivity extends AppCompatActivity {
      */
     protected ConversationFragment getConversationFragment() {
         ConversationFragment fragment = new ConversationFragment();
-        fragment.setMessageSDK(sdk.getConfiguration().getMessageSDK());
+        fragment.setMessageSDK(sdk.getPPMessageSDK());
         return fragment;
     }
 
@@ -185,7 +185,7 @@ public class ConversationsActivity extends AppCompatActivity {
     private void addNotificationListener() {
         L.d(LOG_ADD_LISTENER);
 
-        INotification notification = sdk.getConfiguration().getMessageSDK().getNotification();
+        INotification notification = sdk.getPPMessageSDK().getNotification();
         notificationListener = new INotification.SimpleNotificationEvent() {
 
             @Override
@@ -217,7 +217,7 @@ public class ConversationsActivity extends AppCompatActivity {
         L.d(LOG_REMOVE_LISTENER);
 
         if (notificationListener != null) {
-            sdk.getConfiguration().getMessageSDK().getNotification().removeListener(notificationListener);
+            sdk.getPPMessageSDK().getNotification().removeListener(notificationListener);
             notificationListener = null;
         }
     }

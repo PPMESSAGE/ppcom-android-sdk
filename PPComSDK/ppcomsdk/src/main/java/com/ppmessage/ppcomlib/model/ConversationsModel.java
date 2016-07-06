@@ -63,7 +63,7 @@ public class ConversationsModel {
 
     public ConversationsModel(PPComSDK sdk) {
         this.sdk = sdk;
-        this.messageSDK = sdk.getConfiguration().getMessageSDK();
+        this.messageSDK = sdk.getPPMessageSDK();
         this.startupHelper = sdk.getStartupHelper();
         this.conversationAgency = new ConversationAgency(sdk);
         conversationList = new ArrayList<>();

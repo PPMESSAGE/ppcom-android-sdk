@@ -75,6 +75,14 @@ public class PPMessageSDK {
         }
     }
 
+    public synchronized void update(PPMessageSDKConfiguration configuration) {
+        if (configuration == null) {
+            throw new PPMessageException(CONFIGURATION_EMPTY_LOG);
+        } else {
+            this.configuration.update(configuration);
+        }
+    }
+
     public IAPI getAPI() {
         checkConfig();
         if (api == null) {

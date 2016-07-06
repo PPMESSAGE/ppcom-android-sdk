@@ -22,8 +22,7 @@ public class TestMessageActivity extends MessageActivity {
         super.onCreate(savedInstanceState);
 
         PPComSDK sdk = PPComSDK.getInstance();
-        PPMessageSDK messageSDK = sdk.getConfiguration().getMessageSDK();
-
+        PPMessageSDK messageSDK = sdk.getPPMessageSDK();
         List<PPMessage> messageList = TestData.getTestMessageList();
         MessageAdapter messageAdapter = new MessageAdapter(messageSDK, this, messageList);
         setAdapter(messageAdapter);

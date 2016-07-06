@@ -36,7 +36,7 @@ public class ConversationMembersAdapter extends BaseAdapter {
 
     public ConversationMembersAdapter(PPComSDK sdk, List<User> userList) {
         this.sdk = sdk;
-        this.messageSDK = sdk.getConfiguration().getMessageSDK();
+        this.messageSDK = sdk.getPPMessageSDK();
         this.context = sdk.getConfiguration().getContext();
         this.inflater = LayoutInflater.from(context);
         this.userList = userList;

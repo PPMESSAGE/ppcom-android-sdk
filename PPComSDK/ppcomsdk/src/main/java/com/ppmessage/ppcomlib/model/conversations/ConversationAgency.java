@@ -43,7 +43,7 @@ public class ConversationAgency {
     }
 
     private void createConversation(String groupUUID, String userUUID, final OnCreateConversationEvent event) {
-        PPMessageSDK messageSDK = sdk.getConfiguration().getMessageSDK();
+        PPMessageSDK messageSDK = sdk.getPPMessageSDK();
 
         if (messageSDK.getNotification().getConfig().getActiveUser() == null) {
             L.w(LOG_USER_EMPTY);
@@ -77,7 +77,7 @@ public class ConversationAgency {
                 if (Utils.isJsonResponseEmpty(jsonResponse)) {
                     if (event != null) event.onCompleted(null);
                 } else {
-                    Conversation conversation = Conversation.parse(sdk.getConfiguration().getMessageSDK(), jsonResponse);
+                    Conversation conversation = Conversation.parse(sdk.getPPMessageSDK(), jsonResponse);
                     if (event != null) event.onCompleted(conversation);
                 }
             }

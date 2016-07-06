@@ -29,7 +29,7 @@ public class ConversationWaitingService {
 
     public ConversationWaitingService(PPComSDK sdk) {
         this.sdk = sdk;
-        this.messageSDK = sdk.getConfiguration().getMessageSDK();
+        this.messageSDK = sdk.getPPMessageSDK();
         this.polling = new PollingControl();
     }
 

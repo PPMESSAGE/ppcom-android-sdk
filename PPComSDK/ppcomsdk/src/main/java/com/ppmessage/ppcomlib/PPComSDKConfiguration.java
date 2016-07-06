@@ -2,11 +2,13 @@ package com.ppmessage.ppcomlib;
 
 import android.content.Context;
 
-import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.PPMessageSDKConfiguration;
 import com.ppmessage.sdk.core.bean.message.PPMessage;
 import com.ppmessage.sdk.core.notification.INotification;
 import com.ppmessage.sdk.core.notification.WSMessageAckNotificationHandler;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Created by ppmessage on 5/13/16.
@@ -18,54 +20,71 @@ public final class PPComSDKConfiguration {
     final Context context;
 
     final String appUUID;
-
-    final String entUserUuid;
-    final String entUserData;
-    final String entUserType;
-
+    final String apiKey;
+    final String apiSecret;
+    final String serverUrl;
     final String userEmail;
-    final String userIcon;
-    final String userFullName;
+    final String entUserUUID;
 
-    final String jpushRegistrationId;
+    private String entUserData;
+    private String entUserType;
 
-    final PPMessageSDK messageSDK;
+    private String userIcon;
+    private String userFullName;
+
+    private String jpushRegistrationId;
 
     public PPComSDKConfiguration(PPComSDKConfiguration.Builder builder) {
         this.builder = builder;
 
         this.context = this.builder.context;
         this.appUUID = this.builder.appUUID;
+        this.apiKey = this.builder.apiKey;
+        this.apiSecret = this.builder.apiSecret;
+
+        this.serverUrl = this.builder.serverUrl;
 
         this.userEmail = this.builder.userEmail;
         this.userIcon = this.builder.userIcon;
         this.userFullName = this.builder.userFullName;
 
         this.entUserType = this.builder.entUserType;
-        this.entUserUuid = this.builder.entUserUuid;
+        this.entUserUUID = this.builder.entUserUUID;
         this.entUserData = this.builder.entUserData;
 
         this.jpushRegistrationId = this.builder.jpushRegistrationId;
+    }
 
-        this.messageSDK = PPMessageSDK.getInstance();
-        this.messageSDK.init(new PPMessageSDKConfiguration.Builder(this.context)
-                .setEnableLogging(true)
-                .setEnableDebugLogging(true)
-                .setAppUUID(builder.appUUID)
-                .setServerUrl(builder.serverUrl)
-                .setPpcomApiKey(builder.apiKey)
-                .setPpcomApiSecret(builder.apiSecret)
+    public void update(PPComSDKConfiguration configuration) {
 
-                .setEntUserUuid(builder.entUserUuid)
-                .setEntUserData(builder.entUserData)
-                .setEntUserType(builder.entUserType)
+        JSONObject jsonObject = new JSONObject();
+        try {
+            if (configuration.getUserFullName() != null) {
+                this.userFullName = configuration.getUserFullName();
+                jsonObject.put("user_fullname", this.userFullName);
+            }
 
-                .setUserEmail(builder.userEmail)
-                .setUserFullName(builder.userFullName)
-                .setUserIcon(builder.userIcon)
-                .setJpushRegistrationId(builder.jpushRegistrationId)
+            if (configuration.getUserIcon() != null) {
+                this.userIcon = configuration.getUserIcon();
+                jsonObject.put("user_icon", this.userIcon);
+            }
 
-                .build());
+            if (configuration.getEntUserData() != null) {
+                this.entUserData = configuration.getEntUserData();
+                jsonObject.put("ent_user_data", this.entUserData);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if (jsonObject.length() > 0) {
+            PPComSDK.getInstance().getStartupHelper().getComUser().updateUserInfo(jsonObject);
+        }
+
+        if (configuration.getJpushRegistrationId() != null) {
+            this.jpushRegistrationId = configuration.getJpushRegistrationId();
+            PPComSDK.getInstance().getStartupHelper().getComUser().updateDeviceJpushRegistrationId();
+        }
 
     }
 
@@ -75,6 +94,18 @@ public final class PPComSDKConfiguration {
 
     public String getAppUUID() {
         return appUUID;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public String getApiSecret() {
+        return apiSecret;
+    }
+
+    public String getServerUrl() {
+        return serverUrl;
     }
 
     public String getUserEmail() {
@@ -89,14 +120,40 @@ public final class PPComSDKConfiguration {
         return userFullName;
     }
 
-    public String getEntUserType() { return entUserType; }
-    public String getEntUserData() { return entUserData; }
-    public String getEntUserUuid() { return entUserUuid; }
+    public String getEntUserType() {
+        return entUserType;
+    }
 
-    public String getJpushRegistrationId() { return jpushRegistrationId; }
+    public String getEntUserData() {
+        return entUserData;
+    }
 
-    public PPMessageSDK getMessageSDK() {
-        return messageSDK;
+    public String getEntUserUUID() {
+        return entUserUUID;
+    }
+
+    public String getJpushRegistrationId() {
+        return jpushRegistrationId;
+    }
+
+    public void setEntUserData(String entUserData) {
+        this.entUserData = entUserData;
+    }
+
+    public void setEntUserType(String entUserType) {
+        this.entUserType = entUserType;
+    }
+
+    public void setUserIcon(String userIcon) {
+        this.userIcon = userIcon;
+    }
+
+    public void setUserFullName(String userFullName) {
+        this.userFullName = userFullName;
+    }
+
+    public void setJpushRegistrationId(String jpushRegistrationId) {
+        this.jpushRegistrationId = jpushRegistrationId;
     }
 
     public static class Builder {
@@ -105,7 +162,7 @@ public final class PPComSDKConfiguration {
 
         private String appUUID;
 
-        private String entUserUuid;
+        private String entUserUUID;
         private String entUserData;
         private String entUserType;
 
@@ -164,8 +221,8 @@ public final class PPComSDKConfiguration {
             return this;
         }
 
-        public PPComSDKConfiguration.Builder setEntUserUuid(String entUserUuid) {
-            this.entUserUuid = entUserUuid;
+        public PPComSDKConfiguration.Builder setEntUserUUID(String entUserUUID) {
+            this.entUserUUID = entUserUUID;
             return this;
         }
 
@@ -177,6 +234,22 @@ public final class PPComSDKConfiguration {
         public PPComSDKConfiguration.Builder setJpushRegistrationId(String jpushRegistrationId) {
             this.jpushRegistrationId = jpushRegistrationId;
             return this;
+        }
+
+        public String getEntUserData() {
+            return entUserData;
+        }
+
+        public String getJpushRegistrationId() {
+            return jpushRegistrationId;
+        }
+
+        public String getUserIcon() {
+            return userIcon;
+        }
+
+        public String getUserFullName() {
+            return userFullName;
         }
 
         public PPComSDKConfiguration build() {

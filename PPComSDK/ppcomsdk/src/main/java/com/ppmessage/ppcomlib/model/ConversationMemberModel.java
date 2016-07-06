@@ -30,7 +30,7 @@ public class ConversationMemberModel {
 
     public ConversationMemberModel(PPComSDK sdk) {
         this.sdk = sdk;
-        this.messageSDK = sdk.getConfiguration().getMessageSDK();
+        this.messageSDK = sdk.getPPMessageSDK();
         membersMap = new HashMap<>();
     }
 
