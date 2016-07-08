@@ -2,18 +2,18 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-version = "0.0.12"
+version = "0.0.24"
 def siteUrl = 'https://www.ppmessage.com' 
 def gitUrl = 'https://github.com/PPMESSAGE/ppmessage.git' 
 group = "com.ppmessage"
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 24
+    buildToolsVersion '24.0.0'
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -27,14 +27,14 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'com.koushikdutta.async:androidasync:2.+'
     compile 'com.squareup.picasso:picasso:2.5.2'
     androidTestCompile 'com.android.support.test:runner:0.4'
     androidTestCompile 'org.hamcrest:hamcrest-library:1.3'
-    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.android.support:support-v4:24.0.0'
+    compile 'com.android.support:appcompat-v7:24.0.0'
 }
 
 install {

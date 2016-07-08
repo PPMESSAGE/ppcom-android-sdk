@@ -1,5 +1,5 @@
-gradle javadocJar
-gradle sourcesJar
-gradle install
-gradle bintrayUpload
+./gradlew javadocJar
+./gradlew sourcesJar
+./gradlew install
+./gradlew bintrayUpload
 

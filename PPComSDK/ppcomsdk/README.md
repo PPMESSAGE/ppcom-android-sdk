@@ -18,7 +18,7 @@ You can download through `Maven` or `Gradle`.
 <dependency>
   <groupId>com.ppmessage</groupId>
   <artifactId>ppcomsdk</artifactId>
-  <version>0.0.3</version>
+  <version>0.0.16</version>
   <type>pom</type>
 </dependency>
 ```

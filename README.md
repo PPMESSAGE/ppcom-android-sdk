@@ -3,6 +3,10 @@
 
 A demo use PPComSDK via gradle.
 
+To use local source project instead of bintray gradle. Use settings.gradle.local to ooverwrite settings.gradle and use gradle.build.local to overwrite gradle.
+
+And do the same for PPComSDK!.
+
 
 ## PPComSDK
 
