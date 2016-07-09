@@ -1,1 +1,1 @@
-include ':app', ':ppcomsdk'
+settings.gradle.local
