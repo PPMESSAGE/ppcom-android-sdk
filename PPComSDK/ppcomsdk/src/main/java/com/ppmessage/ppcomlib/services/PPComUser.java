@@ -19,9 +19,9 @@ import org.json.JSONObject;
  * 1. get anonymous / email user
  * 2. update user info // We don't care the update result
  * 3. create and update device // We also don't care the result
- * <p/>
+ * <p></p>
  * Example:
- * <p/>
+ * <p></p>
  * <pre>
  *
  *     1. -Async get ppcom user
@@ -39,7 +39,7 @@ import org.json.JSONObject;
  *     2. -get ppcom cached user
  *     User user = ppcomUser.getUser();
  * </pre>
- * <p/>
+ * <p></p>
  * Created by ppmessage on 5/13/16.
  */
 public final class PPComUser {

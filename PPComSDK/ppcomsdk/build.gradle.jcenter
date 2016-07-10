@@ -21,8 +21,13 @@ android {
     }
 }
 
+configurations {
+    javadocDeps
+}
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+    javadocDeps 'com.android.support:support-annotations:22.2.0'
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.0.0'
     compile 'com.ppmessage:sdk:0.0.24'
@@ -74,7 +79,7 @@ task sourcesJar(type: Jar) {
 
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
-//    classpath += configurations.compile
+    classpath += configurations.javadocDeps
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
 
@@ -82,6 +87,13 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
+
+afterEvaluate {
+    //javadoc.classpath += project.files(android.plugin.getRuntimeJarList().join(File.pathSeparator))
+    // add this statement
+    // javadoc.classpath += project.android.libraryVariants.toList().first().javaCompile.classpath
+}
+
 
 //afterEvaluate {
 //    javadoc.classpath += files(android.libraryVariants.collect { variant ->
