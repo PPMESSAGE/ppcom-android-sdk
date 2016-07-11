@@ -33,6 +33,7 @@ import com.ppmessage.sdk.core.ui.adapter.MessageAdapter;
 import com.ppmessage.sdk.core.ui.view.MessageListView;
 import com.ppmessage.sdk.core.utils.Uploader;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -197,23 +198,25 @@ public class MessageActivity extends AppCompatActivity {
 
                         @Override
                         public void onComplected(JSONObject response) {
-//
-//
-//                            //TODO delete local txt file
-//                            NSString *fid = response[@"fuuid"];
-//                            imageItem.fid=fid;
-//                            NSDictionary *fidParams = @{@"fid":fid,
-//                                @"mime":@"image/png"};
-//                            message = new PPMessage.Builder()
-//                                    .setFromUser(sdk.getNotification().getConfig().getActiveUser())
-//                                    .setConversation(conversation)
-//                                    .setMediaItem(mediaItem)
-//                                    .build();
-//                            if (!sdk.getNotification().canSendMessage()) {
-//                                message.setError(true);
-//                            } else {
-//                                sdk.getNotification().sendMessage(message);
-//                            }
+                            try {
+                                String fuuid = (String)response.get("fuuid");
+                                JSONObject jsonObject = new JSONObject();
+                                jsonObject.put("fid", fuuid);
+                                jsonObject.put("mime","image/jpg");
+                                PPMessage message = new PPMessage.Builder()
+                                    .setFromUser(sdk.getNotification().getConfig().getActiveUser())
+                                    .setConversation(conversation)
+                                    .setMessageBody(jsonObject.toString())
+                                    .build();
+                                message.setMessageSubType("IMAGE");
+                                if (!sdk.getNotification().canSendMessage()) {
+                                    message.setError(true);
+                                } else {
+                                    sdk.getNotification().sendMessage(message);
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
         }

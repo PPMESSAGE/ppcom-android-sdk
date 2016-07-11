@@ -89,7 +89,7 @@ public class PPMessageAdapter {
 
     private void asyncGetMessageBody(final OnGetMessageBodyEvent event) {
         String messageSubType = message.getMessageSubType();
-        if (messageSubType.equals(PPMessage.TYPE_TEXT)) {
+        if (messageSubType.equals(PPMessage.TYPE_TEXT) || message.getMediaItem() == null) {
             if (event != null) {
                 event.onCompleted(message.getMessageBody());
             }
