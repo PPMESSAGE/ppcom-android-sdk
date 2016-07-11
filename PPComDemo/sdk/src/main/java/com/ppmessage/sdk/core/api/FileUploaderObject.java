@@ -22,6 +22,8 @@ public class FileUploaderObject extends HashMap<String, Object> implements PostO
     HashMap<String,File> mPostFilesList=new HashMap<>();
     byte[]mParamsBuf=null;
     byte[]mEndBuf = null;
+
+    StringBuilder textBuilder = new StringBuilder();
     @Override
     public void buildBody(HttpURLConnection connection) {
 
@@ -45,7 +47,7 @@ public class FileUploaderObject extends HashMap<String, Object> implements PostO
             else if (val instanceof File){
                 File valFile = (File)val;
                 String tmpParam=generateFileParamString(key, valFile.getName());
-                String mimiType =getMimeType(valFile.getAbsolutePath());
+                String mimiType ="mime/jpg";//getMimeType(valFile.getAbsolutePath());
                 if (mimiType != null) {
                     tmpParam += "\r\nContent-Type: " + mimiType + "\r\n\r\n";
                 }
@@ -69,6 +71,7 @@ public class FileUploaderObject extends HashMap<String, Object> implements PostO
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+        textBuilder.append(sb);
 
         return ;
     }
@@ -81,6 +84,8 @@ public class FileUploaderObject extends HashMap<String, Object> implements PostO
 
             for (String fileParam : mPostFilesList.keySet()) {
                 byte[ ]fp = fileParam.getBytes("UTF-8");
+
+                textBuilder.append(fileParam);
                 bodyWriter.write(fp);
                 Log.i("TestLen", "len fp is" + fp.length);
                 FileInputStream in =new FileInputStream(mPostFilesList.get(fileParam));
@@ -95,6 +100,8 @@ public class FileUploaderObject extends HashMap<String, Object> implements PostO
                 in.close();
             }
             bodyWriter.write(mEndBuf);
+
+            textBuilder.append(new String(mEndBuf));
             Log.i("TestLen", "len mEndBuf is" + mEndBuf.length);
             bodyWriter.flush();
             bodyWriter.close();
