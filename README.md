@@ -7,6 +7,22 @@ To use local source project instead of bintray gradle. Use settings.gradle.local
 
 And do the same for PPComSDK!.
 
+> A config-build.sh is intented to help build from local or jcenter.
+
+* build demo reference local source
+
+```
+sh config-build.sh local
+```
+
+* build demo reference jcenter
+
+```
+sh config-build.sh jcenter
+```
+
+> The script will link settings.gradle and build.gradle for you.
+
 
 ## PPComSDK
 
@@ -84,3 +100,4 @@ public class MainActivity extends ConversationsActivity {
 ## PPMessageSDK
 
 PPMessageSDK is core lib and distributed with gradle.
+
