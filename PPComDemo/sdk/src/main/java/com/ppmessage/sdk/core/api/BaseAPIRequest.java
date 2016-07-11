@@ -42,16 +42,16 @@ public class BaseAPIRequest extends BaseHttpRequest {
         }
     }
 
+
     @Override
     protected void setup(HttpURLConnection conn) {
         super.setup(conn);
-
         if (token.getCachedToken() != null) {
             conn.addRequestProperty("Content-Type", "application/json;charset=utf-8");
             conn.addRequestProperty("Authorization", String.format(Locale.getDefault(), "OAuth %s", token.getCachedToken()));
         }
-
     }
+
 
     private IToken.OnRequestTokenEvent onGetAccessToken(final String urlSegment, final String requestString, final OnAPIRequestCompleted completedCallback) {
         return new IToken.OnRequestTokenEvent() {

@@ -17,7 +17,7 @@ import org.json.JSONObject;
  */
 public class Global {
 
-    public static final String TEST_APP_UUID = "c56adc0a-1b54-11e6-bc9f-acbc327f19e9";
+    public static final String TEST_APP_UUID = "34e1f577-428f-11e6-bec1-0050569a49a2";
 
     public static final String TEST_PPCOM_USER_UUID = "a69a5407-1bd7-11e6-9e10-acbc327f19e9";
     public static final String TEST_PPCOM_USER_DEVICE_UUID = "a6a68321-1bd7-11e6-ba05-acbc327f19e9";

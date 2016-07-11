@@ -42,7 +42,7 @@ public class TxtLoader extends BaseHttpRequest {
      */
     public void loadTxt(String url, final OnTxtLoadEvent loadListener) {
         String downloadUrl = Utils.getFileDownloadUrl(url);
-        get(downloadUrl, null, new OnHttpRequestCompleted() {
+        get(downloadUrl, new OnHttpRequestCompleted() {
 
             @Override
             public void onResponse(String response) {

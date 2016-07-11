@@ -22,8 +22,9 @@ public class TxtUploader extends Uploader {
      * @param uploadingListener
      */
     public void upload(String text, OnUploadingListener uploadingListener) {
-        byte[] b = text.getBytes(Charset.forName("UTF-8"));
-        upload(b, DEFAULT_FILE_NAME, uploadingListener);
+        //TODO:
+//        byte[] b = text.getBytes(Charset.forName("UTF-8"));
+//        uploadFile(b, DEFAULT_FILE_NAME, uploadingListener);
     }
 
 }

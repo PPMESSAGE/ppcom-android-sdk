@@ -18,12 +18,12 @@ public final class HostConstants {
 
     static {
         if (LOCAL_DEBUG) {
-            HOST = "10.1.127.148:8945";
+            HOST = "10.0.140.101:8945";
             HTTP_HOST = "http://" + HOST;
             WS_HOST = "ws://" + HOST + "/pcsocket/WS";
 
-            PPCOM_API_KEY = "Y2VmZTUwMjcwODNjNzcyNWIxZWJjNjI5NmRjNDBjYTA0ZGQ5ZTFjNQ==";
-            PPCOM_API_SECRET = "NjI1MzU0OWFlZjUwYWRjZTkxNzYyM2Y3YWU0MzhiZWFjZDQwMTI1Mw==";
+            PPCOM_API_KEY = "NDMxZjQ1NmZmMWZmY2I3NTZhZWMwZDliNjFmNTNkNWM1YjQ2YjZjNA==";
+            PPCOM_API_SECRET = "YjA4YzIzNjMzOTkyMzdlNTE0ZDkyYzMyNjNmZWEyMzQwMDk2M2QyOA==";
             PPKEFU_API_KEY = "MTJkZDBmNDc0Yjg5NDIwY2RjM2M5ZjUyNGNiOTc3NGFhY2JlODllNA==";
         } else {
             HOST = "ppmessage.com";

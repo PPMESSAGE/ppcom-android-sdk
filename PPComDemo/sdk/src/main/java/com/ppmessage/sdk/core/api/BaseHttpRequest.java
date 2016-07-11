@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
@@ -31,19 +32,19 @@ public class BaseHttpRequest {
 
     private final List<AsyncTask> taskList = new CopyOnWriteArrayList<>();
 
-    public void get(String url, String requestString, OnHttpRequestCompleted completedCallback) {
-        request(url, requestString, "GET", completedCallback);
+    public void get(String url,OnHttpRequestCompleted completedCallback) {
+        request(url, null, "GET", completedCallback);
     }
 
     public void post(final String url, final String requestString, final OnHttpRequestCompleted completedCallback) {
-        post(url, (Object)requestString, completedCallback);
+        post(url, new PostStringWriter(requestString), completedCallback);
     }
 
-    public void post(final String url, final Object any, final OnHttpRequestCompleted completedCallback) {
+    public void post(final String url, final PostObject any, final OnHttpRequestCompleted completedCallback) {
         request(url, any, "POST", completedCallback);
     }
 
-    private void request(final String url, final Object anyObj, final String method, final OnHttpRequestCompleted completedCallback) {
+    private void request(final String url, final PostObject anyObj, final String method, final OnHttpRequestCompleted completedCallback) {
         AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
 
             @Override
@@ -98,19 +99,8 @@ public class BaseHttpRequest {
     protected void setup(HttpURLConnection conn) {
     }
 
-    /**
-     * Write data to server, Don't close os manually
-     *
-     * @param os
-     */
-    protected void write(HttpURLConnection conn, OutputStream os, Object anyObj) throws IOException {
-        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-        writer.write((String)anyObj);
-        writer.flush();
-        writer.close();
-    }
 
-    private String makeRequest(String url, Object anyObj, String method) throws Exception {
+    private String makeRequest(String url, PostObject anyObj, String method) throws Exception {
         URL uri = new URL(url);
         HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
         setup(conn);
@@ -123,7 +113,7 @@ public class BaseHttpRequest {
         if (method.equals("POST") || anyObj != null) {
             conn.setDoOutput(true);
             OutputStream os = conn.getOutputStream();
-            write(conn, os, anyObj);
+            anyObj.writeBody(conn, os);
             os.close();
         }
 
@@ -142,6 +132,46 @@ public class BaseHttpRequest {
         L.d(RESPONSE_LOG_FORMAT, uri, responseCode, response);
 
         return TextUtils.isEmpty(response) ? null : response;
+    }
+
+    class PostStringWriter implements PostObject{
+        String body;
+        public PostStringWriter(String stringBody) {
+            this.body=stringBody;
+        }
+
+        public String getBody() {
+            return this.body;
+        }
+
+        public void setBody(String body) {
+            this.body = body;
+        }
+
+        @Override
+        public void buildBody(HttpURLConnection connection) {
+
+        }
+
+        @Override
+        public boolean writeBody(HttpURLConnection connection, OutputStream bodyWriter) {
+            BufferedWriter writer = null;
+            try {
+                writer = new BufferedWriter(new OutputStreamWriter(bodyWriter, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+                return  false;
+            }
+            try {
+                writer.write(body);
+                writer.flush();
+                writer.close();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
     }
 
 }
