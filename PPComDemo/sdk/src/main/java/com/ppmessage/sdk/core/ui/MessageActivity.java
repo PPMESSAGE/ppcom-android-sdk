@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -186,8 +187,26 @@ public class MessageActivity extends AppCompatActivity {
         return message;
     }
 
-    protected PPMessage sendImageFile(File imageFile) {
+    protected PPMessage sendImageFile(final File imageFile) {
         if (checkInfoBeforeSendFile(imageFile)) {
+            final PPMessageImageMediaItem mediaItem =  new PPMessageImageMediaItem();
+            mediaItem.setMime("image/jpg");
+            mediaItem.setFile(imageFile);
+
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds=true;
+            BitmapFactory.decodeFile(imageFile.getAbsolutePath(), options);
+            mediaItem.setOrigWidth(options.outWidth);
+            mediaItem.setOrigHeight(options.outHeight);
+            mediaItem.setOrigUrl("file://"+imageFile.getAbsolutePath());
+
+            final PPMessage message = new PPMessage.Builder()
+                    .setFromUser(sdk.getNotification().getConfig().getActiveUser())
+                    .setConversation(conversation)
+                    .setMediaItem(mediaItem)
+                    .build();
+
+            onTextMessageSendFinish(message);
             new Uploader().uploadFile(imageFile,
                     sdk.getNotification().getConfig().getActiveUser().getUuid(),
                     new Uploader.OnUploadingListener() {
@@ -200,15 +219,7 @@ public class MessageActivity extends AppCompatActivity {
                         public void onComplected(JSONObject response) {
                             try {
                                 String fuuid = (String)response.get("fuuid");
-                                JSONObject jsonObject = new JSONObject();
-                                jsonObject.put("fid", fuuid);
-                                jsonObject.put("mime","image/jpg");
-                                PPMessage message = new PPMessage.Builder()
-                                    .setFromUser(sdk.getNotification().getConfig().getActiveUser())
-                                    .setConversation(conversation)
-                                    .setMessageBody(jsonObject.toString())
-                                    .build();
-                                message.setMessageSubType("IMAGE");
+                                mediaItem.setOrigId(fuuid);
                                 if (!sdk.getNotification().canSendMessage()) {
                                     message.setError(true);
                                 } else {

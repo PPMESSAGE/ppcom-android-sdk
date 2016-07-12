@@ -175,7 +175,14 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
 
     @Override
     public void asyncGetAPIJsonObject(OnGetJsonObjectEvent event) {
-        // Waiting for implementation
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("fid", getOrigId());
+            jsonObject.put("mime", getMime());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        event.onCompleted(jsonObject);
     }
 
     @Override

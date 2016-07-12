@@ -38,7 +38,7 @@ public final class Utils {
     /**
      * Download host
      */
-    public static final String DOWNLOAD_HOST = HostConstants.HTTP_HOST + "/download/";
+    public static final String DOWNLOAD_HOST = HostConstants.HTTP_HOST + "/download/download/";
 
     private static final TxtLoader txtLoader = new TxtLoader();
     private static final TxtUploader txtUploader = new TxtUploader();

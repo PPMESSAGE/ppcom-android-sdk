@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -273,14 +274,18 @@ public class MessageAdapter extends BaseAdapter {
         loadAvatar(v, message, holder.avatar);
         if (imageMediaItem != null) {
             calcAndSetImageViewFinalTargetSize(holder.imgBody, imageMediaItem.getOrigWidth(), imageMediaItem.getOrigHeight());
-            sdk.getImageLoader().loadImage(
-                    imageMediaItem.getOrigUrl(),
-                    imageMediaItem.getOrigWidth(),
-                    imageMediaItem.getOrigHeight(),
-                    new ColorDrawable(Color.GRAY),
-                    holder.imgBody);
+            if (imageMediaItem.getOrigUrl().startsWith("file://")) {
+                holder.imgBody.setImageURI(Uri.parse(imageMediaItem.getOrigUrl().substring("file://".length())));
+            }
+            else {
+                sdk.getImageLoader().loadImage(
+                        imageMediaItem.getOrigUrl(),
+                        imageMediaItem.getOrigWidth(),
+                        imageMediaItem.getOrigHeight(),
+                        new ColorDrawable(Color.GRAY),
+                        holder.imgBody);
+            }
         }
-
         return v;
     }
 
