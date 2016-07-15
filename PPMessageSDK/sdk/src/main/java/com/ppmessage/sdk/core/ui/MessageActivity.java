@@ -1,5 +1,7 @@
 package com.ppmessage.sdk.core.ui;
 
+import android.content.Context;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -7,9 +9,11 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ppmessage.sdk.R;
@@ -21,6 +25,8 @@ import com.ppmessage.sdk.core.bean.message.PPMessage;
 import com.ppmessage.sdk.core.notification.INotification;
 import com.ppmessage.sdk.core.ui.adapter.MessageAdapter;
 import com.ppmessage.sdk.core.ui.view.MessageListView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +46,10 @@ public class MessageActivity extends AppCompatActivity {
     protected MessageAdapter messageAdapter;
     protected TextView sendButton;
     protected EditText inputEt;
+    protected ViewGroup inputEtContainer;
+    protected TextView holdToTalkButton;
+    protected ImageView keyboardButton;
+    protected ImageView voiceButton;
 
     private PPMessageSDK sdk;
 
@@ -54,12 +64,19 @@ public class MessageActivity extends AppCompatActivity {
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.pp_chat_swipe_refresh_layout);
         sendButton = (TextView) findViewById(R.id.pp_chat_tools_send_btn);
         inputEt = (EditText) findViewById(R.id.pp_chat_tools_input_et);
+        inputEtContainer = (ViewGroup) findViewById(R.id.pp_chat_tools_input_et_container);
+        holdToTalkButton = (TextView) findViewById(R.id.pp_chat_tools_hold_voice_btn);
+        voiceButton = (ImageView) findViewById(R.id.pp_chat_tools_voice_btn);
+        keyboardButton = (ImageView) findViewById(R.id.pp_chat_tools_keyboard_btn);
 
         sendButton.setEnabled(false);
         swipeRefreshLayout.setEnabled(false);
 
+        holdToTalkButton.setVisibility(View.GONE);
+        keyboardButton.setVisibility(View.GONE);
+
         // Avoid keyboard auto popup
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        hideKeyboard();
     }
 
     @Override
@@ -91,7 +108,6 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     protected void onSwipeRefresh(SwipeRefreshLayout swipeRefreshLayout) {
-
     }
 
     // === MessageActivity Business Logic ===
@@ -139,6 +155,29 @@ public class MessageActivity extends AppCompatActivity {
                 MessageActivity.this.onSwipeRefresh(swipeRefreshLayout);
             }
         });
+
+        keyboardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                keyboardButton.setVisibility(View.GONE);
+                voiceButton.setVisibility(View.VISIBLE);
+                holdToTalkButton.setVisibility(View.GONE);
+                inputEtContainer.setVisibility(View.VISIBLE);
+            }
+        });
+
+        voiceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                keyboardButton.setVisibility(View.VISIBLE);
+                voiceButton.setVisibility(View.GONE);
+                holdToTalkButton.setVisibility(View.VISIBLE);
+                inputEtContainer.setVisibility(View.GONE);
+
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+            }
+        });
     }
 
     private PPMessage sendText(String text) {
@@ -176,6 +215,10 @@ public class MessageActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    private void hideKeyboard() {
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
 }

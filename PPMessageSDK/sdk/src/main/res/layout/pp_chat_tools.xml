@@ -15,18 +15,33 @@
         android:orientation="horizontal"
         android:padding="5dp" >
 
-        <ImageView
-            android:id="@+id/pp_chat_tools_voice_btn"
+        <FrameLayout
             android:layout_width="@dimen/pp_chat_tools_img_btn_width"
-            android:layout_height="@dimen/pp_chat_tools_img_btn_width"
-            android:clickable="true"
-            android:contentDescription="@string/pp_common_content_desc"
-            android:src="@drawable/pp_chat_tools_voice"
-            android:visibility="gone" />
+            android:layout_height="@dimen/pp_chat_tools_img_btn_width">
+
+            <ImageView
+                android:id="@+id/pp_chat_tools_voice_btn"
+                android:layout_width="@dimen/pp_chat_tools_img_btn_width"
+                android:layout_height="@dimen/pp_chat_tools_img_btn_width"
+                android:clickable="true"
+                android:contentDescription="@string/pp_common_content_desc"
+                android:src="@drawable/pp_chat_tools_voice"
+                android:visibility="visible" />
+
+            <ImageView
+                android:id="@+id/pp_chat_tools_keyboard_btn"
+                android:layout_width="@dimen/pp_chat_tools_img_btn_width"
+                android:layout_height="@dimen/pp_chat_tools_img_btn_width"
+                android:clickable="true"
+                android:contentDescription="@string/pp_common_content_desc"
+                android:src="@drawable/pp_chat_tools_keyboard"
+                android:visibility="visible" />
+
+        </FrameLayout>
 
         <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginEnd="5dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
@@ -34,6 +49,7 @@
             android:layout_weight="1" >
 
             <FrameLayout
+                android:id="@+id/pp_chat_tools_input_et_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/pp_chat_tools_hold_voice_bg"
