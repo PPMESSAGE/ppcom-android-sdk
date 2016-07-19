@@ -15,9 +15,6 @@
     <string name="pp_chat_item_extra">Extra</string>
     <string name="pp_chat_item_file_fname">File Name</string>
     <string name="pp_common_content_desc"></string>
-    <string name="pp_chat_tools_hold_voice_hold_to_talk">Hold to Talk</string>
-    <string name="pp_chat_tools_hold_voice_release_to_send">Release to Send</string>
-    <string name="pp_chat_tools_hold_voice_release_to_cancel">Release to Cancel</string>
     <string name="pp_error_user_not_avaliable">Service not available</string>
     <string name="pp_error_create_conversation_error">Failed to create conversation, Please try again later.</string>
     <string name="pp_error_forget_init_fragmentmanager">mCacheManager = PPCacheManager.getInstance(getFragmentManager());</string>
@@ -73,5 +70,11 @@
 
     <string name="pp_no_more_history">No more messages history</string>
     <string name="loading">Loading...</string>
+
+    <!-- recording -->
+    <string name="pp_chat_tools_hold_voice_hold_to_talk">Hold to Talk</string>
+    <string name="pp_chat_tools_hold_voice_release_to_send">Release to send</string>
+    <string name="pp_chat_tools_hold_voice_release_to_cancel">Release to cancel</string>
+    <string name="pp_chat_tools_hold_voice_slide_up_to_cancel">Slide up to cancel</string>
 
 </resources>

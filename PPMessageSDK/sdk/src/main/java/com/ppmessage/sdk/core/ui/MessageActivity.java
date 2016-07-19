@@ -8,8 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -40,6 +43,7 @@ public class MessageActivity extends AppCompatActivity {
     private static final String SDK_EMPTY_LOG = "[Send] SDK == nil";
     private static final String CONVERSATION_EMTPY_LOG = "[Send] conversation == nil";
     private static final String FROMUSER_EMPTY_LOG = "[Send] FromUser == nil";
+    private static final String CLICK_EVENT_WARNING = "[MessageActivity] Click event, skip send recording, time diff:%d";
 
     protected MessageListView messageListView;
     protected SwipeRefreshLayout swipeRefreshLayout;
@@ -51,9 +55,21 @@ public class MessageActivity extends AppCompatActivity {
     protected ImageView keyboardButton;
     protected ImageView voiceButton;
 
+    protected ViewStub recordingViewStub;
+    protected View recordingView;
+    protected ViewGroup recordingImageViewContainer;
+    protected ImageView recordingCancelImageView;
+    protected TextView recordingStateTv;
+
     private PPMessageSDK sdk;
 
     private Conversation conversation;
+
+    private float actionDownX;
+    private float actionDownY;
+    private long actionDownTimestamp;
+    private static final long RECORDING_MIN_TIME_MS = 300; //300ms
+    private static final float RECORDING_CANCEL_MIN_DISTANCE = 300;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +84,8 @@ public class MessageActivity extends AppCompatActivity {
         holdToTalkButton = (TextView) findViewById(R.id.pp_chat_tools_hold_voice_btn);
         voiceButton = (ImageView) findViewById(R.id.pp_chat_tools_voice_btn);
         keyboardButton = (ImageView) findViewById(R.id.pp_chat_tools_keyboard_btn);
+
+        recordingViewStub = (ViewStub) findViewById(R.id.pp_recording_view_import);
 
         sendButton.setEnabled(false);
         swipeRefreshLayout.setEnabled(false);
@@ -178,6 +196,27 @@ public class MessageActivity extends AppCompatActivity {
                 imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
             }
         });
+
+        holdToTalkButton.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                switch (motionEvent.getAction() & MotionEvent.ACTION_MASK) {
+                    case MotionEvent.ACTION_DOWN:
+                        onActionTouchDown(motionEvent);
+                        return true;
+
+                    case MotionEvent.ACTION_MOVE:
+                        onActionTouchMove(motionEvent);
+                        return true;
+
+                    case MotionEvent.ACTION_CANCEL:
+                    case MotionEvent.ACTION_UP:
+                        onActionTouchUp(motionEvent);
+                        return true;
+                }
+                return false;
+            }
+        });
     }
 
     private PPMessage sendText(String text) {
@@ -219,6 +258,85 @@ public class MessageActivity extends AppCompatActivity {
 
     private void hideKeyboard() {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+    }
+
+    // ==========================
+    // Recording Touch Event
+    // ==========================
+
+    private void onActionTouchDown(MotionEvent motionEvent) {
+        if (recordingView == null) {
+            recordingView = recordingViewStub.inflate();
+
+            recordingImageViewContainer = (ViewGroup) recordingView.findViewById(R.id.pp_recording_imageview_container);
+            recordingStateTv = (TextView) recordingView.findViewById(R.id.pp_recording_view_state_description);
+            recordingCancelImageView = (ImageView) recordingView.findViewById(R.id.pp_recording_view_cancel_imageview);
+        }
+
+        if (recordingView != null) {
+            recordingView.setVisibility(View.VISIBLE);
+        }
+
+        if (recordingStateTv != null) {
+            recordingStateTv.setBackgroundResource(0);
+            recordingStateTv.setText(R.string.pp_chat_tools_hold_voice_slide_up_to_cancel);
+        }
+
+        if (recordingImageViewContainer != null) {
+            recordingImageViewContainer.setVisibility(View.VISIBLE);
+        }
+
+        if (recordingCancelImageView != null) {
+            recordingCancelImageView.setVisibility(View.GONE);
+        }
+
+        if (holdToTalkButton != null) {
+            holdToTalkButton.setPressed(true);
+            holdToTalkButton.setText(R.string.pp_chat_tools_hold_voice_release_to_send);
+        }
+
+        actionDownTimestamp = System.currentTimeMillis();
+        actionDownX = motionEvent.getX();
+        actionDownY = motionEvent.getY();
+    }
+
+    private void onActionTouchMove(MotionEvent motionEvent) {
+        boolean cancelImageVisible = (actionDownY - motionEvent.getY()) >= RECORDING_CANCEL_MIN_DISTANCE;
+        if (recordingCancelImageView != null) {
+            recordingCancelImageView.setVisibility(cancelImageVisible ? View.VISIBLE : View.GONE);
+        }
+        if (recordingImageViewContainer != null) {
+            recordingImageViewContainer.setVisibility(cancelImageVisible ? View.GONE : View.VISIBLE);
+        }
+        if (recordingStateTv != null) {
+            recordingStateTv.setText(cancelImageVisible ?
+                    R.string.pp_chat_tools_hold_voice_release_to_cancel :
+                    R.string.pp_chat_tools_hold_voice_slide_up_to_cancel);
+            recordingStateTv.setBackgroundResource(cancelImageVisible ?
+                    R.drawable.pp_chat_recording_view_state_bg :
+                    0);
+        }
+        if (holdToTalkButton != null) {
+            holdToTalkButton.setText(cancelImageVisible ?
+                    R.string.pp_chat_tools_hold_voice_release_to_cancel :
+                    R.string.pp_chat_tools_hold_voice_release_to_send);
+        }
+    }
+
+    private void onActionTouchUp(MotionEvent motionEvent) {
+        if (recordingView != null) {
+            recordingView.setVisibility(View.GONE);
+        }
+
+        if (holdToTalkButton != null) {
+            holdToTalkButton.setPressed(false);
+            holdToTalkButton.setText(R.string.pp_chat_tools_hold_voice_hold_to_talk);
+        }
+
+        long timeDiff = System.currentTimeMillis() - actionDownTimestamp;
+        if (timeDiff < RECORDING_MIN_TIME_MS) {
+            L.w(CLICK_EVENT_WARNING, timeDiff);
+        }
     }
 
 }

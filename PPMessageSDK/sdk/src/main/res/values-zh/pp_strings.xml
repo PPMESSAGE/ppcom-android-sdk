@@ -27,4 +27,10 @@
 
     <string name="pp_no_more_history">无更多历史消息</string>
 
+    <!-- recording -->
+    <string name="pp_chat_tools_hold_voice_hold_to_talk">按住说话</string>
+    <string name="pp_chat_tools_hold_voice_release_to_send">放开发送</string>
+    <string name="pp_chat_tools_hold_voice_release_to_cancel">松开取消</string>
+    <string name="pp_chat_tools_hold_voice_slide_up_to_cancel">向上滑动取消</string>
+
 </resources>

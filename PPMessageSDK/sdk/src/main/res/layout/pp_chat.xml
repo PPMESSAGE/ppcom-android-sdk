@@ -1,29 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/pp_chat_container"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical" >
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/pp_chat_swipe_refresh_layout"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" >
-
-        <com.ppmessage.sdk.core.ui.view.MessageListView
-            android:id="@+id/pp_chat_lv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:divider="@null"
-            android:dividerHeight="0dp"
-            android:transcriptMode="alwaysScroll" >
-        </com.ppmessage.sdk.core.ui.view.MessageListView>
-    </android.support.v4.widget.SwipeRefreshLayout>
-
-    <include
+    <LinearLayout
+        android:id="@+id/pp_chat_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        layout="@layout/pp_chat_tools" />
+        android:orientation="vertical" >
 
-</LinearLayout>
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/pp_chat_swipe_refresh_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" >
+
+            <com.ppmessage.sdk.core.ui.view.MessageListView
+                android:id="@+id/pp_chat_lv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:divider="@null"
+                android:dividerHeight="0dp"
+                android:transcriptMode="alwaysScroll" >
+            </com.ppmessage.sdk.core.ui.view.MessageListView>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <include
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/pp_chat_tools" />
+
+    </LinearLayout>
+
+    <ViewStub
+        android:id="@+id/pp_recording_view_import"
+        android:inflatedId="@+id/pp_recording_view"
+        android:layout="@layout/pp_recording_view"
+        android:layout_gravity="center"
+        android:layout_width="200dp"
+        android:layout_height="200dp" />
+
+</FrameLayout>
