@@ -28,7 +28,8 @@ public class Global {
     public static PPMessageSDK getPPMessageSDK() {
         PPMessageSDK sdk = PPMessageSDK.getInstance();
         sdk.init(new PPMessageSDKConfiguration
-                .Builder(InstrumentationRegistry.getContext())
+                .Builder()
+                .setContext(InstrumentationRegistry.getContext())
                 .setAppUUID(TEST_APP_UUID)
                 .setEnableDebugLogging(true)
                 .setEnableLogging(true)

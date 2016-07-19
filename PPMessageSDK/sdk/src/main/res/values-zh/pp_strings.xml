@@ -23,6 +23,7 @@
     <string name="pp_message_summary_image">[图片]</string>
     <string name="pp_message_summary_file">[文件]</string>
     <string name="pp_message_summary_unknown"> </string>
+    <string name="pp_message_summary_audio">[语音]</string>
 
     <string name="pp_no_more_history">无更多历史消息</string>
 

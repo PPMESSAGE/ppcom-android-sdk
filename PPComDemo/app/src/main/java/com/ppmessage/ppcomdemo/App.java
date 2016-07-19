@@ -4,7 +4,6 @@ import android.app.Application;
 
 import com.ppmessage.ppcomlib.PPComSDK;
 import com.ppmessage.ppcomlib.PPComSDKConfiguration;
-import com.ppmessage.sdk.core.PPMessageSDK;
 
 /**
  * Created by ppmessage on 5/13/16.

@@ -3,7 +3,10 @@ package com.ppmessage.sdk.core.ui.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +18,17 @@ import com.ppmessage.sdk.R;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.bean.common.User;
 import com.ppmessage.sdk.core.bean.message.PPMessage;
+import com.ppmessage.sdk.core.bean.message.PPMessageAudioMediaItem;
 import com.ppmessage.sdk.core.bean.message.PPMessageFileMediaItem;
 import com.ppmessage.sdk.core.bean.message.PPMessageImageMediaItem;
 import com.ppmessage.sdk.core.bean.message.PPMessageTxtMediaItem;
 import com.ppmessage.sdk.core.utils.IImageLoader;
 import com.ppmessage.sdk.core.utils.Utils;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by ppmessage on 5/12/16.
@@ -33,12 +39,18 @@ public class MessageAdapter extends BaseAdapter {
     private static final double MAX_TEXT_BUBBLE_RATIO = 0.6;
     private static final double MAX_IMAGE_WIDTH_RATIO = 0.8;
     private static final double MAX_IMAGE_HEIGHT_RATIO = 0.3;
+    private static final double MAX_AUDIO_WIDTH_RATIO = 0.5;
+    private static final double MIN_AUDIO_WIDTH = 96;
 
     private static final int DEFAULT_AVATAR_WIDTH = 48;
     private static final int DEFAULT_AVATAR_HEIGHT = 48;
 
+    // 60.0 seconds. we consider 60.0 seconds voice has the same width with the 100.0 seconds voice
+    private static final int MAX_AUDIO_VIEW_TIME = 60;
+
     public enum ViewType {
-        TEXT_LEFT, TEXT_RIGHT, IMAGE_LEFT, IMAGE_RIGHT, FILE_LEFT, FILE_RIGHT,
+        TEXT_LEFT, TEXT_RIGHT, IMAGE_LEFT, IMAGE_RIGHT,
+        FILE_LEFT, FILE_RIGHT, AUDIO_LEFT, AUDIO_RIGHT
     }
 
     private PPMessageSDK sdk;
@@ -52,6 +64,9 @@ public class MessageAdapter extends BaseAdapter {
 
     private final int SCREEN_WIDTH;
     private final int SCREEN_HEIGHT;
+
+    private WeakReference<ImageView> lastClickedAudioImageViewRef;
+    private int lastClickedAudioMessageDirection;
 
     public MessageAdapter(PPMessageSDK sdk, Activity activity, List<PPMessage> messages) {
         this(sdk, activity, messages, true);
@@ -117,6 +132,10 @@ public class MessageAdapter extends BaseAdapter {
             v = getLeftFileMessageView(convertView, parent, message);
         } else if (type == ViewType.FILE_RIGHT.ordinal()) {
             v = getRightFileMessageView(convertView, parent, message);
+        } else if (type == ViewType.AUDIO_LEFT.ordinal()) {
+            v = getLeftAudioMessageView(convertView, parent, message);
+        } else if (type == ViewType.AUDIO_RIGHT.ordinal()) {
+            v = getRightAudioMessageView(convertView, parent, message);
         }
 
         if (v != null) {
@@ -163,11 +182,15 @@ public class MessageAdapter extends BaseAdapter {
         return false;
     }
 
+    // ======================
+    // File Message
+    // ======================
+
     private View getRightFileMessageView(View convertView, ViewGroup parent,
                                          PPMessage message) {
         ViewHolderRightFileMessage holder = null;
         View v = convertView;
-        if (v == null || v.getTag().getClass() != ViewHolderRightFileMessage.class) {
+        if (v == null || v.getTag() == null || v.getTag().getClass() != ViewHolderRightFileMessage.class) {
             v = mInflater.inflate(R.layout.pp_chat_item_file_by_user,
                     parent, false);
             holder = new ViewHolderRightFileMessage();
@@ -193,7 +216,7 @@ public class MessageAdapter extends BaseAdapter {
                                         PPMessage message) {
         ViewHolderLeftFileMessage holder = null;
         View v = convertView;
-        if (v == null || v.getTag().getClass() != ViewHolderLeftFileMessage.class) {
+        if (v == null || v.getTag() == null || v.getTag().getClass() != ViewHolderLeftFileMessage.class) {
             holder = new ViewHolderLeftFileMessage();
 
             v = mInflater.inflate(
@@ -221,11 +244,15 @@ public class MessageAdapter extends BaseAdapter {
         return v;
     }
 
+    // ======================
+    // Image Message
+    // ======================
+
     private View getRightImageMessageView(View convertView, ViewGroup parent,
                                           PPMessage message) {
         ViewHolderRightImageMessage holder = null;
         View v = convertView;
-        if (v == null || v.getTag().getClass() != ViewHolderRightImageMessage.class) {
+        if (v == null || v.getTag() == null || v.getTag().getClass() != ViewHolderRightImageMessage.class) {
             v = mInflater.inflate(
                     R.layout.pp_chat_item_image_by_user, parent, false);
             holder = new ViewHolderRightImageMessage();
@@ -256,7 +283,7 @@ public class MessageAdapter extends BaseAdapter {
                                          PPMessage message) {
         ViewHolderLeftImageMessage holder = null;
         View v = convertView;
-        if (v == null || v.getTag().getClass() != ViewHolderLeftImageMessage.class) {
+        if (v == null || v.getTag() == null || v.getTag().getClass() != ViewHolderLeftImageMessage.class) {
             holder = new ViewHolderLeftImageMessage();
             v = mInflater.inflate(
                     R.layout.pp_chat_item_image_by_admin, parent, false);
@@ -284,11 +311,15 @@ public class MessageAdapter extends BaseAdapter {
         return v;
     }
 
+    // ======================
+    // Text Message
+    // ======================
+
     private View getRightTextMessageView(View convertView, ViewGroup parent,
                                          PPMessage message) {
         ViewHolderRightTextMessage holder = null;
         View v = convertView;
-        if (v == null || v.getTag().getClass() != ViewHolderRightTextMessage.class) {
+        if (v == null || v.getTag() == null || v.getTag().getClass() != ViewHolderRightTextMessage.class) {
             v = mInflater.inflate(R.layout.pp_chat_item_text_by_user,
                     parent, false);
             holder = new ViewHolderRightTextMessage();
@@ -313,7 +344,7 @@ public class MessageAdapter extends BaseAdapter {
                                         PPMessage message) {
         ViewHolderLeftTextMessage holder = null;
         View v = convertView;
-        if (v == null || convertView.getTag().getClass() != ViewHolderLeftTextMessage.class) {
+        if (v == null || v.getTag() == null || convertView.getTag().getClass() != ViewHolderLeftTextMessage.class) {
             v = mInflater.inflate(R.layout.pp_chat_item_text_by_admin,
                     parent, false);
             holder = new ViewHolderLeftTextMessage();
@@ -331,6 +362,84 @@ public class MessageAdapter extends BaseAdapter {
         loadAvatar(v, message, holder.avatar);
         holder.bodyTv.setMaxWidth(getMaxTextBubbleWidth());
         loadText(message, holder.bodyTv);
+
+        return v;
+    }
+
+    // ======================
+    // Audio Message
+    // ======================
+
+    private View getLeftAudioMessageView(View convertView, ViewGroup parent,
+                                         final PPMessage message) {
+        ViewHolderLeftAudioMesasge holder = null;
+        View v = convertView;
+        if (v == null || v.getTag() == null || convertView.getTag().getClass() != ViewHolderLeftAudioMesasge.class) {
+            v = mInflater.inflate(R.layout.pp_chat_item_audio_by_admin, parent, false);
+            holder = new ViewHolderLeftAudioMesasge();
+            holder.avatar = (ImageView) v.findViewById(R.id.pp_chat_item_audio_by_admin_user_avatar);
+            holder.durationTv = (TextView) v.findViewById(R.id.pp_chat_item_audio_by_admin_duration);
+            holder.timestampTv = (TextView) v.findViewById(R.id.pp_chat_item_audio_by_admin_message_extra);
+            holder.audioImage = (ImageView) v.findViewById(R.id.pp_chat_item_audio_by_admin_audio_image);
+            holder.audioImageContainer = (ViewGroup) v.findViewById(R.id.pp_chat_item_audio_by_admin_container);
+        } else {
+            holder = (ViewHolderLeftAudioMesasge) v.getTag();
+        }
+
+        PPMessageAudioMediaItem audioMediaItem = (PPMessageAudioMediaItem) message.getMediaItem();
+
+        setMessageItemExtraInfo(holder.timestampTv, message);
+        loadAvatar(v, message, holder.avatar);
+        calcAndSetAudioViewFinalTargetWidth(holder.audioImageContainer, audioMediaItem.getDuration());
+
+        if (audioMediaItem != null) {
+            holder.durationTv.setText(String.format(Locale.getDefault(), "%.1f\"", audioMediaItem.getDuration()));
+        }
+
+        final ImageView audioImage = holder.audioImage;
+        holder.audioImageContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onAudioMessageClicked(message, audioImage);
+            }
+        });
+
+        return v;
+    }
+
+    private View getRightAudioMessageView(View convertView, ViewGroup parent,
+                                          final PPMessage message) {
+        ViewHolderRightAudioMessage holder = null;
+        View v = convertView;
+        if (v == null || v.getTag() == null || convertView.getTag().getClass() != ViewHolderRightAudioMessage.class) {
+            v = mInflater.inflate(R.layout.pp_chat_item_audio_by_user, parent, false);
+            holder = new ViewHolderRightAudioMessage();
+            holder.avatar = (ImageView) v.findViewById(R.id.pp_chat_item_user_avatar);
+            holder.durationTv = (TextView) v.findViewById(R.id.pp_chat_item_audio_by_user_duration);
+            holder.timestampTv = (TextView) v.findViewById(R.id.pp_chat_item_audio_by_user_message_extra);
+            holder.audioImage = (ImageView) v.findViewById(R.id.pp_chat_item_audio_by_user_audio_image);
+            holder.audioImageContainer = (ViewGroup) v.findViewById(R.id.pp_chat_item_audio_by_user_container);
+        } else {
+            holder = (ViewHolderRightAudioMessage) v.getTag();
+        }
+
+        PPMessageAudioMediaItem audioMediaItem = (PPMessageAudioMediaItem) message.getMediaItem();
+
+        setMessageItemExtraInfo(holder.timestampTv, message);
+        loadAvatar(v, message, holder.avatar);
+        calcAndSetAudioViewFinalTargetWidth(holder.audioImageContainer, audioMediaItem.getDuration());
+
+        if (audioMediaItem != null) {
+            holder.durationTv.setText(String.format(Locale.getDefault(), "%.1f\"", audioMediaItem.getDuration()));
+        }
+
+        final ImageView audioImage = holder.audioImage;
+        holder.audioImageContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onAudioMessageClicked(message, audioImage);
+            }
+        });
 
         return v;
     }
@@ -387,7 +496,7 @@ public class MessageAdapter extends BaseAdapter {
         }
     }
 
-    // === Long Click Listener ===
+    // === Long Click, Click Listener ===
 
     private void bindTextViewLongClickListener(final TextView textView) {
         textView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -398,6 +507,77 @@ public class MessageAdapter extends BaseAdapter {
                 return true;
             }
         });
+    }
+
+    private void onAudioMessageClicked(final PPMessage message, final ImageView audioImageView) {
+
+        ImageView lastClickedAudioImageView = null;
+        if (lastClickedAudioImageViewRef != null && lastClickedAudioImageViewRef.get() != null) {
+            lastClickedAudioImageView = lastClickedAudioImageViewRef.get();
+        }
+
+        if (lastClickedAudioImageView != null) {
+
+            Drawable audioBackground = lastClickedAudioImageView.getBackground();
+            AnimationDrawable currenPlayingAnimationDrawable = null;
+            if (audioBackground != null && audioBackground instanceof AnimationDrawable) {
+                currenPlayingAnimationDrawable = (AnimationDrawable) audioBackground;
+            }
+
+            if (lastClickedAudioImageView == audioImageView) {
+                if (currenPlayingAnimationDrawable != null) {
+                    stopAudioAnimationDrawableAndSetStaticAudioImage(currenPlayingAnimationDrawable, lastClickedAudioImageView, message);
+                }
+                return;
+            } else {
+                if (currenPlayingAnimationDrawable != null) {
+                    stopAudioAnimationDrawableAndSetStaticAudioImage(currenPlayingAnimationDrawable, lastClickedAudioImageView, message);
+                }
+            }
+        }
+
+        startAudioAnimationDrawable(audioImageView, message);
+    }
+
+    private void stopAudioAnimationDrawableAndSetStaticAudioImage(AnimationDrawable drawable, final ImageView audioImage, final PPMessage message) {
+        drawable.stop();
+        audioImage.setBackgroundDrawable(null);
+
+        switch (message.getDirection()) {
+            case PPMessage.DIRECTION_INCOMING:
+                audioImage.setImageResource(R.drawable.pp_receiver_voice_node_playing);
+                break;
+
+            case PPMessage.DIRECTION_OUTGOING:
+                audioImage.setImageResource(R.drawable.pp_sender_voice_node_playing);
+                break;
+        }
+
+        audioImage.post(new Runnable() {
+            @Override
+            public void run() {
+                audioImage.invalidate();
+            }
+        });
+    }
+
+    private void startAudioAnimationDrawable(ImageView audioImageView, PPMessage message) {
+        switch (message.getDirection()) {
+            case PPMessage.DIRECTION_INCOMING:
+                audioImageView.setBackgroundResource(R.drawable.pp_chat_item_audio_by_admin_anim_bg);
+                break;
+
+            case PPMessage.DIRECTION_OUTGOING:
+                audioImageView.setBackgroundResource(R.drawable.pp_chat_item_audio_by_user_anim_bg);
+                break;
+        }
+
+        audioImageView.setImageDrawable(null);
+        AnimationDrawable animationDrawable = (AnimationDrawable) audioImageView.getBackground();
+        animationDrawable.start();
+
+        this.lastClickedAudioImageViewRef = new WeakReference<ImageView>(audioImageView);
+        this.lastClickedAudioMessageDirection = message.getDirection();
     }
 
     // === Provide width info about message bubbles ===
@@ -416,6 +596,14 @@ public class MessageAdapter extends BaseAdapter {
 
     protected int getMaxImageBubbleHeight() {
         return (int) (SCREEN_HEIGHT * MAX_IMAGE_HEIGHT_RATIO);
+    }
+
+    protected int getMaxAudioBubbleWidth() {
+        return (int) (SCREEN_WIDTH * MAX_AUDIO_WIDTH_RATIO);
+    }
+
+    protected int getMinAudioBubbleWidth() {
+        return (int) MIN_AUDIO_WIDTH;
     }
 
     private void calcAndSetImageViewFinalTargetSize(ImageView targetImageView, int originImageWidth, int originImageHeight) {
@@ -442,6 +630,14 @@ public class MessageAdapter extends BaseAdapter {
         imageView.getLayoutParams().height = height;
     }
 
+    private void calcAndSetAudioViewFinalTargetWidth(ViewGroup voiceImageParentView, float duration) {
+        float fixDuration = Math.min(MAX_AUDIO_VIEW_TIME, Math.max(duration, 0));
+        int baseWidth = getMinAudioBubbleWidth();
+        int maxWidth = getMaxAudioBubbleWidth();
+        int targetWidth = (int) (baseWidth + (maxWidth - baseWidth) * fixDuration / MAX_AUDIO_VIEW_TIME);
+        voiceImageParentView.getLayoutParams().width = targetWidth;
+    }
+
     /**
      * Get Message view Type by message
      *
@@ -461,6 +657,8 @@ public class MessageAdapter extends BaseAdapter {
                 viewType = ViewType.IMAGE_LEFT;
             } else if (messageSubType.equals(PPMessage.TYPE_FILE)) {
                 viewType = ViewType.FILE_LEFT;
+            } else if (messageSubType.equals(PPMessage.TYPE_AUDIO)) {
+                viewType = ViewType.AUDIO_LEFT;
             }
 
         } else {
@@ -471,6 +669,8 @@ public class MessageAdapter extends BaseAdapter {
                 viewType = ViewType.IMAGE_RIGHT;
             } else if (messageSubType.equals(PPMessage.TYPE_FILE)) {
                 viewType = ViewType.FILE_RIGHT;
+            } else if (messageSubType.equals(PPMessage.TYPE_AUDIO)) {
+                viewType = ViewType.AUDIO_RIGHT;
             }
 
         }
@@ -534,6 +734,28 @@ public class MessageAdapter extends BaseAdapter {
         TextView fileNameTv;
         TextView timestampTv;
         ViewGroup container;
+    }
+
+    /**
+     * Left Audio Message ViewHolder
+     */
+    class ViewHolderLeftAudioMesasge {
+        ImageView avatar;
+        ImageView audioImage;
+        ViewGroup audioImageContainer;
+        TextView durationTv;
+        TextView timestampTv;
+    }
+
+    /**
+     * Right Audio Message ViewHolder
+     */
+    class ViewHolderRightAudioMessage {
+        ImageView avatar;
+        ImageView audioImage;
+        ViewGroup audioImageContainer;
+        TextView durationTv;
+        TextView timestampTv;
     }
 
 }

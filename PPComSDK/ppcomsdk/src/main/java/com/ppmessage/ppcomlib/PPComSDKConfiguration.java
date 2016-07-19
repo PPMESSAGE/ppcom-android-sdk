@@ -158,6 +158,10 @@ public final class PPComSDKConfiguration {
         public Builder() {
         }
 
+        public Builder(Context context) {
+            this.context = context;
+        }
+
         public PPComSDKConfiguration.Builder setContext(Context context) {
             this.context = context;
             return this;

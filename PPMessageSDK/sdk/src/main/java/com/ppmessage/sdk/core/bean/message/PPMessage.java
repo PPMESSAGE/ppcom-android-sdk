@@ -31,6 +31,7 @@ public class PPMessage implements Parcelable {
     public static final String TYPE_TXT = "TXT";
     public static final String TYPE_IMAGE = "IMAGE";
     public static final String TYPE_FILE = "FILE";
+    public static final String TYPE_AUDIO = "AUDIO";
 
     public static final int DIRECTION_OUTGOING = 0;
     public static final int DIRECTION_INCOMING = 1;
@@ -413,6 +414,8 @@ public class PPMessage implements Parcelable {
             return context.getString(R.string.pp_message_summary_image);
         } else if (messageSubType.equals(PPMessage.TYPE_FILE)) {
             return context.getString(R.string.pp_message_summary_file);
+        } else if (messageSubType.equals(PPMessage.TYPE_AUDIO)) {
+            return context.getString(R.string.pp_message_summary_audio);
         }
         return context.getString(R.string.pp_message_summary_unknown);
     }
@@ -539,6 +542,7 @@ public class PPMessage implements Parcelable {
             if (mediaItem instanceof PPMessageTxtMediaItem) return TYPE_TXT;
             if (mediaItem instanceof PPMessageFileMediaItem) return TYPE_FILE;
             if (mediaItem instanceof PPMessageImageMediaItem) return TYPE_IMAGE;
+            if (mediaItem instanceof PPMessageAudioMediaItem) return TYPE_AUDIO;
             return TYPE_TEXT;
         }
 

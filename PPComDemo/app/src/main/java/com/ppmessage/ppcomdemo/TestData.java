@@ -3,6 +3,7 @@ package com.ppmessage.ppcomdemo;
 import com.ppmessage.sdk.core.bean.common.Conversation;
 import com.ppmessage.sdk.core.bean.common.User;
 import com.ppmessage.sdk.core.bean.message.PPMessage;
+import com.ppmessage.sdk.core.bean.message.PPMessageAudioMediaItem;
 import com.ppmessage.sdk.core.bean.message.PPMessageFileMediaItem;
 import com.ppmessage.sdk.core.bean.message.PPMessageImageMediaItem;
 import com.ppmessage.sdk.core.utils.Utils;
@@ -44,6 +45,16 @@ public class TestData {
                 "THIS IS LARGE TEXT THIS IS LARGE TEXT THIS IS LARGE TEXT " +
                 "THIS IS LARGE TEXT THIS IS LARGE TEXT THIS IS LARGE TEXT ",
                 PPMessage.DIRECTION_INCOMING));
+        messageList.add(makeAudioMessage(0, PPMessage.DIRECTION_INCOMING));
+        messageList.add(makeAudioMessage(5, PPMessage.DIRECTION_INCOMING));
+        messageList.add(makeAudioMessage(20, PPMessage.DIRECTION_INCOMING));
+        messageList.add(makeAudioMessage(60, PPMessage.DIRECTION_INCOMING));
+        messageList.add(makeAudioMessage(100, PPMessage.DIRECTION_INCOMING));
+        messageList.add(makeAudioMessage(0, PPMessage.DIRECTION_OUTGOING));
+        messageList.add(makeAudioMessage(5, PPMessage.DIRECTION_OUTGOING));
+        messageList.add(makeAudioMessage(20, PPMessage.DIRECTION_OUTGOING));
+        messageList.add(makeAudioMessage(60, PPMessage.DIRECTION_OUTGOING));
+        messageList.add(makeAudioMessage(100, PPMessage.DIRECTION_OUTGOING));
 
         return messageList;
     }
@@ -103,6 +114,20 @@ public class TestData {
                 .setFromUser(makeIncomingUser())
                 .setMediaItem(fileMediaItem)
                 .build();
+        message.setDirection(direction);
+        return message;
+    }
+
+    private static PPMessage makeAudioMessage(int duration, int direction) {
+        PPMessageAudioMediaItem audioMediaItem = new PPMessageAudioMediaItem();
+        audioMediaItem.setDuration(duration);
+
+        PPMessage message = new PPMessage.Builder()
+                .setConversation(makeConversation())
+                .setFromUser(makeIncomingUser())
+                .setMediaItem(audioMediaItem)
+                .build();
+
         message.setDirection(direction);
         return message;
     }

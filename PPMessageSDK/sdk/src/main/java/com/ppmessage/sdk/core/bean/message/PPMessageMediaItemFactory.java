@@ -18,6 +18,8 @@ public class PPMessageMediaItemFactory {
             return PPMessageFileMediaItem.parse(mediaItemJsonObject);
         } else if (messageSubType.equals(PPMessage.TYPE_IMAGE)) {
             return PPMessageImageMediaItem.parse(mediaItemJsonObject);
+        } else if (messageSubType.equals(PPMessage.TYPE_AUDIO)) {
+            return PPMessageAudioMediaItem.parse(mediaItemJsonObject);
         }
 
         L.w(LOG_MESSAGE_SUBTYPE_UNKNOWN, messageSubType);

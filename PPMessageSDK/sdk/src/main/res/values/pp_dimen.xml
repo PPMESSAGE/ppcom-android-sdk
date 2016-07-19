@@ -5,6 +5,7 @@
     <dimen name="pp_chat_item_user_avatar_width">38dp</dimen>
     <dimen name="pp_chat_item_welcome_icon_width">42dp</dimen>
     <dimen name="pp_chat_item_file_attachment_width">24dp</dimen>
+    <dimen name="pp_chat_item_audio_attachment_width">24dp</dimen>
     <dimen name="pp_chat_tools_img_btn_width">32dp</dimen>
     <dimen name="pp_chat_tools_img_emoji_btn_width">24dp</dimen>
     <dimen name="pp_create_conversations_btn_radius">3dp</dimen>

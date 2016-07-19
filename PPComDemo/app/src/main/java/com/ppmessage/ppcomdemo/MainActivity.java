@@ -2,22 +2,11 @@ package com.ppmessage.ppcomdemo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.ppmessage.ppcomlib.PPComSDK;
-import com.ppmessage.ppcomlib.PPComSDKConfiguration;
 import com.ppmessage.ppcomlib.ui.ConversationsActivity;
-import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.bean.common.Conversation;
-import com.ppmessage.sdk.core.bean.common.User;
-import com.ppmessage.sdk.core.bean.message.PPMessage;
-import com.ppmessage.sdk.core.notification.INotification;
-import com.ppmessage.sdk.core.ui.ConversationFragment;
 import com.ppmessage.sdk.core.ui.adapter.ConversationsAdapter;
-import com.ppmessage.sdk.core.ui.adapter.MessageAdapter;
-
-import java.util.List;
 
 /**
  * Created by ppmessage on 5/13/16.
@@ -40,4 +29,17 @@ public class MainActivity extends ConversationsActivity {
         startUp();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // NOTE: ONLY FOR TEST
+        conversationFragment.setOnItemClickListener(new ConversationsAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClicked(View container, Conversation conversation) {
+                Intent intent = new Intent(MainActivity.this, TestMessageActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
 }
