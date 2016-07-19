@@ -18,6 +18,10 @@ import com.ppmessage.sdk.core.api.HostInfo;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -30,12 +34,16 @@ import java.util.UUID;
  */
 public final class Utils {
 
+    public static final int EOF = -1;
+    private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
+
     private static final String HHMM_AA_TIMESTAMP_FORMAT = "hh:mm aa";
     private static final String MMDDYY_TIMESTAMP_FORMAT = "MM/dd/yy";
     private static final String MMDDYY_HHMM_AA_TIMESTAMP_FORMAT = "MM/dd/yy hh:mm aa";
 
     private static final TxtLoader txtLoader = new TxtLoader();
     private static final TxtUploader txtUploader = new TxtUploader(PPMessageSDK.getInstance());
+    private static final FileUploader fileUploader = new FileUploader(PPMessageSDK.getInstance());
 
     private Utils() {}
 
@@ -158,6 +166,52 @@ public final class Utils {
         return androidId;
     }
 
+    // ======================
+    // commons-io
+    //
+    // Copied from Apache Commons IO Library IOUtils.java
+    // http://commons.apache.org/proper/commons-io/
+    // ======================
+
+    public static byte[] toByteArray(final InputStream input) throws IOException {
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+        copy(input, output);
+        return output.toByteArray();
+    }
+
+    public static int copy(final InputStream input, final OutputStream output) throws IOException {
+        final long count = copyLarge(input, output);
+        if (count > Integer.MAX_VALUE) {
+            return -1;
+        }
+        return (int) count;
+    }
+
+    public static long copyLarge(final InputStream input, final OutputStream output)
+            throws IOException {
+        return copy(input, output, DEFAULT_BUFFER_SIZE);
+    }
+
+    public static long copy(final InputStream input, final OutputStream output, final int bufferSize)
+            throws IOException {
+        return copyLarge(input, output, new byte[bufferSize]);
+    }
+
+    public static long copyLarge(final InputStream input, final OutputStream output, final byte[] buffer)
+            throws IOException {
+        long count = 0;
+        int n;
+        while (EOF != (n = input.read(buffer))) {
+            output.write(buffer, 0, n);
+            count += n;
+        }
+        return count;
+    }
+
+    // ======================
+    // commons-io
+    // ======================
+
     /**
      * We consider
      *
@@ -228,6 +282,10 @@ public final class Utils {
 
     public static TxtUploader getTxtUploader() {
         return txtUploader;
+    }
+
+    public static FileUploader getFileUploader() {
+        return fileUploader;
     }
 
 }

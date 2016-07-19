@@ -3,8 +3,11 @@ package com.ppmessage.sdk.core.bean.message;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.ppmessage.sdk.core.L;
+import com.ppmessage.sdk.core.utils.Uploader;
 import com.ppmessage.sdk.core.utils.Utils;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -12,11 +15,13 @@ import org.json.JSONObject;
  */
 public class PPMessageAudioMediaItem implements IPPMessageMediaItem {
 
+    /** in seconds **/
     private float duration;
     private String fid;
     private String furl;
     private String fLocalPath;
     private boolean isPlaying;
+    private String mime;
 
     public PPMessageAudioMediaItem() {
     }
@@ -27,6 +32,7 @@ public class PPMessageAudioMediaItem implements IPPMessageMediaItem {
         furl = in.readString();
         fLocalPath = in.readString();
         isPlaying = in.readByte() != 0;
+        mime = in.readString();
     }
 
     public static final Creator<PPMessageAudioMediaItem> CREATOR = new Creator<PPMessageAudioMediaItem>() {
@@ -47,8 +53,37 @@ public class PPMessageAudioMediaItem implements IPPMessageMediaItem {
     }
 
     @Override
-    public void asyncGetAPIJsonObject(OnGetJsonObjectEvent event) {
+    public void asyncGetAPIJsonObject(final OnGetJsonObjectEvent event) {
+        Utils.getFileUploader().uploadFile(this.fLocalPath, new Uploader.OnUploadingListener() {
+            @Override
+            public void onError(Exception e) {
+                if (event != null) {
+                    event.onError(e);
+                }
+            }
 
+            @Override
+            public void onComplected(JSONObject response) {
+                if (event != null) {
+                    String fuuid = response.optString("fuuid", null);
+                    PPMessageAudioMediaItem.this.fid = fuuid;
+
+                    event.onCompleted(buildAPIJSONObject());
+                }
+            }
+        });
+    }
+
+    private JSONObject buildAPIJSONObject() {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("fid", fid);
+            jsonObject.put("mime", mime);
+            jsonObject.put("dura", duration);
+        } catch (JSONException e) {
+            L.e(e);
+        }
+        return jsonObject;
     }
 
     @Override
@@ -104,11 +139,20 @@ public class PPMessageAudioMediaItem implements IPPMessageMediaItem {
         isPlaying = playing;
     }
 
+    public String getMime() {
+        return mime;
+    }
+
+    public void setMime(String mime) {
+        this.mime = mime;
+    }
+
     public static PPMessageAudioMediaItem parse(JSONObject jsonObject) {
         PPMessageAudioMediaItem audioMediaItem = new PPMessageAudioMediaItem();
         audioMediaItem.setDuration((float) jsonObject.optDouble("dura", .0));
         audioMediaItem.setFid(jsonObject.optString("fid", null));
         audioMediaItem.setFurl(Utils.getFileDownloadUrl(audioMediaItem.getFid()));
+        audioMediaItem.setMime(jsonObject.optString("mime", null));
         return audioMediaItem;
     }
 }

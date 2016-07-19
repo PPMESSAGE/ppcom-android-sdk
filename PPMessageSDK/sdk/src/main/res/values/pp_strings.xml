@@ -76,5 +76,7 @@
     <string name="pp_chat_tools_hold_voice_release_to_send">Release to send</string>
     <string name="pp_chat_tools_hold_voice_release_to_cancel">Release to cancel</string>
     <string name="pp_chat_tools_hold_voice_slide_up_to_cancel">Slide up to cancel</string>
+    <string name="pp_external_storage_not_avaliable">External storage cannot write</string>
+    <string name="pp_recording_audio_error">Recording audio error</string>
 
 </resources>

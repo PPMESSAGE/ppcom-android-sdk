@@ -32,5 +32,7 @@
     <string name="pp_chat_tools_hold_voice_release_to_send">放开发送</string>
     <string name="pp_chat_tools_hold_voice_release_to_cancel">松开取消</string>
     <string name="pp_chat_tools_hold_voice_slide_up_to_cancel">向上滑动取消</string>
+    <string name="pp_external_storage_not_avaliable">内存卡不可用</string>
+    <string name="pp_recording_audio_error">录制错误</string>
 
 </resources>

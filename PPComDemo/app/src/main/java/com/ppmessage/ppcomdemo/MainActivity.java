@@ -34,12 +34,12 @@ public class MainActivity extends ConversationsActivity {
         super.onResume();
 
         // NOTE: ONLY FOR TEST
-        conversationFragment.setOnItemClickListener(new ConversationsAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClicked(View container, Conversation conversation) {
-                Intent intent = new Intent(MainActivity.this, TestMessageActivity.class);
-                startActivity(intent);
-            }
-        });
+//        conversationFragment.setOnItemClickListener(new ConversationsAdapter.OnItemClickListener() {
+//            @Override
+//            public void onItemClicked(View container, Conversation conversation) {
+//                Intent intent = new Intent(MainActivity.this, TestMessageActivity.class);
+//                startActivity(intent);
+//            }
+//        });
     }
 }

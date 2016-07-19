@@ -1,7 +1,9 @@
 package com.ppmessage.sdk.core.ui;
 
 import android.content.Context;
-import android.media.Image;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
+import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +12,6 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.WindowManager;
@@ -18,21 +19,20 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ppmessage.sdk.R;
 import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.bean.common.Conversation;
-import com.ppmessage.sdk.core.bean.common.User;
 import com.ppmessage.sdk.core.bean.message.PPMessage;
-import com.ppmessage.sdk.core.notification.INotification;
+import com.ppmessage.sdk.core.bean.message.PPMessageAudioMediaItem;
 import com.ppmessage.sdk.core.ui.adapter.MessageAdapter;
 import com.ppmessage.sdk.core.ui.view.MessageListView;
+import com.ppmessage.sdk.core.utils.Utils;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by ppmessage on 5/11/16.
@@ -44,6 +44,8 @@ public class MessageActivity extends AppCompatActivity {
     private static final String CONVERSATION_EMTPY_LOG = "[Send] conversation == nil";
     private static final String FROMUSER_EMPTY_LOG = "[Send] FromUser == nil";
     private static final String CLICK_EVENT_WARNING = "[MessageActivity] Click event, skip send recording, time diff:%d";
+    private static final String CANCEL_RECORDING_CANCEL_SENDING = "[MessageActivity] cancel recording, cancel sending audio";
+    private static final String EXTERNAL_STORAGE_NOT_OK = "[MessageActivity] external storage cannot writeable, skip record";
 
     protected MessageListView messageListView;
     protected SwipeRefreshLayout swipeRefreshLayout;
@@ -65,11 +67,16 @@ public class MessageActivity extends AppCompatActivity {
 
     private Conversation conversation;
 
-    private float actionDownX;
     private float actionDownY;
     private long actionDownTimestamp;
     private static final long RECORDING_MIN_TIME_MS = 300; //300ms
     private static final float RECORDING_CANCEL_MIN_DISTANCE = 300;
+
+    private static final String AUDIO_RECORDING_FOLDER_NAME = "audio-cache";
+    private static final String AUDIO_MIME = "audio/amr";
+    private MediaRecorder mediaRecorder;
+    private String recordingAudioFilePath;
+    private long audioRecordStartTimestamp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,7 +109,12 @@ public class MessageActivity extends AppCompatActivity {
         super.onResume();
 
         initEvent();
+    }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopRecording();
     }
 
     public void setAdapter(MessageAdapter adapter) {
@@ -219,14 +231,14 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
+    // ========================
+    // Send message
+    // ========================
+
     private PPMessage sendText(String text) {
         PPMessage message = null;
         if (checkInfoBeforeSendMessage(text)) {
-            message = new PPMessage.Builder()
-                    .setFromUser(sdk.getNotification().getConfig().getActiveUser())
-                    .setConversation(conversation)
-                    .setMessageBody(text)
-                    .build();
+            message = buildMessage(text);
             if (!sdk.getNotification().canSendMessage()) {
                 message.setError(true);
             } else {
@@ -236,11 +248,52 @@ public class MessageActivity extends AppCompatActivity {
         return message;
     }
 
+    private PPMessage sendAudio(String audioFilePath, float durationInMS, String mime) {
+        PPMessage message = null;
+        if (checkCommonInfoBeforeSendMessage()) {
+            message = buildMessage(audioFilePath, durationInMS, mime);
+            if (!sdk.getNotification().canSendMessage()) {
+                message.setError(true);
+            } else {
+                sdk.getNotification().sendMessage(message);
+            }
+        }
+        return message;
+    }
+
+    private PPMessage buildMessage(String text) {
+        return new PPMessage.Builder()
+                .setFromUser(sdk.getNotification().getConfig().getActiveUser())
+                .setConversation(conversation)
+                .setMessageBody(text)
+                .build();
+    }
+
+    private PPMessage buildMessage(String audioFilePath, float duration, String mime) {
+        PPMessageAudioMediaItem audioMediaPart = new PPMessageAudioMediaItem();
+        audioMediaPart.setMime(mime);
+        audioMediaPart.setDuration(duration);
+        audioMediaPart.setfLocalPath(audioFilePath);
+
+        return new PPMessage.Builder()
+                .setFromUser(sdk.getNotification().getConfig().getActiveUser())
+                .setConversation(conversation)
+                .setMediaItem(audioMediaPart)
+                .build();
+    }
+
     private boolean checkInfoBeforeSendMessage(String text) {
+        if (!checkCommonInfoBeforeSendMessage()) {
+            return false;
+        }
         if (TextUtils.isEmpty(text)) {
             L.w(TEXT_EMPTY_LOG);
             return false;
         }
+        return true;
+    }
+
+    private boolean checkCommonInfoBeforeSendMessage() {
         if (sdk == null) {
             L.w(SDK_EMPTY_LOG);
             return false;
@@ -296,8 +349,9 @@ public class MessageActivity extends AppCompatActivity {
         }
 
         actionDownTimestamp = System.currentTimeMillis();
-        actionDownX = motionEvent.getX();
         actionDownY = motionEvent.getY();
+
+        startRecording();
     }
 
     private void onActionTouchMove(MotionEvent motionEvent) {
@@ -336,6 +390,92 @@ public class MessageActivity extends AppCompatActivity {
         long timeDiff = System.currentTimeMillis() - actionDownTimestamp;
         if (timeDiff < RECORDING_MIN_TIME_MS) {
             L.w(CLICK_EVENT_WARNING, timeDiff);
+            cancelRecording();
+            return;
+        }
+
+        if (recordingCancelImageView.getVisibility() == View.VISIBLE) {
+            L.d(CANCEL_RECORDING_CANCEL_SENDING);
+            cancelRecording();
+            return;
+        }
+
+        stopRecording();
+        trySendAudio();
+    }
+
+    private void startRecording() {
+        if (!Utils.isExternalStorageWritable()) {
+            L.w(EXTERNAL_STORAGE_NOT_OK);
+            Toast.makeText(MessageActivity.this, R.string.pp_external_storage_not_avaliable, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        File audioCacheDir = new File(getCacheDir(), AUDIO_RECORDING_FOLDER_NAME);
+        audioCacheDir.mkdirs();
+        File audioFile = new File(audioCacheDir, generateAudioFileName());
+        this.recordingAudioFilePath = audioFile.getPath();
+
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mediaRecorder.setOutputFile(recordingAudioFilePath);
+        mediaRecorder.setOnErrorListener(new MediaRecorder.OnErrorListener() {
+            @Override
+            public void onError(MediaRecorder mediaRecorder, int i, int i1) {
+                L.d("[MediaRecorder] error %d: %d", i, i1);
+                stopRecording();
+                Toast.makeText(MessageActivity.this, R.string.pp_recording_audio_error, Toast.LENGTH_SHORT).show();
+            }
+        });
+        mediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
+            @Override
+            public void onInfo(MediaRecorder mediaRecorder, int i, int i1) {
+                L.d("[MediaRecorder] info %d: %d", i, i1);
+            }
+        });
+
+        try {
+            mediaRecorder.prepare();
+            mediaRecorder.start();
+            audioRecordStartTimestamp = System.currentTimeMillis();
+        } catch (IOException e) {
+            L.e(e);
+            Toast.makeText(MessageActivity.this, R.string.pp_recording_audio_error, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void stopRecording() {
+        if (mediaRecorder != null) {
+            mediaRecorder.stop();
+            mediaRecorder.reset();
+            mediaRecorder.release();
+            mediaRecorder = null;
+        }
+    }
+
+    private void cancelRecording() {
+        stopRecording();
+        if (recordingAudioFilePath != null) {
+            File audio = new File(recordingAudioFilePath);
+            audio.deleteOnExit();
+            recordingAudioFilePath = null;
+        }
+    }
+
+    private String generateAudioFileName() {
+        return "audio-" + System.currentTimeMillis() + ".amr";
+    }
+
+    private void trySendAudio() {
+        if (recordingAudioFilePath != null) {
+            File audio = new File(recordingAudioFilePath);
+            if (audio.exists() && audio.length() > 0) {
+                long durationInMS = System.currentTimeMillis() - audioRecordStartTimestamp;
+                sendAudio(recordingAudioFilePath, durationInMS / 1000, AUDIO_MIME);
+            }
+            recordingAudioFilePath = null;
         }
     }
 

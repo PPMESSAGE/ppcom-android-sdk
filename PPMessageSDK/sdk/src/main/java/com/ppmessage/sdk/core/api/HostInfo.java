@@ -22,16 +22,16 @@ public final class HostInfo {
         this.host = host;
         this.ssl = ssl;
 
+        String urlPrefix = this.ssl ? "https://" : "http://";
         if (this.ssl) {
-            setHttpHost("https://" + host);
             setWsHost("wss://" + host + "/pcsocket/WS");
         } else {
-            setHttpHost("http://" + host);
             setWsHost("ws://" + host + "/pcsocket/WS");
         }
+        setHttpHost(urlPrefix + host);
 
-        setDownloadHost(getHttpHost() + "/download/");
-        setUploadHost(getHost() + "/upload");
+        setDownloadHost(getHttpHost() + "/download/download/");
+        setUploadHost(getHttpHost() + "/upload/upload/");
     }
 
     public String getUploadHost() {
