@@ -1,8 +1,6 @@
 package com.ppmessage.sdk.core.ui;
 
 import android.content.Context;
-import android.media.AudioFormat;
-import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -26,7 +24,6 @@ import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.bean.common.Conversation;
 import com.ppmessage.sdk.core.bean.message.PPMessage;
-import com.ppmessage.sdk.core.bean.message.PPMessageAdapter;
 import com.ppmessage.sdk.core.bean.message.PPMessageAudioMediaItem;
 import com.ppmessage.sdk.core.ui.adapter.MessageAdapter;
 import com.ppmessage.sdk.core.ui.view.MessageListView;
@@ -82,6 +79,9 @@ public class MessageActivity extends AppCompatActivity {
     private long audioRecordStartTimestamp;
     private AudioRecordMicPhoneStatusUtil micPhoneStatusUtil;
 
+    private InputMethodManager imm;
+    private String textInput;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +103,8 @@ public class MessageActivity extends AppCompatActivity {
 
         holdToTalkButton.setVisibility(View.GONE);
         keyboardButton.setVisibility(View.GONE);
+
+        imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 
         // Avoid keyboard auto popup
         hideKeyboard();
@@ -199,6 +201,13 @@ public class MessageActivity extends AppCompatActivity {
                 voiceButton.setVisibility(View.VISIBLE);
                 holdToTalkButton.setVisibility(View.GONE);
                 inputEtContainer.setVisibility(View.VISIBLE);
+
+                inputEt.requestFocus();
+                imm.showSoftInput(inputEt, 0);
+                // Instead directly use the method: inputEt.setText(textInput), the following way can
+                // place the cursor at the end of current focused EditText
+                inputEt.setText("");
+                inputEt.append(textInput);
             }
         });
 
@@ -210,8 +219,8 @@ public class MessageActivity extends AppCompatActivity {
                 holdToTalkButton.setVisibility(View.VISIBLE);
                 inputEtContainer.setVisibility(View.GONE);
 
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                imm.hideSoftInputFromWindow(inputEt.getWindowToken(), 0);
+                textInput = inputEt.getText().toString();
             }
         });
 

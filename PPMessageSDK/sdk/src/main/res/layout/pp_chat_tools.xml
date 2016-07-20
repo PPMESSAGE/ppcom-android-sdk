@@ -16,6 +16,7 @@
         android:padding="5dp" >
 
         <FrameLayout
+            android:layout_gravity="bottom"
             android:layout_width="@dimen/pp_chat_tools_img_btn_width"
             android:layout_height="@dimen/pp_chat_tools_img_btn_width">
 
@@ -39,9 +40,12 @@
 
         </FrameLayout>
 
+        <!-- NOTE: -->
+        <!-- Don't change FrameLayout's layout_height attribute from `wrap_content` to `match_parent` -->
+        <!-- or, the EditText maxlines won't working here -->
         <FrameLayout
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="5dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
@@ -73,7 +77,7 @@
             <TextView
                 android:id="@+id/pp_chat_tools_hold_voice_btn"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="32dp"
                 android:background="@drawable/pp_chat_tools_hold_voice_bg"
                 android:gravity="center"
                 android:text="@string/pp_chat_tools_hold_voice_hold_to_talk"

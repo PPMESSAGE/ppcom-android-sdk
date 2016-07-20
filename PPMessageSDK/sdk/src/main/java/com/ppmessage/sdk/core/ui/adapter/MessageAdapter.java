@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.view.LayoutInflater;
@@ -28,7 +27,6 @@ import com.ppmessage.sdk.core.bean.message.PPMessageTxtMediaItem;
 import com.ppmessage.sdk.core.utils.IImageLoader;
 import com.ppmessage.sdk.core.utils.Utils;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
