@@ -1,9 +1,16 @@
 package com.ppmessage.sdk.core.ui;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.media.MediaRecorder;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -25,6 +32,7 @@ import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.bean.common.Conversation;
 import com.ppmessage.sdk.core.bean.message.PPMessage;
 import com.ppmessage.sdk.core.bean.message.PPMessageAudioMediaItem;
+import com.ppmessage.sdk.core.bean.message.PPMessageImageMediaItem;
 import com.ppmessage.sdk.core.ui.adapter.MessageAdapter;
 import com.ppmessage.sdk.core.ui.view.MessageListView;
 import com.ppmessage.sdk.core.utils.AudioRecordMicPhoneStatusUtil;
@@ -38,6 +46,11 @@ import java.io.IOException;
  */
 public class MessageActivity extends AppCompatActivity {
 
+    /** Image capture **/
+    public static final int REQUEST_IMAGE_CAPTURE = 1;
+    /** Pick image from gallery **/
+    public static final int REQUEST_PICK_IMAGES_FROM_GALLERY = 2;
+
     private static final String TEXT_EMPTY_LOG = "[Send] text == nil";
     private static final String SDK_EMPTY_LOG = "[Send] SDK == nil";
     private static final String CONVERSATION_EMTPY_LOG = "[Send] conversation == nil";
@@ -45,6 +58,10 @@ public class MessageActivity extends AppCompatActivity {
     private static final String CLICK_EVENT_WARNING = "[MessageActivity] Click event, skip send recording, time diff:%d";
     private static final String CANCEL_RECORDING_CANCEL_SENDING = "[MessageActivity] cancel recording, cancel sending audio";
     private static final String EXTERNAL_STORAGE_NOT_OK = "[MessageActivity] external storage cannot writeable, skip record";
+    private static final String PHOTOPATH_EMPTY = "[MessageActivity] photo path == null";
+    private static final String PHOTOPATH_FILE_NOT_EXIST = "[MessageActivity] photo not exist in path:%s.";
+    private static final String PICK_IMAGE_FROM_GALLERY_DATA_EMPTY = "[MessageActivity] pick image from gallery, data == null";
+    private static final String PICK_IMAGE_FROM_GALLERY_PATH = "[MessageActivity] pick image from gallery, data path: %s";
 
     protected MessageListView messageListView;
     protected SwipeRefreshLayout swipeRefreshLayout;
@@ -55,6 +72,7 @@ public class MessageActivity extends AppCompatActivity {
     protected TextView holdToTalkButton;
     protected ImageView keyboardButton;
     protected ImageView voiceButton;
+    protected ImageView moreButton;
 
     protected ViewStub recordingViewStub;
     protected View recordingView;
@@ -82,6 +100,8 @@ public class MessageActivity extends AppCompatActivity {
     private InputMethodManager imm;
     private String textInput;
 
+    private String imagePath;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,9 +115,12 @@ public class MessageActivity extends AppCompatActivity {
         holdToTalkButton = (TextView) findViewById(R.id.pp_chat_tools_hold_voice_btn);
         voiceButton = (ImageView) findViewById(R.id.pp_chat_tools_voice_btn);
         keyboardButton = (ImageView) findViewById(R.id.pp_chat_tools_keyboard_btn);
+        moreButton = (ImageView) findViewById(R.id.pp_chat_tools_more_btn);
 
         recordingViewStub = (ViewStub) findViewById(R.id.pp_recording_view_import);
 
+        sendButton.setVisibility(View.GONE);
+        moreButton.setVisibility(View.VISIBLE);
         sendButton.setEnabled(false);
         swipeRefreshLayout.setEnabled(false);
 
@@ -124,6 +147,35 @@ public class MessageActivity extends AppCompatActivity {
         safeStopPlayAudio();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_IMAGE_CAPTURE) { // Take Photo
+                if (imagePath == null) {
+                    L.w(PHOTOPATH_EMPTY);
+                    return;
+                }
+                if (!new File(imagePath).exists()) {
+                    L.w(PHOTOPATH_FILE_NOT_EXIST, imagePath);
+                    return;
+                }
+                notifyGalleryAddPhoto(imagePath);
+                sendImageMessage(imagePath);
+                imagePath = null;
+            } else if (requestCode == REQUEST_PICK_IMAGES_FROM_GALLERY) { // Pick From Gallery
+                if (data == null) {
+                    L.w(PICK_IMAGE_FROM_GALLERY_DATA_EMPTY);
+                    return;
+                }
+
+                Uri imageUri = data.getData();
+                L.d(PICK_IMAGE_FROM_GALLERY_PATH, imageUri);
+                sendImageMessage(imageUri);
+            }
+        }
+    }
+
     public void setAdapter(MessageAdapter adapter) {
         if (this.messageAdapter != adapter) {
             this.messageAdapter = adapter;
@@ -140,11 +192,6 @@ public class MessageActivity extends AppCompatActivity {
         this.conversation = conversation;
     }
 
-    private void onTextMessageSendFinish(PPMessage message) {
-        inputEt.setText("");
-        onMessageSendFinish(message);
-    }
-
     protected void onSwipeRefresh(SwipeRefreshLayout swipeRefreshLayout) {
     }
 
@@ -154,8 +201,15 @@ public class MessageActivity extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PPMessage message = sendText(inputEt.getText().toString());
-                onTextMessageSendFinish(message);
+                sendText(inputEt.getText().toString());
+                inputEt.setText("");
+            }
+        });
+
+        moreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onMoreButtonClicked(view);
             }
         });
 
@@ -184,6 +238,8 @@ public class MessageActivity extends AppCompatActivity {
                                 sdk != null &&
                                 s.toString().length() > 0
                 );
+                moreButton.setVisibility(sendButton.isEnabled() ? View.GONE : View.VISIBLE);
+                sendButton.setVisibility(sendButton.isEnabled() ? View.VISIBLE : View.GONE);
             }
         });
 
@@ -254,11 +310,7 @@ public class MessageActivity extends AppCompatActivity {
         PPMessage message = null;
         if (checkInfoBeforeSendMessage(text)) {
             message = buildMessage(text);
-            if (!sdk.getNotification().canSendMessage()) {
-                message.setError(true);
-            } else {
-                sdk.getNotification().sendMessage(message);
-            }
+            sendMessage(message);
         }
         return message;
     }
@@ -267,13 +319,36 @@ public class MessageActivity extends AppCompatActivity {
         PPMessage message = null;
         if (checkCommonInfoBeforeSendMessage()) {
             message = buildMessage(audioFilePath, durationInMS, mime);
-            if (!sdk.getNotification().canSendMessage()) {
-                message.setError(true);
-            } else {
-                sdk.getNotification().sendMessage(message);
-            }
+            sendMessage(message);
         }
         return message;
+    }
+
+    private PPMessage sendImageMessage(String imagePath) {
+        PPMessage message = null;
+        if (checkCommonInfoBeforeSendMessage()) {
+            message = buildImageMessage(imagePath);
+            sendMessage(message);
+        }
+        return message;
+    }
+
+    private PPMessage sendImageMessage(Uri imagePathUri) {
+        PPMessage message = null;
+        if (checkCommonInfoBeforeSendMessage()) {
+            message = buildImageMessage(imagePathUri);
+            sendMessage(message);
+        }
+        return message;
+    }
+
+    private void sendMessage(PPMessage message) {
+        if (!sdk.getNotification().canSendMessage()) {
+            message.setError(true);
+        } else {
+            sdk.getNotification().sendMessage(message);
+        }
+        onMessageSendFinish(message);
     }
 
     private PPMessage buildMessage(String text) {
@@ -294,6 +369,22 @@ public class MessageActivity extends AppCompatActivity {
                 .setFromUser(sdk.getNotification().getConfig().getActiveUser())
                 .setConversation(conversation)
                 .setMediaItem(audioMediaPart)
+                .build();
+    }
+
+    private PPMessage buildImageMessage(String imagePath) {
+        return buildImageMessage(Uri.fromFile(new File(imagePath)));
+    }
+
+    private PPMessage buildImageMessage(Uri imageUri) {
+        PPMessageImageMediaItem imageMediaItem = new PPMessageImageMediaItem();
+        imageMediaItem.setOrigUrl(imageUri.toString());
+        calcAndSetImageWidthAndHeight(imageMediaItem, imageUri);
+
+        return new PPMessage.Builder()
+                .setFromUser(sdk.getNotification().getConfig().getActiveUser())
+                .setConversation(conversation)
+                .setMediaItem(imageMediaItem)
                 .build();
     }
 
@@ -532,8 +623,7 @@ public class MessageActivity extends AppCompatActivity {
             File audio = new File(recordingAudioFilePath);
             if (audio.exists() && audio.length() > 0) {
                 long durationInMS = System.currentTimeMillis() - audioRecordStartTimestamp;
-                PPMessage audioMessage = sendAudio(recordingAudioFilePath, (float) (((double) durationInMS) / 1000), AUDIO_MIME);
-                onMessageSendFinish(audioMessage);
+                sendAudio(recordingAudioFilePath, (float) (((double) durationInMS) / 1000), AUDIO_MIME);
             }
             recordingAudioFilePath = null;
         }
@@ -546,6 +636,102 @@ public class MessageActivity extends AppCompatActivity {
                 messageAdapter.stopPlayQuietly();
             }
         }
+    }
+
+    // =========================================================
+    // More Button ==[current]==> Image Button
+    // =========================================================
+    private void onMoreButtonClicked(final View view) {
+        showPhotoPickerDialog();
+    }
+
+    private void showPhotoPickerDialog() {
+        new AlertDialog.Builder(this)
+                .setItems(R.array.pp_chat_photo_picker_items,
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+                                switch (which) {
+                                    case 0:
+                                        takePicture();
+                                        break;
+
+                                    case 1:
+                                        pickImage();
+                                        break;
+                                }
+                            }
+                        }).create().show();
+    }
+
+    /**
+     * Take a Photo with the Camera App
+     */
+    private void takePicture() {
+        if (!checkSendImageMessageRequirements()) {
+            return;
+        }
+
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File imageFile = new File(Utils.getPublicImageFolder(), buildImageFileName());
+            imagePath = imageFile.getAbsolutePath();
+            // Continue only if the File was successfully created
+            if (imagePath != null) {
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imageFile));
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
+        }
+    }
+
+    /**
+     * Pick image from gallery
+     */
+    private void pickImage() {
+        if (!checkSendImageMessageRequirements()) {
+            return;
+        }
+
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, REQUEST_PICK_IMAGES_FROM_GALLERY);
+    }
+
+    private String buildImageFileName() {
+        return "image-" + System.currentTimeMillis() + ".jpg";
+    }
+
+    private void notifyGalleryAddPhoto(String photoPath) {
+        Intent mediaScanIntent = new Intent(
+                Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(photoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        sendBroadcast(mediaScanIntent);
+    }
+
+    private void calcAndSetImageWidthAndHeight(PPMessageImageMediaItem imageMediaItem, Uri uri) {
+        BitmapFactory.Options options = createBitmapOptions();
+        BitmapFactory.decodeFile(uri.getPath(), options);
+        imageMediaItem.setOrigWidth(options.outWidth);
+        imageMediaItem.setOrigHeight(options.outHeight);
+        options.inJustDecodeBounds = false;
+    }
+
+    private static BitmapFactory.Options createBitmapOptions() {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        return options;
+    }
+
+    private boolean checkSendImageMessageRequirements() {
+        if (!Utils.isExternalStorageWritable()) {
+            Utils.makeToast(this, R.string.pp_external_storage_not_avaliable);
+            return false;
+        }
+        return true;
     }
 
 }

@@ -38,4 +38,9 @@
     <!-- playing -->
     <string name="pp_mediaplayer_play_error">无法播放</string>
 
+    <string-array name="pp_chat_photo_picker_items">
+        <item>拍照</item>
+        <item>相册</item>
+    </string-array>
+
 </resources>

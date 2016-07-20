@@ -19,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -33,6 +34,8 @@ import java.util.UUID;
  * Created by ppmessage on 5/6/16.
  */
 public final class Utils {
+
+    private static final String PPMESSAGE = "PPMessage";
 
     public static final int EOF = -1;
     private static final int DEFAULT_BUFFER_SIZE = 1024 * 4;
@@ -286,6 +289,16 @@ public final class Utils {
 
     public static FileUploader getFileUploader() {
         return fileUploader;
+    }
+
+    public static File getPublicImageFolder() {
+        File storageDir = Environment
+                .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File imageFolder = new File(storageDir, PPMESSAGE);
+        if (!imageFolder.exists()) {
+            imageFolder.mkdirs();
+        }
+        return imageFolder;
     }
 
 }

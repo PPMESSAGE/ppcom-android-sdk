@@ -1,5 +1,7 @@
 package com.ppmessage.sdk.core.utils;
 
+import android.net.Uri;
+
 import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 
@@ -15,11 +17,21 @@ import java.io.InputStream;
 public class FileUploader extends Uploader {
 
     private static final String LOG_FILEPATH_IS_NULL = "[FileUploader] filePath == null";
+    private static final String LOG_FILEPATH_URI_IS_NULL = "[FileUploader] filePath uri == null";
     private static final String LOG_FILE_IS_NULL = "[FileUploader] file == null";
     private static final String LOG_FILE_NOT_EXISTS = "[FileUploader] file not exists";
 
     public FileUploader(PPMessageSDK messageSDK) {
         super(messageSDK);
+    }
+
+    public void uploadFile(Uri fileUri, final OnUploadingListener uploadingListener) {
+        if (fileUri == null) {
+            L.w(LOG_FILEPATH_URI_IS_NULL);
+            makeErrorCallback(LOG_FILEPATH_URI_IS_NULL, uploadingListener);
+            return;
+        }
+        uploadFile(fileUri.getPath(), uploadingListener);
     }
 
     public void uploadFile(String filePath, final OnUploadingListener uploadingListener) {

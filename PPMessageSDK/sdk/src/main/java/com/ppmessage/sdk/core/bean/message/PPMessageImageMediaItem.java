@@ -1,9 +1,11 @@
 package com.ppmessage.sdk.core.bean.message;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.ppmessage.sdk.core.L;
+import com.ppmessage.sdk.core.utils.Uploader;
 import com.ppmessage.sdk.core.utils.Utils;
 
 import org.json.JSONException;
@@ -174,8 +176,34 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
     }
 
     @Override
-    public void asyncGetAPIJsonObject(OnGetJsonObjectEvent event) {
-        // Waiting for implementation
+    public void asyncGetAPIJsonObject(final OnGetJsonObjectEvent event) {
+        Utils.getFileUploader().uploadFile(Uri.parse(this.origUrl), new Uploader.OnUploadingListener() {
+            @Override
+            public void onError(Exception e) {
+                if (event != null) {
+                    event.onError(e);
+                }
+            }
+
+            @Override
+            public void onComplected(JSONObject response) {
+                if (event != null) {
+                    String fid = response.optString("fuuid", null);
+                    event.onCompleted(buildJsonObject(fid));
+                }
+            }
+        });
+    }
+
+    private JSONObject buildJsonObject(String fid) {
+        JSONObject jsonObject = new JSONObject();
+        try {
+            jsonObject.put("fid", fid);
+            jsonObject.put("mime", "image/jpeg");
+        } catch (JSONException e) {
+            L.e(e);
+        }
+        return jsonObject;
     }
 
     @Override
