@@ -26,6 +26,7 @@ import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.bean.common.Conversation;
 import com.ppmessage.sdk.core.bean.message.PPMessage;
+import com.ppmessage.sdk.core.bean.message.PPMessageAdapter;
 import com.ppmessage.sdk.core.bean.message.PPMessageAudioMediaItem;
 import com.ppmessage.sdk.core.ui.adapter.MessageAdapter;
 import com.ppmessage.sdk.core.ui.view.MessageListView;
@@ -115,6 +116,12 @@ public class MessageActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         stopRecording();
+        if (messageListView != null && messageListView.getAdapter() != null) {
+            MessageAdapter messageAdapter = (MessageAdapter) messageListView.getAdapter();
+            if (messageAdapter != null) {
+                messageAdapter.stopPlayQuietly();
+            }
+        }
     }
 
     public void setAdapter(MessageAdapter adapter) {
@@ -133,8 +140,9 @@ public class MessageActivity extends AppCompatActivity {
         this.conversation = conversation;
     }
 
-    protected void onTextMessageSendFinish(PPMessage message) {
+    private void onTextMessageSendFinish(PPMessage message) {
         inputEt.setText("");
+        onMessageSendFinish(message);
     }
 
     protected void onSwipeRefresh(SwipeRefreshLayout swipeRefreshLayout) {
@@ -313,6 +321,10 @@ public class MessageActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
     }
 
+    protected void onMessageSendFinish(PPMessage message) {
+
+    }
+
     // ==========================
     // Recording Touch Event
     // ==========================
@@ -473,7 +485,8 @@ public class MessageActivity extends AppCompatActivity {
             File audio = new File(recordingAudioFilePath);
             if (audio.exists() && audio.length() > 0) {
                 long durationInMS = System.currentTimeMillis() - audioRecordStartTimestamp;
-                sendAudio(recordingAudioFilePath, durationInMS / 1000, AUDIO_MIME);
+                PPMessage audioMessage = sendAudio(recordingAudioFilePath, durationInMS / 1000, AUDIO_MIME);
+                onMessageSendFinish(audioMessage);
             }
             recordingAudioFilePath = null;
         }

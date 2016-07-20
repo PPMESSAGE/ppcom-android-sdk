@@ -122,12 +122,11 @@ public class PPComMessageActivity extends MessageActivity {
     }
 
     @Override
-    protected void onTextMessageSendFinish(PPMessage message) {
-        super.onTextMessageSendFinish(message);
+    protected void onMessageSendFinish(PPMessage message) {
+        super.onMessageSendFinish(message);
 
         refreshListView(message);
         messageListView.scrollToBottom();
-
     }
 
     @Override

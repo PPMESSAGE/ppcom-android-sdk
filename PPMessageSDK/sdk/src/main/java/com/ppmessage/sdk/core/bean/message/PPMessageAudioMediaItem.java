@@ -149,10 +149,13 @@ public class PPMessageAudioMediaItem implements IPPMessageMediaItem {
 
     public static PPMessageAudioMediaItem parse(JSONObject jsonObject) {
         PPMessageAudioMediaItem audioMediaItem = new PPMessageAudioMediaItem();
-        audioMediaItem.setDuration((float) jsonObject.optDouble("dura", .0));
-        audioMediaItem.setFid(jsonObject.optString("fid", null));
-        audioMediaItem.setFurl(Utils.getFileDownloadUrl(audioMediaItem.getFid()));
-        audioMediaItem.setMime(jsonObject.optString("mime", null));
+        JSONObject amrJSONObject = jsonObject.optJSONObject("amr");
+        if (amrJSONObject != null) {
+            audioMediaItem.setFid(amrJSONObject.optString("fid", null));
+            audioMediaItem.setDuration((float) amrJSONObject.optDouble("dura", .0));
+            audioMediaItem.setFurl(Utils.getFileDownloadUrl(audioMediaItem.getFid()));
+            audioMediaItem.setMime("audio/amr");
+        }
         return audioMediaItem;
     }
 }

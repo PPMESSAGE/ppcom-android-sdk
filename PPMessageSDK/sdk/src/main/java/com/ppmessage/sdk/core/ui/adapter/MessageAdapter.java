@@ -7,6 +7,8 @@ import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ppmessage.sdk.R;
+import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.bean.common.User;
 import com.ppmessage.sdk.core.bean.message.PPMessage;
@@ -25,6 +28,8 @@ import com.ppmessage.sdk.core.bean.message.PPMessageTxtMediaItem;
 import com.ppmessage.sdk.core.utils.IImageLoader;
 import com.ppmessage.sdk.core.utils.Utils;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +39,12 @@ import java.util.Locale;
  * Created by ppmessage on 5/12/16.
  */
 public class MessageAdapter extends BaseAdapter {
+
+    private static final String LOG_MEDIAPLAYER_PREPARE_ERROR = "[MessageAdapter] mediaplayer try to play: %s, meet error: %s";
+    private static final String LOG_MEDIAPLAYER_MEET_ERROR = "[MessageAdapter] mediaplayer meet error: [%d: %d]";
+    private static final String LOG_MEDIAPLAYER_COMPLETED = "[MessageAdapter] mediaplayer play completed";
+    private static final String LOG_MEDIAPLAYER_BUFFER_UPDATED = "[MessageAdapter] mediaplayer buffer updated:%d";
+    private static final String LOG_MEDIAPLAYER_START_PLAY_URI = "[MessageAdapter] mediaplayer start play:%s";
 
     private static final double MAX_FILE_WIDTH_RATIO = 0.6;
     private static final double MAX_TEXT_BUBBLE_RATIO = 0.6;
@@ -67,6 +78,8 @@ public class MessageAdapter extends BaseAdapter {
 
     private WeakReference<ImageView> lastClickedAudioImageViewRef;
     private int lastClickedAudioMessageDirection;
+
+    private MediaPlayer mediaPlayer;
 
     public MessageAdapter(PPMessageSDK sdk, Activity activity, List<PPMessage> messages) {
         this(sdk, activity, messages, true);
@@ -444,6 +457,10 @@ public class MessageAdapter extends BaseAdapter {
         return v;
     }
 
+    // =====================
+    // Helper
+    // =====================
+
     private void loadAvatar(View convertView, PPMessage message, ImageView avatar) {
         User fromUser = message.getFromUser();
         if (fromUser != null && fromUser.getIcon() != null) {
@@ -510,7 +527,6 @@ public class MessageAdapter extends BaseAdapter {
     }
 
     private void onAudioMessageClicked(final PPMessage message, final ImageView audioImageView) {
-
         ImageView lastClickedAudioImageView = null;
         if (lastClickedAudioImageViewRef != null && lastClickedAudioImageViewRef.get() != null) {
             lastClickedAudioImageView = lastClickedAudioImageViewRef.get();
@@ -526,24 +542,31 @@ public class MessageAdapter extends BaseAdapter {
 
             if (lastClickedAudioImageView == audioImageView) {
                 if (currenPlayingAnimationDrawable != null) {
+                    stopPlay();
                     stopAudioAnimationDrawableAndSetStaticAudioImage(currenPlayingAnimationDrawable, lastClickedAudioImageView, message);
                 }
                 return;
             } else {
                 if (currenPlayingAnimationDrawable != null) {
+                    stopPlay();
                     stopAudioAnimationDrawableAndSetStaticAudioImage(currenPlayingAnimationDrawable, lastClickedAudioImageView, message);
                 }
             }
         }
 
+        startPlay(message);
         startAudioAnimationDrawable(audioImageView, message);
     }
 
     private void stopAudioAnimationDrawableAndSetStaticAudioImage(AnimationDrawable drawable, final ImageView audioImage, final PPMessage message) {
+        stopAudioAnimationDrawableAndSetStaticAudioImage(drawable, audioImage, message.getDirection());
+    }
+
+    private void stopAudioAnimationDrawableAndSetStaticAudioImage(AnimationDrawable drawable, final ImageView audioImage, final int messageDirection) {
         drawable.stop();
         audioImage.setBackgroundDrawable(null);
 
-        switch (message.getDirection()) {
+        switch (messageDirection) {
             case PPMessage.DIRECTION_INCOMING:
                 audioImage.setImageResource(R.drawable.pp_receiver_voice_node_playing);
                 break;
@@ -552,13 +575,6 @@ public class MessageAdapter extends BaseAdapter {
                 audioImage.setImageResource(R.drawable.pp_sender_voice_node_playing);
                 break;
         }
-
-        audioImage.post(new Runnable() {
-            @Override
-            public void run() {
-                audioImage.invalidate();
-            }
-        });
     }
 
     private void startAudioAnimationDrawable(ImageView audioImageView, PPMessage message) {
@@ -578,6 +594,83 @@ public class MessageAdapter extends BaseAdapter {
 
         this.lastClickedAudioImageViewRef = new WeakReference<ImageView>(audioImageView);
         this.lastClickedAudioMessageDirection = message.getDirection();
+    }
+
+    private void startPlay(PPMessage message) {
+        Uri audioUri = parseAudioUri(message);
+        startPlay(audioUri);
+    }
+
+    private void stopPlay() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+
+    public void stopPlayQuietly() {
+        stopPlay();
+        if (lastClickedAudioImageViewRef != null && lastClickedAudioImageViewRef.get() != null) {
+            ImageView animatingImageView = lastClickedAudioImageViewRef.get();
+            if (animatingImageView.getBackground() instanceof AnimationDrawable) {
+                stopAudioAnimationDrawableAndSetStaticAudioImage(
+                        (AnimationDrawable) animatingImageView.getBackground(),
+                        animatingImageView,
+                        lastClickedAudioMessageDirection);
+            }
+        }
+    }
+
+    private Uri parseAudioUri(PPMessage message) {
+        Uri audioUri = null;
+        PPMessageAudioMediaItem audioMediaItem = (PPMessageAudioMediaItem) message.getMediaItem();
+        if (audioMediaItem.getfLocalPath() != null) {
+            audioUri = Uri.parse(audioMediaItem.getfLocalPath());
+        } else if (audioMediaItem.getFurl() != null) {
+            audioUri = Uri.parse(audioMediaItem.getFurl());
+        }
+        return audioUri;
+    }
+
+    private void startPlay(Uri audioUri) {
+        if (mediaPlayer == null) {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
+                @Override
+                public boolean onError(MediaPlayer mediaPlayer, int i, int i1) {
+                    L.w(LOG_MEDIAPLAYER_MEET_ERROR, i, i1);
+                    Utils.makeToast(activity, R.string.pp_mediaplayer_play_error);
+                    return false; // is error handled
+                }
+            });
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mediaPlayer) {
+                    L.d(LOG_MEDIAPLAYER_COMPLETED);
+                    stopPlayQuietly();
+                }
+            });
+            mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
+                @Override
+                public void onBufferingUpdate(MediaPlayer mediaPlayer, int i) {
+                    L.d(LOG_MEDIAPLAYER_BUFFER_UPDATED, i);
+                }
+            });
+
+            try {
+                mediaPlayer.setDataSource(activity, audioUri);
+                mediaPlayer.prepare();
+            } catch (IOException e) {
+                L.e(e);
+                L.w(LOG_MEDIAPLAYER_PREPARE_ERROR, audioUri, e);
+                Utils.makeToast(activity, R.string.pp_mediaplayer_play_error);
+                return;
+            }
+        }
+
+        L.d(LOG_MEDIAPLAYER_START_PLAY_URI, audioUri);
+        mediaPlayer.start();
     }
 
     // === Provide width info about message bubbles ===

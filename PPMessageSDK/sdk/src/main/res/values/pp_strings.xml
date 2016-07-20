@@ -79,4 +79,7 @@
     <string name="pp_external_storage_not_avaliable">External storage cannot write</string>
     <string name="pp_recording_audio_error">Recording audio error</string>
 
+    <!-- playing -->
+    <string name="pp_mediaplayer_play_error">Play audio error</string>
+
 </resources>

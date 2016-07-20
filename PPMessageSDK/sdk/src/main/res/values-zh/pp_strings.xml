@@ -35,4 +35,7 @@
     <string name="pp_external_storage_not_avaliable">内存卡不可用</string>
     <string name="pp_recording_audio_error">录制错误</string>
 
+    <!-- playing -->
+    <string name="pp_mediaplayer_play_error">无法播放</string>
+
 </resources>
