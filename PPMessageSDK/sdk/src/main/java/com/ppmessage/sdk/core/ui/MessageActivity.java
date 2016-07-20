@@ -30,6 +30,7 @@ import com.ppmessage.sdk.core.bean.message.PPMessageAdapter;
 import com.ppmessage.sdk.core.bean.message.PPMessageAudioMediaItem;
 import com.ppmessage.sdk.core.ui.adapter.MessageAdapter;
 import com.ppmessage.sdk.core.ui.view.MessageListView;
+import com.ppmessage.sdk.core.utils.AudioRecordMicPhoneStatusUtil;
 import com.ppmessage.sdk.core.utils.Utils;
 
 import java.io.File;
@@ -63,6 +64,7 @@ public class MessageActivity extends AppCompatActivity {
     protected ViewGroup recordingImageViewContainer;
     protected ImageView recordingCancelImageView;
     protected TextView recordingStateTv;
+    protected ImageView recordingStateImageView;
 
     private PPMessageSDK sdk;
 
@@ -78,6 +80,7 @@ public class MessageActivity extends AppCompatActivity {
     private MediaRecorder mediaRecorder;
     private String recordingAudioFilePath;
     private long audioRecordStartTimestamp;
+    private AudioRecordMicPhoneStatusUtil micPhoneStatusUtil;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,12 +119,7 @@ public class MessageActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         stopRecording();
-        if (messageListView != null && messageListView.getAdapter() != null) {
-            MessageAdapter messageAdapter = (MessageAdapter) messageListView.getAdapter();
-            if (messageAdapter != null) {
-                messageAdapter.stopPlayQuietly();
-            }
-        }
+        safeStopPlayAudio();
     }
 
     public void setAdapter(MessageAdapter adapter) {
@@ -330,12 +328,14 @@ public class MessageActivity extends AppCompatActivity {
     // ==========================
 
     private void onActionTouchDown(MotionEvent motionEvent) {
+
         if (recordingView == null) {
             recordingView = recordingViewStub.inflate();
 
             recordingImageViewContainer = (ViewGroup) recordingView.findViewById(R.id.pp_recording_imageview_container);
             recordingStateTv = (TextView) recordingView.findViewById(R.id.pp_recording_view_state_description);
             recordingCancelImageView = (ImageView) recordingView.findViewById(R.id.pp_recording_view_cancel_imageview);
+            recordingStateImageView = (ImageView) recordingView.findViewById(R.id.pp_recording_state_imageview);
         }
 
         if (recordingView != null) {
@@ -423,6 +423,9 @@ public class MessageActivity extends AppCompatActivity {
             return;
         }
 
+        // Before start recording, make sure we have stop the audio mediaPlayer first.
+        safeStopPlayAudio();
+
         File audioCacheDir = new File(getCacheDir(), AUDIO_RECORDING_FOLDER_NAME);
         audioCacheDir.mkdirs();
         File audioFile = new File(audioCacheDir, generateAudioFileName());
@@ -455,7 +458,38 @@ public class MessageActivity extends AppCompatActivity {
         } catch (IOException e) {
             L.e(e);
             Toast.makeText(MessageActivity.this, R.string.pp_recording_audio_error, Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        micPhoneStatusUtil = new AudioRecordMicPhoneStatusUtil(mediaRecorder);
+        micPhoneStatusUtil.setMicPhoneVolumeChangedEvent(new AudioRecordMicPhoneStatusUtil.OnMicPhoneVolumeChangedEvent() {
+            @Override
+            public void onVolumeChanged(double currentDb, double ratio) {
+                // We have 8 pngs
+                if (recordingStateImageView != null) {
+                    int stateImageResId = R.drawable.pp_recording_signal_001;
+                    if (ratio < 0.125) {
+                        stateImageResId = R.drawable.pp_recording_signal_001;
+                    } else if (ratio < 0.250) {
+                        stateImageResId = R.drawable.pp_recording_signal_002;
+                    } else if (ratio < 0.375) {
+                        stateImageResId = R.drawable.pp_recording_signal_003;
+                    } else if (ratio < 0.500) {
+                        stateImageResId = R.drawable.pp_recording_signal_004;
+                    } else if (ratio < 0.625) {
+                        stateImageResId = R.drawable.pp_recording_signal_005;
+                    } else if (ratio < 0.750) {
+                        stateImageResId = R.drawable.pp_recording_signal_006;
+                    } else if (ratio < 0.875) {
+                        stateImageResId = R.drawable.pp_recording_signal_007;
+                    } else {
+                        stateImageResId = R.drawable.pp_recording_signal_008;
+                    }
+                    recordingStateImageView.setImageResource(stateImageResId);
+                }
+            }
+        });
+        micPhoneStatusUtil.start();
     }
 
     private void stopRecording() {
@@ -464,6 +498,10 @@ public class MessageActivity extends AppCompatActivity {
             mediaRecorder.reset();
             mediaRecorder.release();
             mediaRecorder = null;
+        }
+        if (micPhoneStatusUtil != null) {
+            micPhoneStatusUtil.stop();
+            micPhoneStatusUtil = null;
         }
     }
 
@@ -485,10 +523,19 @@ public class MessageActivity extends AppCompatActivity {
             File audio = new File(recordingAudioFilePath);
             if (audio.exists() && audio.length() > 0) {
                 long durationInMS = System.currentTimeMillis() - audioRecordStartTimestamp;
-                PPMessage audioMessage = sendAudio(recordingAudioFilePath, durationInMS / 1000, AUDIO_MIME);
+                PPMessage audioMessage = sendAudio(recordingAudioFilePath, (float) (((double) durationInMS) / 1000), AUDIO_MIME);
                 onMessageSendFinish(audioMessage);
             }
             recordingAudioFilePath = null;
+        }
+    }
+
+    private void safeStopPlayAudio() {
+        if (messageListView != null && messageListView.getAdapter() != null) {
+            MessageAdapter messageAdapter = (MessageAdapter) messageListView.getAdapter();
+            if (messageAdapter != null) {
+                messageAdapter.stopPlayQuietly();
+            }
         }
     }
 

@@ -29,7 +29,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:src="@drawable/pp_recording_signal_008"
-                android:id="@+id/imageView3" />
+                android:id="@+id/pp_recording_state_imageview" />
         </LinearLayout>
 
         <ImageView

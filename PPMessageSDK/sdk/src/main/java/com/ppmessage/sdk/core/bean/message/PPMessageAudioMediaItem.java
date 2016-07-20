@@ -20,7 +20,6 @@ public class PPMessageAudioMediaItem implements IPPMessageMediaItem {
     private String fid;
     private String furl;
     private String fLocalPath;
-    private boolean isPlaying;
     private String mime;
 
     public PPMessageAudioMediaItem() {
@@ -31,7 +30,6 @@ public class PPMessageAudioMediaItem implements IPPMessageMediaItem {
         fid = in.readString();
         furl = in.readString();
         fLocalPath = in.readString();
-        isPlaying = in.readByte() != 0;
         mime = in.readString();
     }
 
@@ -129,14 +127,6 @@ public class PPMessageAudioMediaItem implements IPPMessageMediaItem {
 
     public void setfLocalPath(String fLocalPath) {
         this.fLocalPath = fLocalPath;
-    }
-
-    public boolean isPlaying() {
-        return isPlaying;
-    }
-
-    public void setPlaying(boolean playing) {
-        isPlaying = playing;
     }
 
     public String getMime() {
