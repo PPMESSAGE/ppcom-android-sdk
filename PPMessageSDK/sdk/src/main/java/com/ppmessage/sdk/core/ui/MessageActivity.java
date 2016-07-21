@@ -171,7 +171,10 @@ public class MessageActivity extends AppCompatActivity {
 
                 Uri imageUri = data.getData();
                 L.d(PICK_IMAGE_FROM_GALLERY_PATH, imageUri);
-                sendImageMessage(imageUri);
+
+                if (imageUri != null) {
+                    sendImageMessage(imageUri);
+                }
             }
         }
     }
@@ -376,10 +379,18 @@ public class MessageActivity extends AppCompatActivity {
         return buildImageMessage(Uri.fromFile(new File(imagePath)));
     }
 
+    /**
+     * imageUri: content://com.android.providers.media.documents/document/image%3A32
+     * imageUri: file:///sdcard/storage/xx/xx.png
+     *
+     * @param imageUri
+     * @return
+     */
     private PPMessage buildImageMessage(Uri imageUri) {
+        Uri fixedUri = Uri.parse("file://" + Utils.getRealPathFromURI(this, imageUri));
         PPMessageImageMediaItem imageMediaItem = new PPMessageImageMediaItem();
-        imageMediaItem.setOrigUrl(imageUri.toString());
-        calcAndSetImageWidthAndHeight(imageMediaItem, imageUri);
+        imageMediaItem.setOrigUrl(fixedUri.toString());
+        calcAndSetImageWidthAndHeight(imageMediaItem, fixedUri);
 
         return new PPMessage.Builder()
                 .setFromUser(sdk.getNotification().getConfig().getActiveUser())
@@ -723,6 +734,7 @@ public class MessageActivity extends AppCompatActivity {
     private static BitmapFactory.Options createBitmapOptions() {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
+        options.inSampleSize = 2;
         return options;
     }
 

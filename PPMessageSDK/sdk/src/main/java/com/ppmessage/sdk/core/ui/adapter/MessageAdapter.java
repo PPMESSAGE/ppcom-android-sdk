@@ -43,6 +43,7 @@ public class MessageAdapter extends BaseAdapter {
     private static final String LOG_MEDIAPLAYER_COMPLETED = "[MessageAdapter] mediaplayer play completed";
     private static final String LOG_MEDIAPLAYER_BUFFER_UPDATED = "[MessageAdapter] mediaplayer buffer updated:%d";
     private static final String LOG_MEDIAPLAYER_START_PLAY_URI = "[MessageAdapter] mediaplayer start play:%s";
+    private static final String LOG_SHOW_USERAVATAR_ERROR = "[MessageAdapter] show user avatar error, fromuser:%s, fromuser_icon:%s";
 
     private static final double MAX_FILE_WIDTH_RATIO = 0.6;
     private static final double MAX_TEXT_BUBBLE_RATIO = 0.6;
@@ -53,6 +54,12 @@ public class MessageAdapter extends BaseAdapter {
 
     private static final int DEFAULT_AVATAR_WIDTH = 48;
     private static final int DEFAULT_AVATAR_HEIGHT = 48;
+
+    private static final int DEFAULT_THUMB_WIDTH_IN_SERVER = 120;
+    private static final int DEFAULT_THUMB_HEIGHT_IN_SERVER = 160;
+    private static final int DEFAULT_THUMB_TO_DISPLAY_ZOOMIN_SAMPLE_SIZE = 3;
+    private static final int DEFAULT_DISPLAY_WIDTH = DEFAULT_THUMB_WIDTH_IN_SERVER * DEFAULT_THUMB_TO_DISPLAY_ZOOMIN_SAMPLE_SIZE;
+    private static final int DEFAULT_DISPLAY_HEIGHT = DEFAULT_THUMB_HEIGHT_IN_SERVER * DEFAULT_THUMB_TO_DISPLAY_ZOOMIN_SAMPLE_SIZE;
 
     // 60.0 seconds. we consider 60.0 seconds voice has the same width with the 100.0 seconds voice
     private static final int MAX_AUDIO_VIEW_TIME = 60;
@@ -278,14 +285,8 @@ public class MessageAdapter extends BaseAdapter {
         setMessageItemExtraInfo(holder.timestampTv, message);
 
         PPMessageImageMediaItem imageMediaItem = (PPMessageImageMediaItem) message.getMediaItem();
-        calcAndSetImageViewFinalTargetSize(holder.imgBody, imageMediaItem.getOrigWidth(), imageMediaItem.getOrigHeight());
         showOutgoingUserAvatar(holder.avatar, message.getFromUser());
-
-        sdk.getImageLoader().loadImage(imageMediaItem.getOrigUrl(),
-                imageMediaItem.getOrigWidth(),
-                imageMediaItem.getOrigHeight(),
-                new ColorDrawable(Color.GRAY),
-                holder.imgBody);
+        loadImage(imageMediaItem, holder.imgBody);
 
         return v;
     }
@@ -309,15 +310,7 @@ public class MessageAdapter extends BaseAdapter {
         PPMessageImageMediaItem imageMediaItem = (PPMessageImageMediaItem) message.getMediaItem();
         setMessageItemExtraInfo(holder.timestampTv, message);
         loadAvatar(v, message, holder.avatar);
-        if (imageMediaItem != null) {
-            calcAndSetImageViewFinalTargetSize(holder.imgBody, imageMediaItem.getOrigWidth(), imageMediaItem.getOrigHeight());
-            sdk.getImageLoader().loadImage(
-                    imageMediaItem.getOrigUrl(),
-                    imageMediaItem.getOrigWidth(),
-                    imageMediaItem.getOrigHeight(),
-                    new ColorDrawable(Color.GRAY),
-                    holder.imgBody);
-        }
+        loadImage(imageMediaItem, holder.imgBody);
 
         return v;
     }
@@ -437,7 +430,7 @@ public class MessageAdapter extends BaseAdapter {
         PPMessageAudioMediaItem audioMediaItem = (PPMessageAudioMediaItem) message.getMediaItem();
 
         setMessageItemExtraInfo(holder.timestampTv, message);
-        loadAvatar(v, message, holder.avatar);
+        showOutgoingUserAvatar(holder.avatar, message.getFromUser());
         calcAndSetAudioViewFinalTargetWidth(holder.audioImageContainer, audioMediaItem.getDuration());
 
         if (audioMediaItem != null) {
@@ -459,16 +452,23 @@ public class MessageAdapter extends BaseAdapter {
     // Helper
     // =====================
 
+    /**
+     * Used for left message avatar view
+     *
+     * @param convertView
+     * @param message
+     * @param avatar
+     */
     private void loadAvatar(View convertView, PPMessage message, ImageView avatar) {
         User fromUser = message.getFromUser();
-        if (fromUser != null && fromUser.getIcon() != null) {
-            imageLoader.loadImage(fromUser.getIcon(),
-                    DEFAULT_AVATAR_WIDTH,
-                    DEFAULT_AVATAR_HEIGHT,
-                    R.drawable.pp_icon_avatar,
-                    avatar);
-        }
+    if (fromUser != null && fromUser.getIcon() != null) {
+        imageLoader.loadImage(fromUser.getIcon(),
+                DEFAULT_AVATAR_WIDTH,
+                DEFAULT_AVATAR_HEIGHT,
+                R.drawable.pp_icon_avatar,
+                avatar);
     }
+}
 
     private void loadText(PPMessage message, TextView bodyTv) {
         String messageText = null;
@@ -507,8 +507,81 @@ public class MessageAdapter extends BaseAdapter {
                         DEFAULT_AVATAR_HEIGHT,
                         R.drawable.pp_icon_avatar,
                         userAvatar);
+            } else {
+                L.w(LOG_SHOW_USERAVATAR_ERROR, fromUser, fromUser != null ? fromUser.getIcon() : "null");
             }
         }
+    }
+
+    private void loadImage(PPMessageImageMediaItem imageMediaItem, ImageView imageView) {
+        if (imageMediaItem != null) {
+
+            int reqWidth = 0;
+            int reqHeight = 0;
+            String imageUri = null;
+
+            if (imageMediaItem.getThumUrl() != null) {
+
+                imageUri = imageMediaItem.getThumUrl();
+                reqWidth = imageMediaItem.getThumWidth();
+                reqHeight = imageMediaItem.getThumHeight();
+
+                // thumb image is too small
+                if (imageMediaItem.getOrigUrl() != null) {
+                    if (imageMediaItem.getOrigWidth() > DEFAULT_THUMB_WIDTH_IN_SERVER &&
+                            imageMediaItem.getOrigHeight() > DEFAULT_THUMB_HEIGHT_IN_SERVER) {
+                        reqWidth *= DEFAULT_THUMB_TO_DISPLAY_ZOOMIN_SAMPLE_SIZE;
+                        reqHeight *= DEFAULT_THUMB_TO_DISPLAY_ZOOMIN_SAMPLE_SIZE;
+                    }
+                }
+
+            } else if (imageMediaItem.getOrigUrl() != null) {
+                // Avoid poentially & frequently happend OOM problem
+                int inSampleSize = calculateInSampleSize(
+                        DEFAULT_DISPLAY_WIDTH,
+                        DEFAULT_DISPLAY_HEIGHT,
+                        imageMediaItem.getOrigWidth(),
+                        imageMediaItem.getOrigWidth());
+                imageUri = imageMediaItem.getOrigUrl();
+                reqWidth = (int) ((float) imageMediaItem.getOrigWidth() / inSampleSize);
+                reqHeight = (int) ((float) imageMediaItem.getOrigHeight() / inSampleSize);
+            }
+
+            // Make sure reqWidth and reqHeight > 0
+            if (reqWidth <= 0 || reqHeight <= 0) {
+                reqWidth = DEFAULT_DISPLAY_WIDTH;
+                reqHeight = DEFAULT_DISPLAY_HEIGHT;
+            }
+
+            if (imageUri != null) {
+                calcAndSetImageViewFinalTargetSize(imageView, reqWidth, reqHeight);
+                sdk.getImageLoader().loadImage(
+                        imageUri,
+                        reqWidth,
+                        reqHeight,
+                        new ColorDrawable(Color.GRAY),
+                        imageView);
+            }
+
+        }
+    }
+
+    private int calculateInSampleSize(int reqWidth, int reqHeight, int width, int height) {
+        int sampleSize = 1;
+        if (height > reqHeight || width > reqWidth) {
+            final int heightRatio;
+            final int widthRatio;
+            if (reqHeight == 0) {
+                sampleSize = (int) Math.floor((float) width / (float) reqWidth);
+            } else if (reqWidth == 0) {
+                sampleSize = (int) Math.floor((float) height / (float) reqHeight);
+            } else {
+                heightRatio = (int) Math.floor((float) height / (float) reqHeight);
+                widthRatio = (int) Math.floor((float) width / (float) reqWidth);
+                sampleSize = Math.min(heightRatio, widthRatio);
+            }
+        }
+        return sampleSize;
     }
 
     // === Long Click, Click Listener ===
