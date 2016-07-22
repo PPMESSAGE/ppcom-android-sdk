@@ -28,6 +28,7 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
     private String origId;
     private String thumUrl;
     private String origUrl;
+    private String localPathUrl;
     private int origWidth;
     private int origHeight;
     private int thumWidth;
@@ -37,12 +38,14 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
 
     }
 
+
     protected PPMessageImageMediaItem(Parcel in) {
         mime = in.readString();
         thumId = in.readString();
         origId = in.readString();
         thumUrl = in.readString();
         origUrl = in.readString();
+        localPathUrl = in.readString();
         origWidth = in.readInt();
         origHeight = in.readInt();
         thumWidth = in.readInt();
@@ -141,6 +144,14 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
         this.file = file;
     }
 
+    public String getLocalPathUrl() {
+        return localPathUrl;
+    }
+
+    public void setLocalPathUrl(String localPathUrl) {
+        this.localPathUrl = localPathUrl;
+    }
+
     public static IPPMessageMediaItem parse(JSONObject jsonObject) {
         PPMessageImageMediaItem imageMediaItem = new PPMessageImageMediaItem();
         try {
@@ -177,7 +188,14 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
 
     @Override
     public void asyncGetAPIJsonObject(final OnGetJsonObjectEvent event) {
-        Utils.getFileUploader().uploadFile(Uri.parse(this.origUrl), new Uploader.OnUploadingListener() {
+        if (this.getLocalPathUrl() == null) {
+            if (event != null) {
+                event.onError(new Exception("localPath == null"));
+            }
+            return;
+        }
+
+        Utils.getFileUploader().uploadFile(Uri.parse(this.getLocalPathUrl()), new Uploader.OnUploadingListener() {
             @Override
             public void onError(Exception e) {
                 if (event != null) {
@@ -188,7 +206,11 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
             @Override
             public void onComplected(JSONObject response) {
                 if (event != null) {
+
                     String fid = response.optString("fuuid", null);
+                    PPMessageImageMediaItem.this.setOrigId(fid);
+                    PPMessageImageMediaItem.this.setOrigUrl(Utils.getFileDownloadUrl(fid));
+
                     event.onCompleted(buildJsonObject(fid));
                 }
             }

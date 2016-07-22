@@ -389,7 +389,7 @@ public class MessageActivity extends AppCompatActivity {
     private PPMessage buildImageMessage(Uri imageUri) {
         Uri fixedUri = Uri.parse("file://" + Utils.getRealPathFromURI(this, imageUri));
         PPMessageImageMediaItem imageMediaItem = new PPMessageImageMediaItem();
-        imageMediaItem.setOrigUrl(fixedUri.toString());
+        imageMediaItem.setLocalPathUrl(fixedUri.toString());
         calcAndSetImageWidthAndHeight(imageMediaItem, fixedUri);
 
         return new PPMessage.Builder()

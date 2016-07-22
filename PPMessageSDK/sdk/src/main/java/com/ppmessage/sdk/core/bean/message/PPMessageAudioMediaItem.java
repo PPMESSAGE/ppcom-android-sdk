@@ -64,7 +64,9 @@ public class PPMessageAudioMediaItem implements IPPMessageMediaItem {
             public void onComplected(JSONObject response) {
                 if (event != null) {
                     String fuuid = response.optString("fuuid", null);
+
                     PPMessageAudioMediaItem.this.fid = fuuid;
+                    PPMessageAudioMediaItem.this.furl = Utils.getFileDownloadUrl(fuuid);
 
                     event.onCompleted(buildAPIJSONObject());
                 }

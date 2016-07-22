@@ -27,6 +27,7 @@ import com.ppmessage.sdk.core.bean.message.PPMessageTxtMediaItem;
 import com.ppmessage.sdk.core.utils.IImageLoader;
 import com.ppmessage.sdk.core.utils.Utils;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -535,14 +536,19 @@ public class MessageAdapter extends BaseAdapter {
                     }
                 }
 
-            } else if (imageMediaItem.getOrigUrl() != null) {
+            } else if (imageMediaItem.getLocalPathUrl() != null || imageMediaItem.getOrigUrl() != null) {
                 // Avoid poentially & frequently happend OOM problem
                 int inSampleSize = calculateInSampleSize(
                         DEFAULT_DISPLAY_WIDTH,
                         DEFAULT_DISPLAY_HEIGHT,
                         imageMediaItem.getOrigWidth(),
                         imageMediaItem.getOrigWidth());
-                imageUri = imageMediaItem.getOrigUrl();
+
+                // We prefer localPathUrl first
+                boolean localFileExist = imageMediaItem.getLocalPathUrl() != null &&
+                        new File(Uri.parse(imageMediaItem.getLocalPathUrl()).getPath()).exists();
+                imageUri = localFileExist ? imageMediaItem.getLocalPathUrl() : imageMediaItem.getOrigUrl();
+
                 reqWidth = (int) ((float) imageMediaItem.getOrigWidth() / inSampleSize);
                 reqHeight = (int) ((float) imageMediaItem.getOrigHeight() / inSampleSize);
             }
@@ -697,9 +703,18 @@ public class MessageAdapter extends BaseAdapter {
         Uri audioUri = null;
         PPMessageAudioMediaItem audioMediaItem = (PPMessageAudioMediaItem) message.getMediaItem();
         if (audioMediaItem.getfLocalPath() != null) {
-            audioUri = Uri.parse(audioMediaItem.getfLocalPath());
-        } else if (audioMediaItem.getFurl() != null) {
-            audioUri = Uri.parse(audioMediaItem.getFurl());
+            Uri candidateUri = Uri.parse(audioMediaItem.getfLocalPath());
+            // Make sure local file exists
+            if (candidateUri.getPath() != null) {
+                if (new File(candidateUri.getPath()).exists()) {
+                    audioUri = candidateUri;
+                }
+            }
+        }
+        if (audioUri == null) {
+            if (audioMediaItem.getFurl() != null) {
+                audioUri = Uri.parse(audioMediaItem.getFurl());
+            }
         }
         return audioUri;
     }
