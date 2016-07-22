@@ -139,7 +139,11 @@ public class BaseHttpRequest {
             br.close();
         }
 
-        L.d(RESPONSE_LOG_FORMAT, uri, responseCode, response);
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            L.d(RESPONSE_LOG_FORMAT, uri, responseCode, response);
+        } else {
+            L.w(RESPONSE_LOG_FORMAT, uri, responseCode, response);
+        }
 
         return TextUtils.isEmpty(response) ? null : response;
     }
