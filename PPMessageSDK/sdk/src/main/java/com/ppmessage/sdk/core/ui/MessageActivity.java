@@ -57,6 +57,7 @@ public class MessageActivity extends AppCompatActivity {
     private static final String FROMUSER_EMPTY_LOG = "[Send] FromUser == nil";
     private static final String CLICK_EVENT_WARNING = "[MessageActivity] Click event, skip send recording, time diff:%d";
     private static final String CANCEL_RECORDING_CANCEL_SENDING = "[MessageActivity] cancel recording, cancel sending audio";
+    private static final String CANCEL_RECORDING_TOUCH_CANCEL = "[MessageActivity] motionevent touch cancel, cancel sending audio";
     private static final String EXTERNAL_STORAGE_NOT_OK = "[MessageActivity] external storage cannot writeable, skip record";
     private static final String PHOTOPATH_EMPTY = "[MessageActivity] photo path == null";
     private static final String PHOTOPATH_FILE_NOT_EXIST = "[MessageActivity] photo not exist in path:%s.";
@@ -296,6 +297,9 @@ public class MessageActivity extends AppCompatActivity {
                         return true;
 
                     case MotionEvent.ACTION_CANCEL:
+                        onActionTouchCancel(motionEvent);
+                        return true;
+
                     case MotionEvent.ACTION_UP:
                         onActionTouchUp(motionEvent);
                         return true;
@@ -500,15 +504,14 @@ public class MessageActivity extends AppCompatActivity {
         }
     }
 
-    private void onActionTouchUp(MotionEvent motionEvent) {
-        if (recordingView != null) {
-            recordingView.setVisibility(View.GONE);
-        }
+    private void onActionTouchCancel(MotionEvent motionEvent) {
+        resetViewAfterRecordCompleted();
+        L.d(CANCEL_RECORDING_TOUCH_CANCEL);
+        cancelRecording();
+    }
 
-        if (holdToTalkButton != null) {
-            holdToTalkButton.setPressed(false);
-            holdToTalkButton.setText(R.string.pp_chat_tools_hold_voice_hold_to_talk);
-        }
+    private void onActionTouchUp(MotionEvent motionEvent) {
+        resetViewAfterRecordCompleted();
 
         long timeDiff = System.currentTimeMillis() - actionDownTimestamp;
         if (timeDiff < RECORDING_MIN_TIME_MS) {
@@ -525,6 +528,17 @@ public class MessageActivity extends AppCompatActivity {
 
         stopRecording();
         trySendAudio();
+    }
+
+    private void resetViewAfterRecordCompleted() {
+        if (recordingView != null) {
+            recordingView.setVisibility(View.GONE);
+        }
+
+        if (holdToTalkButton != null) {
+            holdToTalkButton.setPressed(false);
+            holdToTalkButton.setText(R.string.pp_chat_tools_hold_voice_hold_to_talk);
+        }
     }
 
     private void startRecording() {
@@ -605,10 +619,20 @@ public class MessageActivity extends AppCompatActivity {
 
     private void stopRecording() {
         if (mediaRecorder != null) {
-            mediaRecorder.stop();
-            mediaRecorder.reset();
-            mediaRecorder.release();
-            mediaRecorder = null;
+            try {
+                mediaRecorder.stop();
+            } catch (Exception e) {
+                // Ignore
+                // Note that a RuntimeException is intentionally thrown to the application,
+                // if no valid audio/video data has been received when stop() is called.
+                // This happens if stop() is called immediately after start().
+                // The failure lets the application take action accordingly to clean up the output file (delete the output file, for instance),
+                // since the output file is not properly constructed when this happens.
+            } finally {
+                mediaRecorder.reset();
+                mediaRecorder.release();
+                mediaRecorder = null;
+            }
         }
         if (micPhoneStatusUtil != null) {
             micPhoneStatusUtil.stop();

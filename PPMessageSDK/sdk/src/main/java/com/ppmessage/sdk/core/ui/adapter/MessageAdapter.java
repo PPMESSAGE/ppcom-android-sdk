@@ -617,7 +617,8 @@ public class MessageAdapter extends BaseAdapter {
                 currenPlayingAnimationDrawable = (AnimationDrawable) audioBackground;
             }
 
-            if (lastClickedAudioImageView == audioImageView) {
+            if (lastClickedAudioImageView == audioImageView &&
+                    isPlaying()) {
                 if (currenPlayingAnimationDrawable != null) {
                     stopPlay();
                     stopAudioAnimationDrawableAndSetStaticAudioImage(currenPlayingAnimationDrawable, lastClickedAudioImageView, message);
@@ -684,6 +685,10 @@ public class MessageAdapter extends BaseAdapter {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+    }
+
+    private boolean isPlaying() {
+        return mediaPlayer != null && mediaPlayer.isPlaying();
     }
 
     public void stopPlayQuietly() {
