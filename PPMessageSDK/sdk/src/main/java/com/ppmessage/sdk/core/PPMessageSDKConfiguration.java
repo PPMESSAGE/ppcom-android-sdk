@@ -1,13 +1,9 @@
 package com.ppmessage.sdk.core;
 
 import android.content.Context;
-import android.hardware.camera2.params.StreamConfigurationMap;
 
 import com.ppmessage.sdk.core.utils.IImageLoader;
-import com.ppmessage.sdk.core.utils.PicassoImageLoader;
 import com.ppmessage.sdk.core.utils.UILImageLoader;
-import com.ppmessage.sdk.core.ws.AndroidAsyncWebSocketImpl;
-import com.ppmessage.sdk.core.ws.IWebSocket;
 
 /**
  * Created by ppmessage on 5/12/16.

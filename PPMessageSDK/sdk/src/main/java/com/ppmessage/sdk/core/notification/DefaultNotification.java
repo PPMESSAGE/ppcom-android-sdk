@@ -1,5 +1,9 @@
 package com.ppmessage.sdk.core.notification;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+
 import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageException;
 import com.ppmessage.sdk.core.PPMessageSDK;
@@ -44,9 +48,25 @@ public class DefaultNotification implements INotification, INotificationHandler.
     private static final String WS_STARTED_OR_STARTING = "[WebSocket] websocket started or starting, skip re-start";
     private static final String WS_AUTH_ACTIVE_USER_EMPTY = "[WebSocket] try auth websocket, but config.active_user == null";
 
+    private static final String AUTORECONNECT_COUNT_ARRIVED = "[WebSocket] auto reconnect achieve max count:%d, current:%d";
+    private static final String AUTORECONNECT_STOPED = "[WebSocket] auto reconnect stop manaually";
+    private static final String AUTORECONNECT_BEGIN = "[WebSocket] begin auto reconnect, retry count: %d";
+    private static final String AUTORECONNECT_STOP = "[WebSocket] stop auto reconnect";
+
+    /** retry connect count **/
+    private static final int MAX_TRY_AUTO_RECONNECT_COUNT = 3;
+    /** what message send by Handler **/
+    private static final int WHAT_RECONNECT = 1;
+    /** delay in millseconds **/
+    private static final int DELAY_AUTO_RECONNECT_IN_MILLISECONDS = 5000;
+    private int currentRetryCount = 0;
+    private boolean stop;
+    private Handler autoReconnectHandler;
+    private Runnable autoReconnectRunnable;
+
     public DefaultNotification(PPMessageSDK sdk) {
         this.sdk = sdk;
-
+        this.stop = false;
         notificationHandlerFactory = new NotificationHandlerFactory(sdk);
     }
 
@@ -87,6 +107,7 @@ public class DefaultNotification implements INotification, INotificationHandler.
                 if (wsAuthObject != null) {
                     authWebSocket(wsAuthObject);
                 }
+                resetAutoReconnect();
             }
 
             @Override
@@ -97,16 +118,14 @@ public class DefaultNotification implements INotification, INotificationHandler.
 
             @Override
             public void onClose(IWebSocket webSocket) {
-                //TODO should't simply set webSocket = null here
                 L.w(WS_CLOSE_LOG);
-                DefaultNotification.this.webSocket = null;
+                onWebSocketClosedOrMeetError();
             }
 
             @Override
             public void onError(IWebSocket webSocket, Exception e) {
                 L.e(WS_MEET_ERROR_LOG, e != null ? e.toString() : "null");
-                //TODO should't simply set webSocket = null here
-                DefaultNotification.this.webSocket = null;
+                onWebSocketClosedOrMeetError();
             }
         });
 
@@ -117,9 +136,11 @@ public class DefaultNotification implements INotification, INotificationHandler.
     @Override
     public synchronized void stop() {
         L.w(WS_TRY_TO_CLOSE_LOG);
+        this.stop = true;
         if (webSocket == null) return;
         webSocket.close();
         webSocket = null;
+        resetAutoReconnect();
     }
 
     @Override
@@ -269,4 +290,82 @@ public class DefaultNotification implements INotification, INotificationHandler.
     private boolean isConnectingOrConnected() {
         return webSocket != null;
     }
+
+    // =================================
+    // WebSocket - Auto Reconnect
+    // =================================
+    protected boolean autoReconnectWhenMeetError() {
+        return true;
+    }
+
+    private void onWebSocketClosedOrMeetError() {
+        DefaultNotification.this.webSocket = null;
+
+        if (autoReconnectWhenMeetError()) {
+            startReconnect();
+        }
+    }
+
+    private void startReconnect() {
+        if (currentRetryCount > MAX_TRY_AUTO_RECONNECT_COUNT) {
+            L.w(AUTORECONNECT_COUNT_ARRIVED, MAX_TRY_AUTO_RECONNECT_COUNT, currentRetryCount);
+            resetAutoReconnect();
+            return;
+        }
+
+        if (this.stop) {
+            L.w(AUTORECONNECT_STOPED);
+            resetAutoReconnect();
+            return;
+        }
+
+        check();
+        currentRetryCount++;
+        L.d(AUTORECONNECT_BEGIN, currentRetryCount);
+
+        if (autoReconnectHandler != null && autoReconnectRunnable != null) {
+            autoReconnectHandler.postDelayed(autoReconnectRunnable, DELAY_AUTO_RECONNECT_IN_MILLISECONDS);
+        }
+    }
+
+    private void check() {
+        if (autoReconnectHandler == null) {
+            autoReconnectHandler = new Handler(Looper.getMainLooper()) {
+                @Override
+                public void handleMessage(Message msg) {
+                    super.handleMessage(msg);
+
+                    switch (msg.what) {
+                        case WHAT_RECONNECT:
+                            start();
+                            break;
+                    }
+                }
+            };
+        }
+        if (autoReconnectRunnable == null) {
+            autoReconnectRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    if (autoReconnectHandler != null) {
+                        autoReconnectHandler.sendEmptyMessage(WHAT_RECONNECT);
+                    }
+                }
+            };
+        }
+    }
+
+    private void resetAutoReconnect() {
+        if (autoReconnectHandler != null) {
+            autoReconnectHandler.removeCallbacks(autoReconnectRunnable);
+            autoReconnectHandler = null;
+        }
+        if (autoReconnectRunnable != null) {
+            autoReconnectRunnable = null;
+        }
+        currentRetryCount = 0;
+
+        L.d(AUTORECONNECT_STOP);
+    }
+
 }
