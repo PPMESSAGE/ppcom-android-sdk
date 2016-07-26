@@ -43,4 +43,6 @@
         <item>相册</item>
     </string-array>
 
+    <string name="pp_show_orig_image_error">加载图片失败</string>
+
 </resources>

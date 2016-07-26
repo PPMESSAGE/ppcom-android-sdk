@@ -17,6 +17,22 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+    <style name="ImageScale" parent="android:Theme.Light.NoTitleBar">
+        <item name="android:windowNoTitle">true</item>
+        <!-- 无标题 -->
+        <item name="android:windowFullscreen">false</item>
+        <!-- 设置全屏显示 -->
+        <item name="android:windowFrame">@null</item>
+        <!-- 边框 -->
+        <item name="android:windowIsFloating">false</item>
+        <!-- 是否浮现在activity之上 -->
+        <item name="android:windowIsTranslucent">true</item>
+        <!-- 半透明 -->
+        <item name="android:windowBackground">@android:color/black</item>
+        <!-- 模糊 -->
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
     <style name="pp_chat_item_left_bubble_bg_style">
         <item name="android:background">@drawable/pp_messages_left_bubble</item>
         <item name="android:paddingBottom">10dp</item>

@@ -5,6 +5,7 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 
 import com.ppmessage.sdk.core.utils.IImageLoader;
 import com.ppmessage.sdk.core.utils.PicassoImageLoader;
+import com.ppmessage.sdk.core.utils.UILImageLoader;
 import com.ppmessage.sdk.core.ws.AndroidAsyncWebSocketImpl;
 import com.ppmessage.sdk.core.ws.IWebSocket;
 
@@ -137,7 +138,7 @@ public final class PPMessageSDKConfiguration {
 
         public Builder setContext(Context context) {
             this.context = context;
-            this.imageLoader = new PicassoImageLoader(context);
+            this.imageLoader = new UILImageLoader(context);
             return this;
         }
 

@@ -22,6 +22,7 @@ public class CustomListView extends ListView implements AbsListView.OnScrollList
     private OnLastItemVisibleListener mOnLastItemVisibleListener;
 
     private int scrollIndex;
+    private int top;
 
     public CustomListView(Context context) {
         super(context);
@@ -84,6 +85,7 @@ public class CustomListView extends ListView implements AbsListView.OnScrollList
      */
     public void saveScrollPosition() {
         scrollIndex = getFirstVisiblePosition();
+        top = getChildAt(0) == null ? 0 : (getChildAt(0).getTop() - getPaddingTop());
     }
 
     public void restoreScrollPosition() {
@@ -94,7 +96,7 @@ public class CustomListView extends ListView implements AbsListView.OnScrollList
         post(new Runnable() {
             @Override
             public void run() {
-                setSelection(scrollIndex + scrollIndexOffset);
+                setSelectionFromTop(scrollIndex, top + scrollIndexOffset);
             }
         });
     }

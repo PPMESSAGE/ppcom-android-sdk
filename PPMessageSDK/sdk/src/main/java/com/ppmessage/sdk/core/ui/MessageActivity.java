@@ -1,5 +1,6 @@
 package com.ppmessage.sdk.core.ui;
 
+import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -50,6 +51,8 @@ public class MessageActivity extends AppCompatActivity {
     public static final int REQUEST_IMAGE_CAPTURE = 1;
     /** Pick image from gallery **/
     public static final int REQUEST_PICK_IMAGES_FROM_GALLERY = 2;
+    /** Is show big image download successful **/
+    public static final int REQUEST_SHOW_BIG_IMAGE_RESULT = 3;
 
     private static final String TEXT_EMPTY_LOG = "[Send] text == nil";
     private static final String SDK_EMPTY_LOG = "[Send] SDK == nil";
@@ -81,6 +84,10 @@ public class MessageActivity extends AppCompatActivity {
     protected ImageView recordingCancelImageView;
     protected TextView recordingStateTv;
     protected ImageView recordingStateImageView;
+
+    protected ImageView largeImageView;
+    private Animator mCurrentAnimator;
+    private int mShortAnimationDuration;
 
     private PPMessageSDK sdk;
 
@@ -119,6 +126,7 @@ public class MessageActivity extends AppCompatActivity {
         moreButton = (ImageView) findViewById(R.id.pp_chat_tools_more_btn);
 
         recordingViewStub = (ViewStub) findViewById(R.id.pp_recording_view_import);
+        largeImageView = (ImageView) findViewById(R.id.pp_large_imageview);
 
         sendButton.setVisibility(View.GONE);
         moreButton.setVisibility(View.VISIBLE);
@@ -129,6 +137,7 @@ public class MessageActivity extends AppCompatActivity {
         keyboardButton.setVisibility(View.GONE);
 
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         // Avoid keyboard auto popup
         hideKeyboard();
@@ -176,6 +185,14 @@ public class MessageActivity extends AppCompatActivity {
                 if (imageUri != null) {
                     sendImageMessage(imageUri);
                 }
+            } else if (requestCode == REQUEST_SHOW_BIG_IMAGE_RESULT) {
+
+                if (messageAdapter != null) {
+                    messageListView.saveScrollPosition();
+                    messageAdapter.notifyDataSetChanged();
+                    messageListView.restoreScrollPosition();
+                }
+
             }
         }
     }
@@ -305,6 +322,13 @@ public class MessageActivity extends AppCompatActivity {
                         return true;
                 }
                 return false;
+            }
+        });
+
+        largeImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                largeImageView.setVisibility(View.GONE);
             }
         });
     }

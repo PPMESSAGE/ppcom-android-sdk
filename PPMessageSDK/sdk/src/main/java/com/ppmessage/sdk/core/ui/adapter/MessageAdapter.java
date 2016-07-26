@@ -2,6 +2,7 @@ package com.ppmessage.sdk.core.ui.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -24,6 +25,8 @@ import com.ppmessage.sdk.core.bean.message.PPMessageAudioMediaItem;
 import com.ppmessage.sdk.core.bean.message.PPMessageFileMediaItem;
 import com.ppmessage.sdk.core.bean.message.PPMessageImageMediaItem;
 import com.ppmessage.sdk.core.bean.message.PPMessageTxtMediaItem;
+import com.ppmessage.sdk.core.ui.EaseShowBigImageActivity;
+import com.ppmessage.sdk.core.ui.MessageActivity;
 import com.ppmessage.sdk.core.utils.IImageLoader;
 import com.ppmessage.sdk.core.utils.Utils;
 
@@ -288,6 +291,7 @@ public class MessageAdapter extends BaseAdapter {
         PPMessageImageMediaItem imageMediaItem = (PPMessageImageMediaItem) message.getMediaItem();
         showOutgoingUserAvatar(holder.avatar, message.getFromUser());
         loadImage(imageMediaItem, holder.imgBody);
+        bindImageViewClickListener(message, holder.imgBody);
 
         return v;
     }
@@ -312,6 +316,7 @@ public class MessageAdapter extends BaseAdapter {
         setMessageItemExtraInfo(holder.timestampTv, message);
         loadAvatar(v, message, holder.avatar);
         loadImage(imageMediaItem, holder.imgBody);
+        bindImageViewClickListener(message, holder.imgBody);
 
         return v;
     }
@@ -520,10 +525,35 @@ public class MessageAdapter extends BaseAdapter {
             int reqWidth = 0;
             int reqHeight = 0;
             String imageUri = null;
+            boolean useThumb = false;
 
-            if (imageMediaItem.getThumUrl() != null) {
+            // Local path exist
+            if (imageMediaItem.getLocalPathUrl() != null && new File(Uri.parse(imageMediaItem.getLocalPathUrl()).getPath()).exists()) {
+                imageUri = imageMediaItem.getLocalPathUrl();
+            }
 
-                imageUri = imageMediaItem.getThumUrl();
+            // Orig Bitmap exist in disk
+            if (imageUri == null) {
+                if (imageMediaItem.getOrigUrl() != null &&
+                        sdk.getImageLoader().imageFile(imageMediaItem.getOrigUrl()) != null) {
+                    imageUri = imageMediaItem.getOrigUrl();
+                }
+            }
+
+            // We prefer thumb image first
+            if (imageUri == null) {
+
+                // Thumb image
+                if (imageMediaItem.getThumUrl() != null) {
+                    useThumb = true;
+                    imageUri = imageMediaItem.getThumUrl();
+                } else if (imageMediaItem.getOrigUrl() != null) {
+                    imageUri = imageMediaItem.getOrigUrl();
+                }
+
+            }
+
+            if (useThumb) {
                 reqWidth = imageMediaItem.getThumWidth();
                 reqHeight = imageMediaItem.getThumHeight();
 
@@ -535,19 +565,13 @@ public class MessageAdapter extends BaseAdapter {
                         reqHeight *= DEFAULT_THUMB_TO_DISPLAY_ZOOMIN_SAMPLE_SIZE;
                     }
                 }
-
-            } else if (imageMediaItem.getLocalPathUrl() != null || imageMediaItem.getOrigUrl() != null) {
+            } else {
                 // Avoid poentially & frequently happend OOM problem
                 int inSampleSize = calculateInSampleSize(
                         DEFAULT_DISPLAY_WIDTH,
                         DEFAULT_DISPLAY_HEIGHT,
                         imageMediaItem.getOrigWidth(),
                         imageMediaItem.getOrigWidth());
-
-                // We prefer localPathUrl first
-                boolean localFileExist = imageMediaItem.getLocalPathUrl() != null &&
-                        new File(Uri.parse(imageMediaItem.getLocalPathUrl()).getPath()).exists();
-                imageUri = localFileExist ? imageMediaItem.getLocalPathUrl() : imageMediaItem.getOrigUrl();
 
                 reqWidth = (int) ((float) imageMediaItem.getOrigWidth() / inSampleSize);
                 reqHeight = (int) ((float) imageMediaItem.getOrigHeight() / inSampleSize);
@@ -599,6 +623,28 @@ public class MessageAdapter extends BaseAdapter {
                 Utils.copyToClipboard(activity, textView.getText().toString());
                 Utils.makeToast(activity, R.string.pp_copy_message_success_hint);
                 return true;
+            }
+        });
+    }
+
+    private void bindImageViewClickListener(final PPMessage message, final ImageView imageView) {
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (message != null) {
+                    final PPMessageImageMediaItem imageMediaItem = (PPMessageImageMediaItem) message.getMediaItem();
+                    if (imageMediaItem != null) {
+                        String imageUrl = imageMediaItem.getLocalPathUrl();
+                        if (imageUrl == null || new File(Uri.parse(imageUrl).getPath()).exists() ) {
+                            imageUrl = imageMediaItem.getOrigUrl();
+                        }
+
+                        Intent intent = new Intent(activity, EaseShowBigImageActivity.class);
+                        intent.putExtra(EaseShowBigImageActivity.EXTRA_IMAGE_URI_KEY, imageUrl);
+                        activity.startActivityForResult(intent, MessageActivity.REQUEST_SHOW_BIG_IMAGE_RESULT);
+                    }
+
+                }
             }
         });
     }

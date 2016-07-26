@@ -82,4 +82,6 @@
     <!-- playing -->
     <string name="pp_mediaplayer_play_error">Play audio error</string>
 
+    <string name="pp_show_orig_image_error">Failed to load image</string>
+
 </resources>

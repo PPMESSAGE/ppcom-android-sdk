@@ -2,7 +2,6 @@ package com.ppmessage.sdk.core.bean.message;
 
 import android.net.Uri;
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.utils.Uploader;
@@ -10,9 +9,6 @@ import com.ppmessage.sdk.core.utils.Utils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.File;
-import java.util.logging.FileHandler;
 
 /**
  * Created by ppmessage on 5/10/16.
@@ -22,7 +18,6 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
     private static final int DEFAULT_IMAGE_WIDTH = 300;
     private static final int DEFAULT_IMAGE_HEIGHT = 400;
 
-    private File file;
     private String mime;
     private String thumId;
     private String origId;
@@ -38,7 +33,6 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
 
     }
 
-
     protected PPMessageImageMediaItem(Parcel in) {
         mime = in.readString();
         thumId = in.readString();
@@ -50,6 +44,25 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
         origHeight = in.readInt();
         thumWidth = in.readInt();
         thumHeight = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mime);
+        dest.writeString(thumId);
+        dest.writeString(origId);
+        dest.writeString(thumUrl);
+        dest.writeString(origUrl);
+        dest.writeString(localPathUrl);
+        dest.writeInt(origWidth);
+        dest.writeInt(origHeight);
+        dest.writeInt(thumWidth);
+        dest.writeInt(thumHeight);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     public static final Creator<PPMessageImageMediaItem> CREATOR = new Creator<PPMessageImageMediaItem>() {
@@ -136,14 +149,6 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
         this.thumHeight = thumHeight;
     }
 
-    public File getFile() {
-        return file;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
-    }
-
     public String getLocalPathUrl() {
         return localPathUrl;
     }
@@ -153,6 +158,7 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
     }
 
     public static IPPMessageMediaItem parse(JSONObject jsonObject) {
+
         PPMessageImageMediaItem imageMediaItem = new PPMessageImageMediaItem();
         try {
             imageMediaItem.setMime(jsonObject.getString("mime"));
@@ -229,20 +235,18 @@ public class PPMessageImageMediaItem implements IPPMessageMediaItem {
     }
 
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(mime);
-        dest.writeString(thumId);
-        dest.writeString(origId);
-        dest.writeString(thumUrl);
-        dest.writeString(origUrl);
-        dest.writeInt(origWidth);
-        dest.writeInt(origHeight);
-        dest.writeInt(thumWidth);
-        dest.writeInt(thumHeight);
+    public String toString() {
+        return "PPMessageImageMediaItem{" +
+                "thumHeight=" + thumHeight +
+                ", thumWidth=" + thumWidth +
+                ", origHeight=" + origHeight +
+                ", origWidth=" + origWidth +
+                ", localPathUrl='" + localPathUrl + '\'' +
+                ", origUrl='" + origUrl + '\'' +
+                ", thumUrl='" + thumUrl + '\'' +
+                ", origId='" + origId + '\'' +
+                ", thumId='" + thumId + '\'' +
+                ", mime='" + mime + '\'' +
+                '}';
     }
 }
