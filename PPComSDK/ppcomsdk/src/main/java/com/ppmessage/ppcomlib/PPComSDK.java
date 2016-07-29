@@ -121,6 +121,7 @@ public class PPComSDK {
                 .setUserIcon(configuration.getUserIcon())
 
                 .setJpushRegistrationId(configuration.getJpushRegistrationId())
+                .setInputHint(configuration.getInputHint())
 
                 .build());
 

@@ -149,6 +149,10 @@ public class PPMessageSDK {
         return this.configuration.userSha1Password;
     }
 
+    public PPMessageSDKConfiguration getConfiguration() {
+        return configuration;
+    }
+
     private void checkConfig() {
         if (configuration == null || hostInfo == null) throw new PPMessageException(CONFIGURATION_EMPTY_LOG);
     }

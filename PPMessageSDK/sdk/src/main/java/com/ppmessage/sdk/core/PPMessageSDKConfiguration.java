@@ -41,6 +41,8 @@ public final class PPMessageSDKConfiguration {
 
     final IImageLoader imageLoader;
 
+    final String inputHint;
+
     public PPMessageSDKConfiguration(Builder builder) {
         this.builder = builder;
 
@@ -70,6 +72,7 @@ public final class PPMessageSDKConfiguration {
         this.enableLogging = builder.enableLogging;
 
         this.imageLoader = builder.imageLoader;
+        this.inputHint = builder.inputHint;
     }
 
     public void update(PPMessageSDKConfiguration configuration) {
@@ -94,6 +97,10 @@ public final class PPMessageSDKConfiguration {
 
     public Builder getBuilder() {
         return builder;
+    }
+
+    public String getInputHint() {
+        return inputHint;
     }
 
     public static class Builder {
@@ -126,6 +133,8 @@ public final class PPMessageSDKConfiguration {
         private boolean enableDebugLogging;
 
         private IImageLoader imageLoader;
+
+        private String inputHint;
 
         public Builder() {
             this.enableLogging = true;
@@ -221,6 +230,17 @@ public final class PPMessageSDKConfiguration {
 
         public Builder setJpushRegistrationId(String jpushRegistrationId) {
             this.jpushRegistrationId = jpushRegistrationId;
+            return this;
+        }
+
+        /**
+         * 设置聊天时候的输入框提示信息
+         *
+         * @param inputHint 提示信息
+         * @return
+         */
+        public Builder setInputHint(String inputHint) {
+            this.inputHint = inputHint;
             return this;
         }
 

@@ -1,6 +1,8 @@
 package com.ppmessage.ppcomdemo;
 
 import android.app.Application;
+import android.content.res.Resources;
+import android.graphics.Color;
 
 import com.ppmessage.ppcomlib.PPComSDK;
 import com.ppmessage.ppcomlib.PPComSDKConfiguration;
@@ -15,9 +17,9 @@ public class App extends Application {
 //    private static final String TEST_API_SECRET = "NjM1MTY4MWU0ZDlmYWEzMzhhZWU4ZjhjNzM5YTJkZDY2N2M0YTRjNA==";
 //    private static final String TEST_SERVER_URL = "http://192.168.0.51:8945";
 
-    private static final String TEST_APP_UUID = "9c60acbd-44bb-11e6-94c0-acbc327f19e9";
-    private static final String TEST_API_KEY = "YjRlZTYyNWY3ZThjMDJlNDg3YjRkYjNkZDQzNTk0NjdmODk1ZTMzNg==";
-    private static final String TEST_API_SECRET = "MTU3ZWE3MWQ4MTc0NzgxNjRhNGViMTdhMWUyMDUxZTRlYzAzNjg2YQ==";
+    private static final String TEST_APP_UUID = "28d059d1-53bd-11e6-a2a6-acbc327f19e9";
+    private static final String TEST_API_KEY = "ZWZiZDZlMWZjYThiMDI4ODUxMjdkMGQyMTE0ZDE2NzE3MDg1NzUxYg==";
+    private static final String TEST_API_SECRET = "Y2VhMmNhMDY2YjdmN2U3OTQ4MWIyNmMyMjE1MTdlZjlmMzUzYWUwZg==";
     private static final String TEST_SERVER_URL = "http://192.168.0.204:8945";
 
     @Override
@@ -30,6 +32,10 @@ public class App extends Application {
                 .setApiKey(TEST_API_KEY)
                 .setApiSecret(TEST_API_SECRET)
                 .setServerUrl(TEST_SERVER_URL)
+                .setInputHint("请输入问题具体描述")
+                .setActionbarBackgroundColor(getResources().getColor(
+                        android.R.color.holo_blue_dark))
+                .setActionbarTitleColor(Color.WHITE)
                 .build());
 
         super.onCreate();

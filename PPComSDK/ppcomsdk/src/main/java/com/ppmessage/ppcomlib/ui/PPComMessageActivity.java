@@ -9,6 +9,7 @@ import android.view.MenuItem;
 
 import com.ppmessage.ppcomlib.PPComSDK;
 import com.ppmessage.ppcomlib.R;
+import com.ppmessage.ppcomlib.utils.PPComUtils;
 import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.bean.common.Conversation;
@@ -55,6 +56,9 @@ public class PPComMessageActivity extends MessageActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setTitle(getIntent().getStringExtra(EXTRA_KEY_CONVERSATION_NAME));
+        PPComUtils.setActivityActionBarStyle(this);
+
         swipeRefreshLayout.setEnabled(true);
 
         sdk = PPComSDK.getInstance();
@@ -66,8 +70,6 @@ public class PPComMessageActivity extends MessageActivity {
 
         conversationUUID = getIntent().getStringExtra(EXTRA_KEY_CONVERSATION_UUID);
         L.d(LOG_GET_CONVERSATION_UUID_FROM_INTENT, conversationUUID);
-
-        setTitle(getIntent().getStringExtra(EXTRA_KEY_CONVERSATION_NAME));
 
         setConversation(findConversation(conversationUUID));
 

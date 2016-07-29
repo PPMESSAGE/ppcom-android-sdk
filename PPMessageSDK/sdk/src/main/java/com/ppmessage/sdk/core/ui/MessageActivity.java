@@ -1,6 +1,5 @@
 package com.ppmessage.sdk.core.ui;
 
-import android.animation.Animator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -86,8 +85,6 @@ public class MessageActivity extends AppCompatActivity {
     protected ImageView recordingStateImageView;
 
     protected ImageView largeImageView;
-    private Animator mCurrentAnimator;
-    private int mShortAnimationDuration;
 
     private PPMessageSDK sdk;
 
@@ -137,7 +134,6 @@ public class MessageActivity extends AppCompatActivity {
         keyboardButton.setVisibility(View.GONE);
 
         imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        mShortAnimationDuration = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         // Avoid keyboard auto popup
         hideKeyboard();
@@ -207,6 +203,10 @@ public class MessageActivity extends AppCompatActivity {
 
     public void setMessageSDK(PPMessageSDK sdk) {
         this.sdk = sdk;
+
+        if (this.sdk != null && this.inputEt != null) {
+            this.inputEt.setHint(this.sdk.getConfiguration().getInputHint());
+        }
     }
 
     public void setConversation(Conversation conversation) {

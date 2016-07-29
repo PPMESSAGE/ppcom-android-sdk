@@ -14,6 +14,7 @@ import com.ppmessage.ppcomlib.model.ConversationMemberModel;
 import com.ppmessage.ppcomlib.model.ConversationsModel;
 import com.ppmessage.ppcomlib.model.PPComMessagesModel;
 import com.ppmessage.ppcomlib.ui.adapter.ConversationMembersAdapter;
+import com.ppmessage.ppcomlib.utils.PPComUtils;
 import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.bean.common.Conversation;
 import com.ppmessage.sdk.core.bean.common.User;
@@ -39,9 +40,11 @@ public class ConversationMemberActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ppcomlib_conversation_member_activity);
-        gridView = (GridView) findViewById(R.id.gridView);
 
         setTitle(R.string.ppcom_sdk_conversation_members_activity_name);
+        PPComUtils.setActivityActionBarStyle(this);
+
+        gridView = (GridView) findViewById(R.id.gridView);
 
         sdk = PPComSDK.getInstance();
         conversationUUID = (String) getIntent().getStringExtra(EXTRA_CONVERSATION_UUID);

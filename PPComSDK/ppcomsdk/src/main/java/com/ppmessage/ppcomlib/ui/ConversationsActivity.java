@@ -16,6 +16,7 @@ import com.ppmessage.ppcomlib.R;
 import com.ppmessage.ppcomlib.model.ConversationsModel;
 import com.ppmessage.ppcomlib.services.ConversationWaitingService;
 import com.ppmessage.ppcomlib.services.PPComStartupHelper;
+import com.ppmessage.ppcomlib.utils.PPComUtils;
 import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.bean.common.Conversation;
@@ -54,6 +55,7 @@ public class ConversationsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        PPComUtils.setActivityActionBarStyle(this);
 
         sdk = PPComSDK.getInstance();
         messageSDK = sdk.getPPMessageSDK();

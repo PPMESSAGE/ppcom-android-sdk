@@ -1,6 +1,8 @@
 package com.ppmessage.ppcomlib;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.support.annotation.ColorInt;
 
 import com.ppmessage.sdk.core.PPMessageSDKConfiguration;
 import com.ppmessage.sdk.core.bean.message.PPMessage;
@@ -32,6 +34,11 @@ public final class PPComSDKConfiguration {
     private String userFullName;
     private String jpushRegistrationId;
 
+    // View Related
+    final String inputHint;
+    final int actionbarBackgroundColor;
+    final int actionbarTitleColor;
+
     public PPComSDKConfiguration(PPComSDKConfiguration.Builder builder) {
         this.builder = builder;
 
@@ -51,6 +58,10 @@ public final class PPComSDKConfiguration {
         this.entUserData = this.builder.entUserData;
 
         this.jpushRegistrationId = this.builder.jpushRegistrationId;
+
+        this.inputHint = builder.inputHint;
+        this.actionbarBackgroundColor = builder.actionbarBackgroundColor;
+        this.actionbarTitleColor = builder.actionbarTitleColor;
     }
 
     public void update(PPComSDKConfiguration configuration) {
@@ -134,6 +145,18 @@ public final class PPComSDKConfiguration {
         return jpushRegistrationId;
     }
 
+    public String getInputHint() {
+        return inputHint;
+    }
+
+    public int getActionbarBackgroundColor() {
+        return actionbarBackgroundColor;
+    }
+
+    public int getActionbarTitleColor() {
+        return actionbarTitleColor;
+    }
+
     public static class Builder {
 
         private Context context;
@@ -155,11 +178,18 @@ public final class PPComSDKConfiguration {
         private String apiKey;
         private String apiSecret;
 
+        private String inputHint;
+        private int actionbarBackgroundColor;
+        private int actionbarTitleColor;
+
         public Builder() {
+            this(null);
         }
 
         public Builder(Context context) {
-            this.context = context;
+            setContext(context);
+            setActionbarBackgroundColor(Color.BLUE);
+            setActionbarTitleColor(Color.WHITE);
         }
 
         public PPComSDKConfiguration.Builder setContext(Context context) {
@@ -219,6 +249,42 @@ public final class PPComSDKConfiguration {
 
         public PPComSDKConfiguration.Builder setJpushRegistrationId(String jpushRegistrationId) {
             this.jpushRegistrationId = jpushRegistrationId;
+            return this;
+        }
+
+        /**
+         * Set input hint, deault is null <br>
+         * 设置聊天时的输入框提示信息,默认为 null
+         *
+         * @param inputHint
+         * @return
+         */
+        public PPComSDKConfiguration.Builder setInputHint(String inputHint) {
+            this.inputHint = inputHint;
+            return this;
+        }
+
+        /**
+         * Set Activity actionBar's title color. Default is white color <br>
+         * 设置 Activity ActionBar 标题颜色, 默认是白色
+         *
+         * @param actionbarTitleColor
+         * @return
+         */
+        public PPComSDKConfiguration.Builder setActionbarTitleColor(@ColorInt int actionbarTitleColor) {
+            this.actionbarTitleColor = actionbarTitleColor;
+            return this;
+        }
+
+        /**
+         * Set Activity actionBar's background color. Default is BLUE<br>
+         * 设置 Activity ActionBar 背景颜色, 默认为蓝色
+         *
+         * @param actionbarBackgroundColor
+         * @return
+         */
+        public PPComSDKConfiguration.Builder setActionbarBackgroundColor(@ColorInt int actionbarBackgroundColor) {
+            this.actionbarBackgroundColor = actionbarBackgroundColor;
             return this;
         }
 
