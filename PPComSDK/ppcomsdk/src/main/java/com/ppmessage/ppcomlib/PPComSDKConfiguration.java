@@ -39,6 +39,8 @@ public final class PPComSDKConfiguration {
     final int actionbarBackgroundColor;
     final int actionbarTitleColor;
 
+    final boolean enableLog;
+
     public PPComSDKConfiguration(PPComSDKConfiguration.Builder builder) {
         this.builder = builder;
 
@@ -62,6 +64,8 @@ public final class PPComSDKConfiguration {
         this.inputHint = builder.inputHint;
         this.actionbarBackgroundColor = builder.actionbarBackgroundColor;
         this.actionbarTitleColor = builder.actionbarTitleColor;
+
+        this.enableLog = builder.enableLog;
     }
 
     public void update(PPComSDKConfiguration configuration) {
@@ -182,6 +186,8 @@ public final class PPComSDKConfiguration {
         private int actionbarBackgroundColor;
         private int actionbarTitleColor;
 
+        private boolean enableLog;
+
         public Builder() {
             this(null);
         }
@@ -190,6 +196,7 @@ public final class PPComSDKConfiguration {
             setContext(context);
             setActionbarBackgroundColor(Color.BLUE);
             setActionbarTitleColor(Color.WHITE);
+            setEnableLog(true);
         }
 
         public PPComSDKConfiguration.Builder setContext(Context context) {
@@ -273,6 +280,11 @@ public final class PPComSDKConfiguration {
          */
         public PPComSDKConfiguration.Builder setActionbarTitleColor(@ColorInt int actionbarTitleColor) {
             this.actionbarTitleColor = actionbarTitleColor;
+            return this;
+        }
+
+        public PPComSDKConfiguration.Builder setEnableLog(boolean enableLog) {
+            this.enableLog = enableLog;
             return this;
         }
 

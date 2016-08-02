@@ -1,7 +1,6 @@
 package com.ppmessage.ppcomdemo;
 
 import android.app.Application;
-import android.content.res.Resources;
 import android.graphics.Color;
 
 import com.ppmessage.ppcomlib.PPComSDK;
@@ -36,6 +35,7 @@ public class App extends Application {
                 .setActionbarBackgroundColor(getResources().getColor(
                         android.R.color.holo_blue_dark))
                 .setActionbarTitleColor(Color.WHITE)
+                .setEnableLog(true)
                 .build());
 
         super.onCreate();

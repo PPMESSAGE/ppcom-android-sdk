@@ -2,8 +2,8 @@ package com.ppmessage.sdk.core;
 
 import android.content.Context;
 
+import com.ppmessage.sdk.core.utils.GlideImageLoader;
 import com.ppmessage.sdk.core.utils.IImageLoader;
-import com.ppmessage.sdk.core.utils.UILImageLoader;
 
 /**
  * Created by ppmessage on 5/12/16.
@@ -143,7 +143,7 @@ public final class PPMessageSDKConfiguration {
 
         public Builder setContext(Context context) {
             this.context = context;
-            this.imageLoader = new UILImageLoader(context);
+            this.imageLoader = new GlideImageLoader(context);
             return this;
         }
 

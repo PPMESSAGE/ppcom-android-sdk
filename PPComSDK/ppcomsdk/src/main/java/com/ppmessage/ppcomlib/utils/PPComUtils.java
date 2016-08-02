@@ -9,7 +9,6 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 
 import com.ppmessage.ppcomlib.PPComSDK;
-import com.ppmessage.sdk.core.L;
 
 /**
  * Created by ppmessage on 7/29/16.
@@ -20,8 +19,6 @@ public final class PPComUtils {
     }
 
     public static void setActivityActionBarStyle(AppCompatActivity activity) {
-        L.d("PPCOMSDK:%s, PPComSDK.getInstance().getConfiguration():%s", String.valueOf(PPComSDK.getInstance() != null),
-                String.valueOf(PPComSDK.getInstance().getConfiguration() != null));
         if (PPComSDK.getInstance() == null || PPComSDK.getInstance().getConfiguration() == null) return;
 
         setActivityActionBarStyle(activity,
@@ -30,11 +27,6 @@ public final class PPComUtils {
     }
 
     public static void setActivityActionBarStyle(AppCompatActivity activity, @ColorInt int actionBarBackgroundColor, @ColorInt int actionBarTitleColor) {
-        L.d("activity:%s, supportActionbar:%s, actionBarBackgroundColor:%d, actionBarTitleColor:%d",
-                String.valueOf(activity != null),
-                String.valueOf(activity.getSupportActionBar() != null),
-                actionBarBackgroundColor,
-                actionBarTitleColor);
         if (activity == null || activity.getSupportActionBar() == null) return;
 
         final ActionBar actionBar = activity.getSupportActionBar();

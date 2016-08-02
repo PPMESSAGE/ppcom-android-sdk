@@ -23,11 +23,19 @@ import java.util.List;
  */
 public class UnackedMessagesLoader {
 
+    private static final String TAG = UnackedMessagesLoader.class.getSimpleName();
+    public static final String LOG_API_PAGE_UNACKED_MESSAGES_EMPTY = "[" + TAG + "]: call api to page unacked messages, empty result, cancel request";
+    public static final String LOG_PROCESS_UNACKED_MESSAGES_COMPLETED = "[" + TAG + "]: process %d unacked messages completed, total unacked messages count %d";
+
+    private static final int DEFAULT_PAGE_UNACKED_MESSAGES_COUNT = 30;
+
     private PPMessageSDK messageSDK;
     private UnackedMessagesProcessor messagesProcessor;
+    private boolean stop;
 
     public UnackedMessagesLoader(PPMessageSDK messageSDK) {
         this.messageSDK = messageSDK;
+        this.stop = false;
     }
 
     /**
@@ -41,17 +49,28 @@ public class UnackedMessagesLoader {
         final JSONObject requestParam = getRequestParam();
         if (requestParam == null) return;
 
-        messageSDK.getAPI().getUnackedMessages(requestParam, new OnAPIRequestCompleted() {
+        messageSDK.getAPI().pageUnackedMessages(requestParam, new OnAPIRequestCompleted() {
             @Override
             public void onResponse(JSONObject jsonResponse) {
                 List<String> unackedMessageJSONStringList = UnackedMessagesLoader.this.onResponse(jsonResponse);
                 if (unackedMessageJSONStringList == null || unackedMessageJSONStringList.isEmpty()) {
+                    L.d(LOG_API_PAGE_UNACKED_MESSAGES_EMPTY);
                     return;
                 }
 
-                UnackedMessagesLoader.this.stop();
+                UnackedMessagesLoader.this.stopLastMessagesProcessor();
 
                 messagesProcessor = new UnackedMessagesProcessor(messageSDK, unackedMessageJSONStringList);
+                messagesProcessor.setCompletedCallback(new UnackedMessagesProcessor.OnCompletedCallback() {
+                    @Override
+                    public void onCompleted(int messageProcessedCount, int messageTotalCount) {
+                        L.d(LOG_PROCESS_UNACKED_MESSAGES_COMPLETED, messageProcessedCount, messageTotalCount);
+
+                        if (!isStop()) {
+                            loadUnackedMessages();
+                        }
+                    }
+                });
                 messagesProcessor.start();
             }
 
@@ -69,14 +88,23 @@ public class UnackedMessagesLoader {
     }
 
     public void stop() {
+        stopLastMessagesProcessor();
+        stop = true;
+    }
+
+    public boolean inLoading() {
+        return messagesProcessor != null && !messagesProcessor.isCompleted() && !isStop();
+    }
+
+    public boolean isStop() {
+        return stop;
+    }
+
+    private void stopLastMessagesProcessor() {
         if (messagesProcessor != null) {
             messagesProcessor.stop();
             messagesProcessor = null;
         }
-    }
-
-    public boolean inLoading() {
-        return messagesProcessor != null && !messagesProcessor.isCompleted();
     }
 
     private JSONObject getRequestParam() {
@@ -86,9 +114,10 @@ public class UnackedMessagesLoader {
 
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put("page_offset", 0);
+            jsonObject.put("page_size", DEFAULT_PAGE_UNACKED_MESSAGES_COUNT);
             jsonObject.put("app_uuid", appUUID);
-            jsonObject.put("from_uuid", activeUser.getUuid());
-            jsonObject.put("device_uuid", activeUser.getDeviceUUID());
+            jsonObject.put("user_uuid", activeUser.getUuid());
         } catch (JSONException e) {
             L.e(e);
         }
@@ -165,6 +194,10 @@ public class UnackedMessagesLoader {
 
     private static class UnackedMessagesProcessor {
 
+        interface OnCompletedCallback {
+            void onCompleted(int messageProcessedCount, int messageTotalCount);
+        }
+
         private static final String LOG_START = "[UnackedMessagesProcessor] start process unacked messages, count: %d";
         private static final String LOG_NEXT = "[UnackedMessagesProcessor] next unacked message, index:%d, message:%s";
         private static final String LOG_COMPLETED = "[UnackedMessagesProcessor] index == size, finished, total unacked messages: %d";
@@ -177,6 +210,7 @@ public class UnackedMessagesLoader {
         private List<String> unackedMessages;
         private int index;
         private boolean completed;
+        private OnCompletedCallback completedCallback;
 
         public UnackedMessagesProcessor(PPMessageSDK messageSDK, final List<String> unackedMessages) {
             this.handler = new Handler(Looper.getMainLooper()) {
@@ -196,6 +230,10 @@ public class UnackedMessagesLoader {
             this.unackedMessages = unackedMessages;
             this.index = -1;
             setCompleted(false);
+        }
+
+        public void setCompletedCallback(OnCompletedCallback completedCallback) {
+            this.completedCallback = completedCallback;
         }
 
         public void start() {
@@ -237,6 +275,12 @@ public class UnackedMessagesLoader {
 
         private void setCompleted(boolean completed) {
             this.completed = completed;
+
+            if (completed) {
+                if (completedCallback != null) {
+                    completedCallback.onCompleted(index, unackedMessages != null ? unackedMessages.size() : 0);
+                }
+            }
         }
     }
 

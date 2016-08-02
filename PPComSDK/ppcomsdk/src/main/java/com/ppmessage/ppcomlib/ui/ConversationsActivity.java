@@ -51,6 +51,7 @@ public class ConversationsActivity extends AppCompatActivity {
     private static final String LOG_WAITING = "[ConversationsActivity] waiting conversations ...";
     private static final String LOG_REMOVE_LISTENER = "[ConversationsActivity] remove notification listener";
     private static final String LOG_ADD_LISTENER = "[ConversationsActivity] add notification listener";
+    private static final String LOG_CANCEL_ANY_ONGOING_TASK = "[ConversationsActivity] cancel any ongoing task";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +86,12 @@ public class ConversationsActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         removeNotificationListener();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cancelAnyOnGoingTask();
     }
 
     public void startUp() {
@@ -252,6 +259,15 @@ public class ConversationsActivity extends AppCompatActivity {
         if (unackedMessagesLoader != null) {
             unackedMessagesLoader.loadUnackedMessages();
         }
+    }
+
+    private void cancelAnyOnGoingTask() {
+        cancelWaiting();
+        if (unackedMessagesLoader != null) {
+            unackedMessagesLoader.stop();
+            unackedMessagesLoader = null;
+        }
+        L.d(LOG_CANCEL_ANY_ONGOING_TASK);
     }
 
 }

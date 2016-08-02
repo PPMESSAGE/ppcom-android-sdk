@@ -56,8 +56,8 @@ public class MessageAdapter extends BaseAdapter {
     private static final double MAX_AUDIO_WIDTH_RATIO = 0.5;
     private static final double MIN_AUDIO_WIDTH = 96;
 
-    private static final int DEFAULT_AVATAR_WIDTH = 48;
-    private static final int DEFAULT_AVATAR_HEIGHT = 48;
+    private static final int DEFAULT_AVATAR_WIDTH = 72;
+    private static final int DEFAULT_AVATAR_HEIGHT = 72;
 
     private static final int DEFAULT_THUMB_WIDTH_IN_SERVER = 120;
     private static final int DEFAULT_THUMB_HEIGHT_IN_SERVER = 160;
@@ -534,8 +534,10 @@ public class MessageAdapter extends BaseAdapter {
 
             // Orig Bitmap exist in disk
             if (imageUri == null) {
+                File imageFile = sdk.getImageLoader().imageFile(imageMediaItem.getOrigUrl());
                 if (imageMediaItem.getOrigUrl() != null &&
-                        sdk.getImageLoader().imageFile(imageMediaItem.getOrigUrl()) != null) {
+                        imageFile != null &&
+                        imageFile.exists()) {
                     imageUri = imageMediaItem.getOrigUrl();
                 }
             }
@@ -567,7 +569,8 @@ public class MessageAdapter extends BaseAdapter {
                 }
             } else {
                 // Avoid poentially & frequently happend OOM problem
-                int inSampleSize = calculateInSampleSize(
+                // Avoid poentially & frequently happend OOM problem
+                int inSampleSize = Utils.calculateInSampleSize(
                         DEFAULT_DISPLAY_WIDTH,
                         DEFAULT_DISPLAY_HEIGHT,
                         imageMediaItem.getOrigWidth(),
@@ -596,24 +599,6 @@ public class MessageAdapter extends BaseAdapter {
         }
     }
 
-    private int calculateInSampleSize(int reqWidth, int reqHeight, int width, int height) {
-        int sampleSize = 1;
-        if (height > reqHeight || width > reqWidth) {
-            final int heightRatio;
-            final int widthRatio;
-            if (reqHeight == 0) {
-                sampleSize = (int) Math.floor((float) width / (float) reqWidth);
-            } else if (reqWidth == 0) {
-                sampleSize = (int) Math.floor((float) height / (float) reqHeight);
-            } else {
-                heightRatio = (int) Math.floor((float) height / (float) reqHeight);
-                widthRatio = (int) Math.floor((float) width / (float) reqWidth);
-                sampleSize = Math.min(heightRatio, widthRatio);
-            }
-        }
-        return sampleSize;
-    }
-
     // === Long Click, Click Listener ===
 
     private void bindTextViewLongClickListener(final TextView textView) {
@@ -635,12 +620,14 @@ public class MessageAdapter extends BaseAdapter {
                     final PPMessageImageMediaItem imageMediaItem = (PPMessageImageMediaItem) message.getMediaItem();
                     if (imageMediaItem != null) {
                         String imageUrl = imageMediaItem.getLocalPathUrl();
-                        if (imageUrl == null || new File(Uri.parse(imageUrl).getPath()).exists() ) {
+                        if (imageUrl == null || !new File(Uri.parse(imageUrl).getPath()).exists() ) {
                             imageUrl = imageMediaItem.getOrigUrl();
                         }
 
                         Intent intent = new Intent(activity, EaseShowBigImageActivity.class);
                         intent.putExtra(EaseShowBigImageActivity.EXTRA_IMAGE_URI_KEY, imageUrl);
+                        intent.putExtra(EaseShowBigImageActivity.EXTRA_IMAGE_WIDTH_KEY, imageMediaItem.getOrigWidth());
+                        intent.putExtra(EaseShowBigImageActivity.EXTRA_IMAGE_HEIGHT_KEY, imageMediaItem.getOrigHeight());
                         activity.startActivityForResult(intent, MessageActivity.REQUEST_SHOW_BIG_IMAGE_RESULT);
                     }
 

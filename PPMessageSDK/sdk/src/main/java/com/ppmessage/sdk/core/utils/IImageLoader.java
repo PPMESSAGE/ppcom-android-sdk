@@ -33,4 +33,6 @@ public interface IImageLoader {
 
     void loadImage(String imageUri, int width, int height, Drawable placeHolder, ImageView target, Callback callback);
 
+    void loadImage(String imageUri, int width, int height, boolean asGif, Drawable placeHolder, ImageView target, Callback callback);
+
 }

@@ -123,6 +123,8 @@ public class PPComSDK {
                 .setJpushRegistrationId(configuration.getJpushRegistrationId())
                 .setInputHint(configuration.getInputHint())
 
+                .setEnableDebugLogging(configuration.enableLog)
+
                 .build());
 
     }

@@ -374,4 +374,22 @@ public final class Utils {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
 
+    public static int calculateInSampleSize(int reqWidth, int reqHeight, int width, int height) {
+        int sampleSize = 1;
+        if (height > reqHeight || width > reqWidth) {
+            final int heightRatio;
+            final int widthRatio;
+            if (reqHeight == 0) {
+                sampleSize = (int) Math.floor((float) width / (float) reqWidth);
+            } else if (reqWidth == 0) {
+                sampleSize = (int) Math.floor((float) height / (float) reqHeight);
+            } else {
+                heightRatio = (int) Math.floor((float) height / (float) reqHeight);
+                widthRatio = (int) Math.floor((float) width / (float) reqWidth);
+                sampleSize = Math.min(heightRatio, widthRatio);
+            }
+        }
+        return sampleSize;
+    }
+
 }

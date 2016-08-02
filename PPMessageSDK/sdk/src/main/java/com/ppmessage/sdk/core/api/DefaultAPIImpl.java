@@ -142,4 +142,9 @@ public class DefaultAPIImpl extends BaseAPIRequest implements IAPI {
     public void closeConversation(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
         super.post("/PP_CLOSE_CONVERSATION", requestParam, completedCallback);
     }
+
+    @Override
+    public void pageUnackedMessages(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
+        super.post("/PP_PAGE_UNACKED_MESSAGE", requestParam, completedCallback);
+    }
 }

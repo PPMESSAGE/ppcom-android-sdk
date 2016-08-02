@@ -21,7 +21,6 @@ import android.view.View.OnClickListener;
 import android.widget.ProgressBar;
 
 import com.ppmessage.sdk.R;
-import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.ui.view.photoview.EasePhotoView;
 import com.ppmessage.sdk.core.utils.IImageLoader;
@@ -42,8 +41,6 @@ public class EaseShowBigImageActivity extends Activity {
     private EasePhotoView image;
     private ProgressBar loadLocalPb;
 
-    private boolean downloadOK;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,23 +55,27 @@ public class EaseShowBigImageActivity extends Activity {
         final int width = getIntent().getIntExtra(EXTRA_IMAGE_WIDTH_KEY, screenPoint.x);
         final int height = getIntent().getIntExtra(EXTRA_IMAGE_HEIGHT_KEY, screenPoint.y);
 
-        L.d("show big image remotepath:%s, width:%d, height:%d", remotepath, width, height);
+        int sampleSize = Utils.calculateInSampleSize(width, height, screenPoint.x, screenPoint.y);
+        if (sampleSize < 1) sampleSize = 1;
+
+        int targetWidth = width / sampleSize;
+        int targetHeight = height / sampleSize;
 
         loadLocalPb.setVisibility(View.VISIBLE);
         PPMessageSDK.getInstance().getImageLoader().loadImage(
                 remotepath,
-                width,
-                height,
+                targetWidth,
+                targetHeight,
+                true,
                 null,
                 image,
                 new IImageLoader.Callback() {
                     @Override
                     public void onSuccess() {
-                        if (EaseShowBigImageActivity.this.isFinishing() || EaseShowBigImageActivity.this.isDestroyed()) {
+                        if (EaseShowBigImageActivity.this.isFinishing()) {
                             return;
                         }
 
-                        downloadOK = true;
                         setResult(Activity.RESULT_OK);
                         loadLocalPb.setVisibility(View.GONE);
                     }

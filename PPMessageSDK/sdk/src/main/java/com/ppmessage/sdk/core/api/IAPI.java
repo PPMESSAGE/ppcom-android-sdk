@@ -215,4 +215,12 @@ public interface IAPI {
      */
     void closeConversation(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
 
+    /**
+     * paging unacked messages
+     *
+     * @param requestParam
+     * @param completedCallback
+     */
+    void pageUnackedMessages(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
+
 }

@@ -26,8 +26,8 @@ public class ConversationsAdapter extends BaseAdapter {
     private static final String ITEM_CLICK_LOG = "[ConversationsAdapter] item clicked: %s";
     private static final String ITEM_LONG_CLICK_LOG = "[ConversationsAdapter] item long clicked: %s";
 
-    private static final int DEFAULT_WIDTH = 48;
-    private static final int DEFAULT_HEIGHT = 48;
+    private static final int DEFAULT_WIDTH = 72;
+    private static final int DEFAULT_HEIGHT = 72;
 
     public interface OnItemClickListener {
         void onItemClicked(View container, Conversation conversation);
