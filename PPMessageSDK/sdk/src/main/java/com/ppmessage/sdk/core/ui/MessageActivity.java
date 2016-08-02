@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -106,6 +107,8 @@ public class MessageActivity extends AppCompatActivity {
     private String textInput;
 
     private String imagePath;
+
+    private int listViewFirstVisibleItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -329,6 +332,31 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 largeImageView.setVisibility(View.GONE);
+            }
+        });
+
+        messageListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
+                                 int totalItemCount) {
+                if (messageListView.getChildCount() > 0) {
+                    if (listViewFirstVisibleItem != firstVisibleItem) {
+                        if (listViewFirstVisibleItem > firstVisibleItem) {
+                            onScrollDown();
+                        }
+                        listViewFirstVisibleItem = firstVisibleItem;
+                    }
+                }
+            }
+
+            private void onScrollDown() {
+                if (imm != null && inputEt != null) {
+                    imm.hideSoftInputFromWindow(inputEt.getWindowToken(), 0);
+                }
             }
         });
     }
