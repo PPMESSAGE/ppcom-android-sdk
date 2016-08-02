@@ -34,6 +34,7 @@
     <string name="pp_chat_tools_hold_voice_slide_up_to_cancel">向上滑动取消</string>
     <string name="pp_external_storage_not_avaliable">内存卡不可用</string>
     <string name="pp_recording_audio_error">录制错误</string>
+    <string name="pp_recording_audio_no_permission">无法得到语音录制权限</string>
 
     <!-- playing -->
     <string name="pp_mediaplayer_play_error">无法播放</string>

@@ -1,14 +1,18 @@
 package com.ppmessage.sdk.core.ui;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.media.MediaRecorder;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -53,6 +57,8 @@ public class MessageActivity extends AppCompatActivity {
     public static final int REQUEST_PICK_IMAGES_FROM_GALLERY = 2;
     /** Is show big image download successful **/
     public static final int REQUEST_SHOW_BIG_IMAGE_RESULT = 3;
+    /** We should require RECORD_AUDIO permission dynamically on Android 6.0 platform **/
+    public static final int REQUEST_AUDIO_RECORD_PERMISSION = 4;
 
     private static final String TEXT_EMPTY_LOG = "[Send] text == nil";
     private static final String SDK_EMPTY_LOG = "[Send] SDK == nil";
@@ -66,6 +72,7 @@ public class MessageActivity extends AppCompatActivity {
     private static final String PHOTOPATH_FILE_NOT_EXIST = "[MessageActivity] photo not exist in path:%s.";
     private static final String PICK_IMAGE_FROM_GALLERY_DATA_EMPTY = "[MessageActivity] pick image from gallery, data == null";
     private static final String PICK_IMAGE_FROM_GALLERY_PATH = "[MessageActivity] pick image from gallery, data path: %s";
+    private static final String DEVICE_NO_CAMERA_LOG = "[MessageActivity] device has no camera";
 
     protected MessageListView messageListView;
     protected SwipeRefreshLayout swipeRefreshLayout;
@@ -193,6 +200,20 @@ public class MessageActivity extends AppCompatActivity {
                 }
 
             }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case REQUEST_AUDIO_RECORD_PERMISSION:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                    Utils.makeToast(this, R.string.pp_recording_audio_no_permission);
+                }
+                break;
         }
     }
 
@@ -594,9 +615,18 @@ public class MessageActivity extends AppCompatActivity {
     }
 
     private void startRecording() {
+        // Check and request permission if need on Android 6.0 platform
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int hasRecordAudioPermission = checkSelfPermission(Manifest.permission.RECORD_AUDIO);
+            if (hasRecordAudioPermission != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[] { Manifest.permission.RECORD_AUDIO }, REQUEST_AUDIO_RECORD_PERMISSION);
+                return;
+            }
+        }
+
         if (!Utils.isExternalStorageWritable()) {
             L.w(EXTERNAL_STORAGE_NOT_OK);
-            Toast.makeText(MessageActivity.this, R.string.pp_external_storage_not_avaliable, Toast.LENGTH_SHORT).show();
+            Utils.makeToast(this, R.string.pp_external_storage_not_avaliable);
             return;
         }
 
@@ -608,31 +638,35 @@ public class MessageActivity extends AppCompatActivity {
         File audioFile = new File(audioCacheDir, generateAudioFileName());
         this.recordingAudioFilePath = audioFile.getPath();
 
-        mediaRecorder = new MediaRecorder();
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        mediaRecorder.setOutputFile(recordingAudioFilePath);
-        mediaRecorder.setOnErrorListener(new MediaRecorder.OnErrorListener() {
-            @Override
-            public void onError(MediaRecorder mediaRecorder, int i, int i1) {
-                L.d("[MediaRecorder] error %d: %d", i, i1);
-                stopRecording();
-                Toast.makeText(MessageActivity.this, R.string.pp_recording_audio_error, Toast.LENGTH_SHORT).show();
-            }
-        });
-        mediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
-            @Override
-            public void onInfo(MediaRecorder mediaRecorder, int i, int i1) {
-                L.d("[MediaRecorder] info %d: %d", i, i1);
-            }
-        });
-
         try {
+            mediaRecorder = new MediaRecorder();
+            mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            mediaRecorder.setOutputFile(recordingAudioFilePath);
+            mediaRecorder.setOnErrorListener(new MediaRecorder.OnErrorListener() {
+                @Override
+                public void onError(MediaRecorder mediaRecorder, int i, int i1) {
+                    L.d("[MediaRecorder] error %d: %d", i, i1);
+                    stopRecording();
+                    Toast.makeText(MessageActivity.this, R.string.pp_recording_audio_error, Toast.LENGTH_SHORT).show();
+                }
+            });
+            mediaRecorder.setOnInfoListener(new MediaRecorder.OnInfoListener() {
+                @Override
+                public void onInfo(MediaRecorder mediaRecorder, int i, int i1) {
+                    L.d("[MediaRecorder] info %d: %d", i, i1);
+                }
+            });
+
             mediaRecorder.prepare();
             mediaRecorder.start();
             audioRecordStartTimestamp = System.currentTimeMillis();
         } catch (IOException e) {
+            L.e(e);
+            Toast.makeText(MessageActivity.this, R.string.pp_recording_audio_error, Toast.LENGTH_SHORT).show();
+            return;
+        } catch (Exception e) {
             L.e(e);
             Toast.makeText(MessageActivity.this, R.string.pp_recording_audio_error, Toast.LENGTH_SHORT).show();
             return;
@@ -757,6 +791,11 @@ public class MessageActivity extends AppCompatActivity {
      */
     private void takePicture() {
         if (!checkSendImageMessageRequirements()) {
+            return;
+        }
+
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+            L.w(DEVICE_NO_CAMERA_LOG);
             return;
         }
 

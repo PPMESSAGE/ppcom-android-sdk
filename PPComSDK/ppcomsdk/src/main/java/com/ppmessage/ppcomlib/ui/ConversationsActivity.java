@@ -94,6 +94,12 @@ public class ConversationsActivity extends AppCompatActivity {
         cancelAnyOnGoingTask();
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        cancelAnyOnGoingTask();
+    }
+
     public void startUp() {
         getLoadingDialog().show();
 

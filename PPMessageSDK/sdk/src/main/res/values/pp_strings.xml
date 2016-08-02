@@ -78,6 +78,7 @@
     <string name="pp_chat_tools_hold_voice_slide_up_to_cancel">Slide up to cancel</string>
     <string name="pp_external_storage_not_avaliable">External storage cannot write</string>
     <string name="pp_recording_audio_error">Recording audio error</string>
+    <string name="pp_recording_audio_no_permission">Cannot get audio record permission</string>
 
     <!-- playing -->
     <string name="pp_mediaplayer_play_error">Play audio error</string>

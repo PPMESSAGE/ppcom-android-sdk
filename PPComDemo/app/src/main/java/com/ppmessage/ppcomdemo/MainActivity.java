@@ -1,12 +1,8 @@
 package com.ppmessage.ppcomdemo;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 
 import com.ppmessage.ppcomlib.ui.ConversationsActivity;
-import com.ppmessage.sdk.core.bean.common.Conversation;
-import com.ppmessage.sdk.core.ui.adapter.ConversationsAdapter;
 
 /**
  * Created by ppmessage on 5/13/16.
@@ -27,19 +23,5 @@ public class MainActivity extends ConversationsActivity {
 //                .build());
 //
         startUp();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // NOTE: ONLY FOR TEST
-//        conversationFragment.setOnItemClickListener(new ConversationsAdapter.OnItemClickListener() {
-//            @Override
-//            public void onItemClicked(View container, Conversation conversation) {
-//                Intent intent = new Intent(MainActivity.this, TestMessageActivity.class);
-//                startActivity(intent);
-//            }
-//        });
     }
 }
