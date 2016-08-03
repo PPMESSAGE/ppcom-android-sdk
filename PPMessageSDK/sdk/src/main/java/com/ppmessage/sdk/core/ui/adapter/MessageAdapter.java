@@ -42,6 +42,10 @@ import java.util.Locale;
  */
 public class MessageAdapter extends BaseAdapter {
 
+    public interface OnConvertViewClickEvent {
+        void onClick(View convertView, int position);
+    }
+
     private static final String LOG_MEDIAPLAYER_PREPARE_ERROR = "[MessageAdapter] mediaplayer try to play: %s, meet error: %s";
     private static final String LOG_MEDIAPLAYER_MEET_ERROR = "[MessageAdapter] mediaplayer meet error: [%d: %d]";
     private static final String LOG_MEDIAPLAYER_COMPLETED = "[MessageAdapter] mediaplayer play completed";
@@ -90,6 +94,8 @@ public class MessageAdapter extends BaseAdapter {
 
     private MediaPlayer mediaPlayer;
 
+    private OnConvertViewClickEvent convertViewClickEvent;
+
     public MessageAdapter(PPMessageSDK sdk, Activity activity, List<PPMessage> messages) {
         this(sdk, activity, messages, true);
     }
@@ -132,7 +138,7 @@ public class MessageAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         int type = getItemViewType(position);
         PPMessage message = getItem(position);
 
@@ -161,11 +167,23 @@ public class MessageAdapter extends BaseAdapter {
         }
 
         if (v != null) {
-            v.setClickable(false);
-            v.setOnClickListener(null);
+            final View messageView = v;
+            messageView.setClickable(true);
+            messageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (convertViewClickEvent != null) {
+                        convertViewClickEvent.onClick(messageView, position);
+                    }
+                }
+            });
         }
 
         return v;
+    }
+
+    public void setConvertViewClickEvent(OnConvertViewClickEvent convertViewClickEvent) {
+        this.convertViewClickEvent = convertViewClickEvent;
     }
 
     /**
@@ -230,6 +248,7 @@ public class MessageAdapter extends BaseAdapter {
         holder.fileNameTv.setText(fileMediaItem.getName());
         setMessageItemExtraInfo(holder.timestampTv, message);
         holder.fileNameTv.setMaxWidth(getMaxFileBubbleWidth());
+        bindFileViewClickListener(holder.container);
 
         return v;
     }
@@ -262,6 +281,7 @@ public class MessageAdapter extends BaseAdapter {
         loadAvatar(v, message, holder.avatar);
         holder.fileNameTv.setMaxWidth(getMaxFileBubbleWidth());
         v.setClickable(false);
+        bindFileViewClickListener(holder.container);
 
         return v;
     }
@@ -632,6 +652,14 @@ public class MessageAdapter extends BaseAdapter {
                     }
 
                 }
+            }
+        });
+    }
+
+    private void bindFileViewClickListener(final ViewGroup fileContainer) {
+        fileContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
             }
         });
     }

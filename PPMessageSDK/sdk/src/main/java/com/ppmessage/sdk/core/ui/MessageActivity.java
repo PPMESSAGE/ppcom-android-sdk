@@ -223,6 +223,16 @@ public class MessageActivity extends AppCompatActivity {
             this.messageListView.setAdapter(this.messageAdapter);
             this.messageAdapter.notifyDataSetChanged();
         }
+        if (this.messageAdapter != null) {
+            this.messageAdapter.setConvertViewClickEvent(new MessageAdapter.OnConvertViewClickEvent() {
+                @Override
+                public void onClick(View convertView, int position) {
+                    if (imm != null && inputEt != null) {
+                        imm.hideSoftInputFromWindow(inputEt.getWindowToken(), 0);
+                    }
+                }
+            });
+        }
     }
 
     public void setMessageSDK(PPMessageSDK sdk) {

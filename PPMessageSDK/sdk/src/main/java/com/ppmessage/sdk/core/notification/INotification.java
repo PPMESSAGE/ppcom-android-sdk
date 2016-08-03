@@ -1,12 +1,9 @@
 package com.ppmessage.sdk.core.notification;
 
-import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.bean.common.Conversation;
 import com.ppmessage.sdk.core.bean.common.User;
 import com.ppmessage.sdk.core.bean.message.PPMessage;
 import com.ppmessage.sdk.core.ws.IWebSocket;
-
-import org.json.JSONObject;
 
 import java.util.List;
 
