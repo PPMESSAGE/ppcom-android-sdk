@@ -53,7 +53,7 @@ public class MessageAdapter extends BaseAdapter {
     private static final String LOG_MEDIAPLAYER_START_PLAY_URI = "[MessageAdapter] mediaplayer start play:%s";
     private static final String LOG_SHOW_USERAVATAR_ERROR = "[MessageAdapter] show user avatar error, fromuser:%s, fromuser_icon:%s";
 
-    private static final double MAX_FILE_WIDTH_RATIO = 0.6;
+    private static final double MAX_FILE_WIDTH_RATIO = 0.5;
     private static final double MAX_TEXT_BUBBLE_RATIO = 0.6;
     private static final double MAX_IMAGE_WIDTH_RATIO = 0.8;
     private static final double MAX_IMAGE_HEIGHT_RATIO = 0.3;
@@ -65,9 +65,8 @@ public class MessageAdapter extends BaseAdapter {
 
     private static final int DEFAULT_THUMB_WIDTH_IN_SERVER = 120;
     private static final int DEFAULT_THUMB_HEIGHT_IN_SERVER = 160;
-    private static final int DEFAULT_THUMB_TO_DISPLAY_ZOOMIN_SAMPLE_SIZE = 3;
-    private static final int DEFAULT_DISPLAY_WIDTH = DEFAULT_THUMB_WIDTH_IN_SERVER * DEFAULT_THUMB_TO_DISPLAY_ZOOMIN_SAMPLE_SIZE;
-    private static final int DEFAULT_DISPLAY_HEIGHT = DEFAULT_THUMB_HEIGHT_IN_SERVER * DEFAULT_THUMB_TO_DISPLAY_ZOOMIN_SAMPLE_SIZE;
+    private static final int DEFAULT_DISPLAY_WIDTH = DEFAULT_THUMB_WIDTH_IN_SERVER;
+    private static final int DEFAULT_DISPLAY_HEIGHT = DEFAULT_THUMB_HEIGHT_IN_SERVER;
 
     // 60.0 seconds. we consider 60.0 seconds voice has the same width with the 100.0 seconds voice
     private static final int MAX_AUDIO_VIEW_TIME = 60;
@@ -576,34 +575,27 @@ public class MessageAdapter extends BaseAdapter {
             }
 
             if (useThumb) {
-                reqWidth = imageMediaItem.getThumWidth();
-                reqHeight = imageMediaItem.getThumHeight();
-
-                // thumb image is too small
-                if (imageMediaItem.getOrigUrl() != null) {
-                    if (imageMediaItem.getOrigWidth() > DEFAULT_THUMB_WIDTH_IN_SERVER &&
-                            imageMediaItem.getOrigHeight() > DEFAULT_THUMB_HEIGHT_IN_SERVER) {
-                        reqWidth *= DEFAULT_THUMB_TO_DISPLAY_ZOOMIN_SAMPLE_SIZE;
-                        reqHeight *= DEFAULT_THUMB_TO_DISPLAY_ZOOMIN_SAMPLE_SIZE;
-                    }
-                }
+                reqWidth = Utils.dip2px(activity, imageMediaItem.getThumWidth());
+                reqHeight = Utils.dip2px(activity, imageMediaItem.getThumHeight());
             } else {
                 // Avoid poentially & frequently happend OOM problem
-                // Avoid poentially & frequently happend OOM problem
-                int inSampleSize = Utils.calculateInSampleSize(
+                int[] size = new int[2];
+                Utils.calculateTargetDisplayImageSize(
+                        size,
                         DEFAULT_DISPLAY_WIDTH,
                         DEFAULT_DISPLAY_HEIGHT,
                         imageMediaItem.getOrigWidth(),
-                        imageMediaItem.getOrigWidth());
+                        imageMediaItem.getOrigHeight()
+                );
 
-                reqWidth = (int) ((float) imageMediaItem.getOrigWidth() / inSampleSize);
-                reqHeight = (int) ((float) imageMediaItem.getOrigHeight() / inSampleSize);
+                reqWidth = Utils.dip2px(activity, size[0]);
+                reqHeight = Utils.dip2px(activity, size[1]);
             }
 
             // Make sure reqWidth and reqHeight > 0
             if (reqWidth <= 0 || reqHeight <= 0) {
-                reqWidth = DEFAULT_DISPLAY_WIDTH;
-                reqHeight = DEFAULT_DISPLAY_HEIGHT;
+                reqWidth = Utils.dip2px(activity, DEFAULT_DISPLAY_WIDTH);
+                reqHeight = Utils.dip2px(activity, DEFAULT_DISPLAY_HEIGHT);
             }
 
             if (imageUri != null) {
@@ -867,12 +859,12 @@ public class MessageAdapter extends BaseAdapter {
             finalHeight = (int) (originImageHeight * ratio);
         }
 
-        setImageSize(targetImageView, finalWidth, finalHeight);
+        setViewSize(targetImageView, finalWidth, finalHeight);
     }
 
-    private void setImageSize(ImageView imageView, int width, int height) {
-        imageView.getLayoutParams().width = width;
-        imageView.getLayoutParams().height = height;
+    private void setViewSize(View view, int width, int height) {
+        view.getLayoutParams().width = width;
+        view.getLayoutParams().height = height;
     }
 
     private void calcAndSetAudioViewFinalTargetWidth(ViewGroup voiceImageParentView, float duration) {

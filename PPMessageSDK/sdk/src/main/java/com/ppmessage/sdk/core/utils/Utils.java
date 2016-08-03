@@ -374,6 +374,21 @@ public final class Utils {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
 
+    public static void calculateTargetDisplayImageSize(int[] outSize, int reqWidth, int reqHeight, int width, int height) {
+        if (outSize == null || outSize.length != 2) {
+            throw new IllegalArgumentException("outSize.length != 2");
+        }
+
+        if (width > reqWidth || height > reqHeight) {
+            float ratio = Math.min((float) reqWidth / width, (float) reqHeight / height);
+            outSize[0] = (int) (width * ratio);
+            outSize[1] = (int) (height * ratio);
+        } else {
+            outSize[0] = width;
+            outSize[1] = height;
+        }
+    }
+
     public static int calculateInSampleSize(int reqWidth, int reqHeight, int width, int height) {
         int sampleSize = 1;
         if (height > reqHeight || width > reqWidth) {
@@ -390,6 +405,22 @@ public final class Utils {
             }
         }
         return sampleSize;
+    }
+
+    /**
+     * 根据手机的分辨率从 dp 的单位 转成为 px(像素)
+     */
+    public static int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
+
+    /**
+     * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
+     */
+    public static int px2dip(Context context, float pxValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
     }
 
 }
