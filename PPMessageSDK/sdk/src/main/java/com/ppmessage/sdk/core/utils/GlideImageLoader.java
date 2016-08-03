@@ -156,4 +156,9 @@ public class GlideImageLoader implements IImageLoader {
                     .into(target);
         }
     }
+
+    @Override
+    public void clearMemory() {
+        Glide.get(context).clearMemory();
+    }
 }

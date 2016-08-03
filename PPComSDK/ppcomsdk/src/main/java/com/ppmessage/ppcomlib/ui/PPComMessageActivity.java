@@ -135,6 +135,12 @@ public class PPComMessageActivity extends MessageActivity {
     protected void onSwipeRefresh(final SwipeRefreshLayout swipeRefreshLayout) {
         super.onSwipeRefresh(swipeRefreshLayout);
 
+        if (!sdk.getPPMessageSDK().getNotification().isConfigurationValid()) {
+            Utils.makeToast(this, R.string.pp_configuration_not_valid);
+            swipeRefreshLayout.setRefreshing(false);
+            return;
+        }
+
         if (!hasMoreHistory(conversationUUID)) {
             Utils.makeToast(this, R.string.pp_no_more_history);
             swipeRefreshLayout.setRefreshing(false);

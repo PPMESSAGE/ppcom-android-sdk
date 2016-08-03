@@ -218,6 +218,9 @@ public interface INotification {
      */
     Config getConfig();
 
+    /** check configuration is valid **/
+    boolean isConfigurationValid();
+
     boolean canSendMessage();
 
     void start();

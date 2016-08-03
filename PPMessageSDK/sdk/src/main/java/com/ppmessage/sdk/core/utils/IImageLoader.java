@@ -35,4 +35,7 @@ public interface IImageLoader {
 
     void loadImage(String imageUri, int width, int height, boolean asGif, Drawable placeHolder, ImageView target, Callback callback);
 
+    /** Clear memory **/
+    void clearMemory();
+
 }

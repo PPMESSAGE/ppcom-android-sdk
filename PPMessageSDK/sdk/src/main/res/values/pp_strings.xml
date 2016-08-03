@@ -70,6 +70,7 @@
 
     <string name="pp_no_more_history">No more messages history</string>
     <string name="loading">Loading...</string>
+    <string name="pp_configuration_not_valid">Configurations not valid</string>
 
     <!-- recording -->
     <string name="pp_chat_tools_hold_voice_hold_to_talk">Hold to Talk</string>

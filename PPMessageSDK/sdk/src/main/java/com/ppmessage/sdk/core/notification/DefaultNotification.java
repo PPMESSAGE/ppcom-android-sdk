@@ -85,6 +85,14 @@ public class DefaultNotification implements INotification, INotificationHandler.
     }
 
     @Override
+    public boolean isConfigurationValid() {
+        return this.config != null &&
+                this.config.getActiveUser() != null &&
+                this.config.getApiToken() != null &&
+                this.config.getAppUUID() != null;
+    }
+
+    @Override
     public boolean canSendMessage() {
         checkConfig();
         return webSocket != null && webSocket.isOpen();

@@ -12,15 +12,15 @@ import com.ppmessage.ppcomlib.PPComSDK;
 import com.ppmessage.ppcomlib.R;
 import com.ppmessage.ppcomlib.model.ConversationMemberModel;
 import com.ppmessage.ppcomlib.model.ConversationsModel;
-import com.ppmessage.ppcomlib.model.PPComMessagesModel;
 import com.ppmessage.ppcomlib.ui.adapter.ConversationMembersAdapter;
 import com.ppmessage.ppcomlib.utils.PPComUtils;
 import com.ppmessage.sdk.core.L;
 import com.ppmessage.sdk.core.bean.common.Conversation;
 import com.ppmessage.sdk.core.bean.common.User;
+import com.ppmessage.sdk.core.utils.Utils;
 
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Created by ppmessage on 5/13/16.
@@ -28,6 +28,9 @@ import java.util.Iterator;
 public class ConversationMemberActivity extends AppCompatActivity {
 
     public static final String EXTRA_CONVERSATION_UUID = "com.ppmessage.ppcomlib.ui.ConversationMemberActivity.conversation_uuid";
+
+    private static final String TAG = ConversationMemberActivity.class.getSimpleName();
+    public static final String LOG_LOST_COM_USER = "[" + TAG + "], can not find ppcom user";
 
     private GridView gridView;
 
@@ -54,7 +57,7 @@ public class ConversationMemberActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (conversationUUID != null) {
+        if (conversationUUID != null && checkRequirements()) {
             startLoading();
 
             ConversationMemberModel conversationMemberModel = sdk.getMessageService().getConversationMemberModel();
@@ -78,7 +81,6 @@ public class ConversationMemberActivity extends AppCompatActivity {
     }
 
     private void updateGridView(List<User> userList) {
-
         User comUser = sdk.getStartupHelper().getComUser().getUser();
         for (Iterator<User> iter = userList.listIterator(); iter.hasNext(); ) {
             User u = iter.next();
@@ -95,9 +97,6 @@ public class ConversationMemberActivity extends AppCompatActivity {
 
                 User comUser = sdk.getStartupHelper().getComUser().getUser();
                 if (comUser == null) return;
-
-                L.d(comUser.getUuid());
-                L.d(user.getUuid());
 
                 if (user.getUuid().equals(comUser.getUuid())) return;
 
@@ -141,6 +140,18 @@ public class ConversationMemberActivity extends AppCompatActivity {
         if (loadingDialog != null) {
             loadingDialog.dismiss();
         }
+    }
+
+    private boolean checkRequirements() {
+        if (sdk == null ||
+                sdk.getStartupHelper() == null ||
+                sdk.getStartupHelper().getComUser() == null ||
+                sdk.getStartupHelper().getComUser().getUser() == null) {
+            L.w(LOG_LOST_COM_USER);
+            Utils.makeToast(this, R.string.pp_configuration_not_valid);
+            return false;
+        }
+        return true;
     }
 
 }

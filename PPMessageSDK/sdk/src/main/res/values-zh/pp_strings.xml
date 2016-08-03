@@ -26,6 +26,7 @@
     <string name="pp_message_summary_audio">[语音]</string>
 
     <string name="pp_no_more_history">无更多历史消息</string>
+    <string name="pp_configuration_not_valid">配置无效</string>
 
     <!-- recording -->
     <string name="pp_chat_tools_hold_voice_hold_to_talk">按住说话</string>

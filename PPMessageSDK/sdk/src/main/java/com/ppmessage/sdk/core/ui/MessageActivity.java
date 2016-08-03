@@ -63,7 +63,7 @@ public class MessageActivity extends AppCompatActivity {
     private static final String TEXT_EMPTY_LOG = "[Send] text == nil";
     private static final String SDK_EMPTY_LOG = "[Send] SDK == nil";
     private static final String CONVERSATION_EMTPY_LOG = "[Send] conversation == nil";
-    private static final String FROMUSER_EMPTY_LOG = "[Send] FromUser == nil";
+    private static final String NOTIFICATION_NOT_VALID_CONFIGURATION = "[Send] notification configuration not valid";
     private static final String CLICK_EVENT_WARNING = "[MessageActivity] Click event, skip send recording, time diff:%d";
     private static final String CANCEL_RECORDING_CANCEL_SENDING = "[MessageActivity] cancel recording, cancel sending audio";
     private static final String CANCEL_RECORDING_TOUCH_CANCEL = "[MessageActivity] motionevent touch cancel, cancel sending audio";
@@ -506,8 +506,8 @@ public class MessageActivity extends AppCompatActivity {
             L.w(CONVERSATION_EMTPY_LOG);
             return false;
         }
-        if (sdk.getNotification().getConfig().getActiveUser() == null) {
-            L.w(FROMUSER_EMPTY_LOG);
+        if (!sdk.getNotification().isConfigurationValid()) {
+            L.w(NOTIFICATION_NOT_VALID_CONFIGURATION);
             return false;
         }
         return true;
