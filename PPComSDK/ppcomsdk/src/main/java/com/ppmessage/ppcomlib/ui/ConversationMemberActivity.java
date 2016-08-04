@@ -30,14 +30,17 @@ public class ConversationMemberActivity extends AppCompatActivity {
     public static final String EXTRA_CONVERSATION_UUID = "com.ppmessage.ppcomlib.ui.ConversationMemberActivity.conversation_uuid";
 
     private static final String TAG = ConversationMemberActivity.class.getSimpleName();
-    public static final String LOG_LOST_COM_USER = "[" + TAG + "], can not find ppcom user";
+    private static final String LOG_LOST_COM_USER = "[" + TAG + "], can not find ppcom user";
+    private static final String LOG_LOST_CONVERSATION = "[" + TAG + "], can not find avaliable conversation";
 
-    private GridView gridView;
-
-    private String conversationUUID;
     private PPComSDK sdk;
 
+    private GridView gridView;
     private ProgressDialog loadingDialog;
+
+    private String conversationUUID;
+    /** 会员成员数量:包括自己 **/
+    private int conversationMembersCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +67,8 @@ public class ConversationMemberActivity extends AppCompatActivity {
             conversationMemberModel.getMembers(conversationUUID, new ConversationMemberModel.OnGetConversationMembersEvent() {
                 @Override
                 public void onCompleted(List<User> userList) {
+                    ConversationMemberActivity.this.conversationMembersCount =
+                            userList != null ? userList.size() : 0;
                     stopLoading();
                     updateGridView(userList);
                 }
@@ -107,8 +112,18 @@ public class ConversationMemberActivity extends AppCompatActivity {
     }
 
     private void chattingWithUser(final User user) {
-        startLoading();
+        // 当前会话只有两个成员,说明当前这个会话就是我们要找的会话
+        if (conversationMembersCount == 2) {
+            Conversation conversation = sdk.getMessageService().getConversationsModel().get(conversationUUID);
+            if (conversation != null) {
+                enterMessageActivity(conversation);
+                return;
+            }
+            L.w(LOG_LOST_CONVERSATION);
+        }
 
+        // 从服务器拿取
+        startLoading();
         ConversationsModel conversationsModel = sdk.getMessageService().getConversationsModel();
         conversationsModel.asyncGetUserConversation(user.getUuid(), new ConversationsModel.OnGetConversationEvent() {
             @Override
@@ -116,14 +131,18 @@ public class ConversationMemberActivity extends AppCompatActivity {
                 stopLoading();
 
                 if (conversation != null) {
-                    Intent intent = new Intent(ConversationMemberActivity.this, PPComMessageActivity.class);
-                    intent.putExtra(PPComMessageActivity.EXTRA_KEY_CONVERSATION_NAME, conversation.getConversationName());
-                    intent.putExtra(PPComMessageActivity.EXTRA_KEY_CONVERSATION_UUID, conversation.getConversationUUID());
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    startActivity(intent);
+                    enterMessageActivity(conversation);
                 }
             }
         });
+    }
+
+    private void enterMessageActivity(Conversation conversation) {
+        Intent intent = new Intent(ConversationMemberActivity.this, PPComMessageActivity.class);
+        intent.putExtra(PPComMessageActivity.EXTRA_KEY_CONVERSATION_NAME, conversation.getConversationName());
+        intent.putExtra(PPComMessageActivity.EXTRA_KEY_CONVERSATION_UUID, conversation.getConversationUUID());
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     private void startLoading() {

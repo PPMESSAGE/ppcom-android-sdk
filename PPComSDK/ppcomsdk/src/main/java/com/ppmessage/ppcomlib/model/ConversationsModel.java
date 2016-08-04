@@ -115,14 +115,6 @@ public class ConversationsModel {
     }
 
     public void asyncGetUserConversation(String userUUID, final OnGetConversationEvent event) {
-        Conversation find = findByAssignedUUID(userUUID);
-        if (find != null) {
-            if (event != null) {
-                event.onCompleted(find);
-            }
-            return;
-        }
-
         conversationAgency.createUserConversation(userUUID, new ConversationAgency.OnCreateConversationEvent() {
             @Override
             public void onCompleted(Conversation conversation) {
@@ -187,21 +179,6 @@ public class ConversationsModel {
                 if (event != null) event.onCompleted(sortedConversations());
             }
         });
-    }
-
-    private Conversation findByAssignedUUID(String userUUID) {
-        List<Conversation> conversationList = this.conversationList;
-        Conversation find = null;
-        for (int i = 0; i < conversationList.size(); i++) {
-            Conversation conversation = conversationList.get(i);
-            if (!conversation.isGroupType() &&
-                    conversation.getAssignedUUID() != null &&
-                    conversation.getAssignedUUID().equals(userUUID)) {
-                find = conversation;
-                break;
-            }
-        }
-        return find;
     }
 
 }
