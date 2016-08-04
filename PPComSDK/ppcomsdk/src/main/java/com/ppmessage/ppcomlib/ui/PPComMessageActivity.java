@@ -24,9 +24,7 @@ import com.ppmessage.sdk.core.ui.MessageActivity;
 import com.ppmessage.sdk.core.ui.adapter.MessageAdapter;
 import com.ppmessage.sdk.core.utils.Utils;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by ppmessage on 5/13/16.
@@ -112,7 +110,6 @@ public class PPComMessageActivity extends MessageActivity {
             if (conversationUUID != null) {
                 Intent intent = new Intent(this, ConversationMemberActivity.class);
                 intent.putExtra(ConversationMemberActivity.EXTRA_CONVERSATION_UUID, conversationUUID);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
             }
         }
