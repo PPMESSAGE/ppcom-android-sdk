@@ -75,7 +75,7 @@ If you want to clear data, set it to an empty string.
 
 `sdk.update()` must called after sdk.init() success, otherwise `RuntimeException` will be throwed.
 
-```
+```java
 public class MainActivity extends ConversationsActivity {
 
     @Override
