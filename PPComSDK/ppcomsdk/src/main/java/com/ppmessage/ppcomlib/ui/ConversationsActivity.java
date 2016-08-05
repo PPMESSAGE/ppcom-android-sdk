@@ -273,6 +273,9 @@ public class ConversationsActivity extends AppCompatActivity {
             unackedMessagesLoader.stop();
             unackedMessagesLoader = null;
         }
+        if (sdk != null) {
+            sdk.getPPMessageSDK().getImageLoader().clearMemory();
+        }
         L.d(LOG_CANCEL_ANY_ONGOING_TASK);
     }
 
