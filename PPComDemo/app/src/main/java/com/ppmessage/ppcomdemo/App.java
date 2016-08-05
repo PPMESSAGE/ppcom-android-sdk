@@ -36,6 +36,7 @@ public class App extends Application {
                         android.R.color.holo_blue_dark))
                 .setActionbarTitleColor(Color.WHITE)
                 .setEnableLog(true)
+                .setEnableEnterKeyToSendText(true)
                 .build());
 
         super.onCreate();

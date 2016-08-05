@@ -38,6 +38,7 @@ public final class PPMessageSDKConfiguration {
 
     final boolean enableLogging;
     final boolean enableDebugLogging;
+    final boolean enableEnterKeyToSendText;
 
     final IImageLoader imageLoader;
 
@@ -70,6 +71,7 @@ public final class PPMessageSDKConfiguration {
 
         this.enableDebugLogging = builder.enableDebugLogging;
         this.enableLogging = builder.enableLogging;
+        this.enableEnterKeyToSendText = builder.enableEnterKeyToSendText;
 
         this.imageLoader = builder.imageLoader;
         this.inputHint = builder.inputHint;
@@ -103,6 +105,10 @@ public final class PPMessageSDKConfiguration {
         return inputHint;
     }
 
+    public boolean isEnableEnterKeyToSendText() {
+        return enableEnterKeyToSendText;
+    }
+
     public static class Builder {
 
         private Context context;
@@ -131,6 +137,7 @@ public final class PPMessageSDKConfiguration {
 
         private boolean enableLogging;
         private boolean enableDebugLogging;
+        private boolean enableEnterKeyToSendText;
 
         private IImageLoader imageLoader;
 
@@ -241,6 +248,17 @@ public final class PPMessageSDKConfiguration {
          */
         public Builder setInputHint(String inputHint) {
             this.inputHint = inputHint;
+            return this;
+        }
+
+        /**
+         * Enable enterKey to send text message <br>
+         * 是否使用回车键发送文本消息
+         * @param enableEnterKeyToSendText
+         * @return
+         */
+        public Builder setEnableEnterKeyToSendText(boolean enableEnterKeyToSendText) {
+            this.enableEnterKeyToSendText = enableEnterKeyToSendText;
             return this;
         }
 

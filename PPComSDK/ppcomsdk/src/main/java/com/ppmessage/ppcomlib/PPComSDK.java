@@ -124,6 +124,7 @@ public class PPComSDK {
                 .setInputHint(configuration.getInputHint())
 
                 .setEnableDebugLogging(configuration.enableLog)
+                .setEnableEnterKeyToSendText(configuration.enableEnterKeyToSendText)
 
                 .build());
 

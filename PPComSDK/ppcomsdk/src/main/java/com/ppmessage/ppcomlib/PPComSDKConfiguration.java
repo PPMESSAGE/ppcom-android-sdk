@@ -40,6 +40,7 @@ public final class PPComSDKConfiguration {
     final int actionbarTitleColor;
 
     final boolean enableLog;
+    final boolean enableEnterKeyToSendText;
 
     public PPComSDKConfiguration(PPComSDKConfiguration.Builder builder) {
         this.builder = builder;
@@ -66,6 +67,7 @@ public final class PPComSDKConfiguration {
         this.actionbarTitleColor = builder.actionbarTitleColor;
 
         this.enableLog = builder.enableLog;
+        this.enableEnterKeyToSendText = builder.enableEnterKeyToSendText;
     }
 
     public void update(PPComSDKConfiguration configuration) {
@@ -161,6 +163,10 @@ public final class PPComSDKConfiguration {
         return actionbarTitleColor;
     }
 
+    public boolean isEnableEnterKeyToSendText() {
+        return enableEnterKeyToSendText;
+    }
+
     public static class Builder {
 
         private Context context;
@@ -187,6 +193,7 @@ public final class PPComSDKConfiguration {
         private int actionbarTitleColor;
 
         private boolean enableLog;
+        private boolean enableEnterKeyToSendText;
 
         public Builder() {
             this(null);
@@ -297,6 +304,17 @@ public final class PPComSDKConfiguration {
          */
         public PPComSDKConfiguration.Builder setActionbarBackgroundColor(@ColorInt int actionbarBackgroundColor) {
             this.actionbarBackgroundColor = actionbarBackgroundColor;
+            return this;
+        }
+
+        /**
+         * Enable enterKey to send text message <br>
+         * 是否使用回车键发送文本消息
+         * @param enableEnterKeyToSendText
+         * @return
+         */
+        public PPComSDKConfiguration.Builder setEnableEnterKeyToSendText(boolean enableEnterKeyToSendText) {
+            this.enableEnterKeyToSendText = enableEnterKeyToSendText;
             return this;
         }
 

@@ -257,7 +257,7 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 sendText(inputEt.getText().toString());
-                inputEt.setText("");
+                inputEt.getText().clear();
             }
         });
 
@@ -283,7 +283,17 @@ public class MessageActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
+                if (sdk != null && sdk.getConfiguration().isEnableEnterKeyToSendText()) {
+                    if (s != null && s.toString().endsWith("\n")) {
+                        if (sendButton != null && inputEt != null) {
+                            // "\n".length() is 1, so at least 2 character
+                            if (s.toString().length() > 1) {
+                                sendText(s.toString().substring(0, s.toString().length() - 1));
+                            }
+                            inputEt.getText().clear();
+                        }
+                    }
+                }
             }
 
             @Override
