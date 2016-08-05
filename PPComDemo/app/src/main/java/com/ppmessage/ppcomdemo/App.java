@@ -31,7 +31,7 @@ public class App extends Application {
                 .setApiKey(TEST_API_KEY)
                 .setApiSecret(TEST_API_SECRET)
                 .setServerUrl(TEST_SERVER_URL)
-                .setInputHint("请输入问题具体描述")
+                .setInputHint("Any questions")
                 .setActionbarBackgroundColor(getResources().getColor(
                         android.R.color.holo_blue_dark))
                 .setActionbarTitleColor(Color.WHITE)

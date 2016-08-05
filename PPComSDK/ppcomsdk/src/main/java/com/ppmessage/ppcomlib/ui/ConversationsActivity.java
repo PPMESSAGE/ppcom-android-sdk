@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.ppmessage.ppcomlib.PPComSDK;
@@ -98,6 +99,15 @@ public class ConversationsActivity extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
         cancelAnyOnGoingTask();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void startUp() {
@@ -274,7 +284,7 @@ public class ConversationsActivity extends AppCompatActivity {
             unackedMessagesLoader = null;
         }
         if (sdk != null) {
-            sdk.getPPMessageSDK().getImageLoader().clearMemory();
+            sdk.getStartupHelper().shutdown();
         }
         L.d(LOG_CANCEL_ANY_ONGOING_TASK);
     }

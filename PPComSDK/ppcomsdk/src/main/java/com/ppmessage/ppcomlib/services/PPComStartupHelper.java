@@ -54,6 +54,7 @@ public class PPComStartupHelper {
     private static final String LOG_GET_APP_ACCESS_TOKEN_ERROR = "[StartUp] can not get access token";
     private static final String LOG_IN_STARTUP = "[StartUp] In startup";
     private static final String LOG_CAN_NOT_GET_APP_INFO = "[StartUp] can not get app info";
+    private static final String LOG_SHUTDOWN = "[StartUp] shutdown PPComStartupHelper";
 
     private PPComSDK sdk;
     private PPComUser comUser;
@@ -106,6 +107,16 @@ public class PPComStartupHelper {
 
     public PPComApp getComApp() {
         return comApp;
+    }
+
+    /**
+     * <li>Set {@link #state} to {@link StartupState#NULL}</li>
+     * <li>Call {@link PPMessageSDK#shutdown()}</li>
+     */
+    public void shutdown() {
+        L.d(LOG_SHUTDOWN);
+        state = StartupState.NULL;
+        sdk.getPPMessageSDK().shutdown();
     }
 
     private void getPPComUser(final OnStartupCallback event) {
