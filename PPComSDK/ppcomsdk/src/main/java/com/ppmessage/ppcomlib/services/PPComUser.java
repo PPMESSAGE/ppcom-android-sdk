@@ -103,8 +103,10 @@ public final class PPComUser {
         try {
             params.put("app_uuid", appUUID);
             params.put("ppcom_trace_uuid", traceUUID);
-            params.put("ent_user_data", sdk.getConfiguration().getEntUserData());
-            params.put("ent_user_type", sdk.getConfiguration().getEntUserType());
+            params.put("is_app_user", true);
+            params.put("is_browser_user", false);
+            // params.put("ent_user_data", sdk.getConfiguration().getEntUserData());
+            // params.put("ent_user_type", sdk.getConfiguration().getEntUserType());
         } catch (JSONException e) {
             e.printStackTrace();
         }
