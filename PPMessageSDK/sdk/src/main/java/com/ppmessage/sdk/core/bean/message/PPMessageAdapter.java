@@ -34,9 +34,13 @@ public class PPMessageAdapter {
             apiJSONObject.put("message_subtype", message.getMessageSubType());
             apiJSONObject.put("from_uuid", message.getFromUser().getUuid());
             apiJSONObject.put("device_uuid", sdk.getNotification().getConfig().getActiveUser().getDeviceUUID());
+            apiJSONObject.put("from_device_uuid", sdk.getNotification().getConfig().getActiveUser().getDeviceUUID());
             apiJSONObject.put("uuid", message.getMessageID());
             apiJSONObject.put("from_type", "DU");
             apiJSONObject.put("app_uuid", sdk.getNotification().getConfig().getAppUUID());
+            apiJSONObject.put("is_service_user", sdk.getNotification().getConfig().getActiveUser().isServiceUser());
+            apiJSONObject.put("is_app_message", true);
+            apiJSONObject.put("is_browser_message", false);
         } catch (JSONException e) {
             L.e(e);
         }
