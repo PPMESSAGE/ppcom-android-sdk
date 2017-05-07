@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
@@ -95,7 +96,7 @@
                 android:layout_height="@dimen/pp_chat_tools_img_btn_width"
                 android:clickable="true"
                 android:contentDescription="@string/pp_common_content_desc"
-                android:src="@drawable/pp_icon_photo_camera_black_24dp"
+                android:src="@drawable/ic_attach_file_black_24dp"
                 android:visibility="visible" />
 
             <TextView

@@ -198,11 +198,11 @@ public class Conversation implements Comparable<Conversation>, Parcelable {
             JSONArray conversationUsers = jsonObject.optJSONArray("conversation_users");
             if (conversationUsers != null) {
                 for(int i = 0; i < conversationUsers.length(); i++) {
+                    JSONObject user = (JSONObject) conversationUsers.get(i);
+                    if (user.optString("uuid").equals(conversationUserUuid)) {
+                        continue;
+                    }
                     if (conversationIcon == null) {
-                        JSONObject user = (JSONObject) conversationUsers.get(i);
-                        if (user.optString("uuid").equals(conversationUserUuid)) {
-                            continue;
-                        }
                         conversationIcon = Utils.getFileDownloadUrl(user.optString("user_icon"));
                         break;
                     }
@@ -270,8 +270,10 @@ public class Conversation implements Comparable<Conversation>, Parcelable {
         try {
 
             if (jsonObject.has("latest_message")) {
-                jsonMessageBody = jsonObject.getJSONObject("latest_message")
-                        .getString("message_body");
+                JSONObject latest = jsonObject.getJSONObject('latest_message');
+                if (latest == null) return null;
+                
+                jsonMessageBody = latest.getString("message_body");
             } else if (jsonObject.has("message_body")) {
                 jsonMessageBody = jsonObject.getString("message_body");
             }
