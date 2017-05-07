@@ -99,7 +99,7 @@ public class MessageHistorysModel {
             L.e(e);
         }
 
-        messageSDK.getAPI().loadMessageHistorys(jsonObject, new OnAPIRequestCompleted() {
+        messageSDK.getAPI().getHistoryMessage(jsonObject, new OnAPIRequestCompleted() {
             @Override
             public void onResponse(JSONObject jsonResponse) {
                 MessageHistorysModel.this.onResponse(requestParam, jsonResponse, event);

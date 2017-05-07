@@ -96,7 +96,7 @@ public class DefaultAPIImpl extends BaseAPIRequest implements IAPI {
     }
 
     @Override
-    public void loadMessageHistorys(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
+    public void getHistoryMessage(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
         super.post("/PP_PAGE_HISTORY_MESSAGE", requestParam, completedCallback);
     }
 

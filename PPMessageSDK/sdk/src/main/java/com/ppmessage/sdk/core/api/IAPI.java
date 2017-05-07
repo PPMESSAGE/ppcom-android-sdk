@@ -137,12 +137,12 @@ public interface IAPI {
     void getConversationList(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
 
     /**
-     * Load message historys
+     * Load history message
      *
      * @param requestParam
      * @param completedCallback
      */
-    void loadMessageHistorys(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
+    void getHistoryMessage(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
 
     /**
      * Create PPCom Conversation

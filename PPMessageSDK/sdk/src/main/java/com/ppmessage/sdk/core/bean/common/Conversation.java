@@ -9,6 +9,7 @@ import com.ppmessage.sdk.core.PPMessageSDK;
 import com.ppmessage.sdk.core.bean.message.PPMessage;
 import com.ppmessage.sdk.core.utils.Utils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -178,6 +179,7 @@ public class Conversation implements Comparable<Conversation>, Parcelable {
         String conversationUUID = null;
         String conversationIcon = null;
         String conversationName = null;
+        String conversationUserUuid = null;
         long updatetime = 0;
         boolean isGroupType = false;
         String groupUUID = null;
@@ -189,20 +191,27 @@ public class Conversation implements Comparable<Conversation>, Parcelable {
             if (jsonObject.has("conversation_data")) {
                 JSONObject conversationData = jsonObject.getJSONObject("conversation_data");
                 conversationUUID = conversationData.optString("conversation_uuid", null);
-                conversationIcon = Utils.getFileDownloadUrl(conversationData.optString("conversation_icon"));
                 conversationName = conversationData.optString("conversation_name", null);
-            } else {
-                conversationIcon = jsonObject.has("conversation_icon") ? Utils.getFileDownloadUrl(jsonObject.getString("conversation_icon")) :
-                        (jsonObject.has("group_icon") ? Utils.getFileDownloadUrl(jsonObject.getString("group_icon")) : null);
-                conversationName = jsonObject.has("conversation_name") ? jsonObject.getString("conversation_name") :
-                        (jsonObject.has("group_name") ? jsonObject.getString("group_name") : null);
-                conversationUUID = isGroupType ?
-                        ( jsonObject.has("conversation_uuid") ? Utils.safeNull(jsonObject.getString("conversation_uuid")) : null ) :
-                        ( jsonObject.has("uuid") ? jsonObject.getString("uuid") : null );
+                conversationUserUuid = conversationData.optString("user_uuid", null);
+            }
+
+            JSONArray conversationUsers = jsonObject.optJSONArray("conversation_users");
+            if (conversationUsers != null) {
+                for(int i = 0; i < conversationUsers.length(); i++) {
+                    if (conversationIcon == null) {
+                        JSONObject user = (JSONObject) conversationUsers.get(i);
+                        if (user.optString("uuid").equals(conversationUserUuid)) {
+                            continue;
+                        }
+                        conversationIcon = Utils.getFileDownloadUrl(user.optString("user_icon"));
+                        break;
+                    }
+                }
             }
         } catch (JSONException e) {
             L.e(e);
         }
+
 
         conversation.setConversationIcon(conversationIcon);
         conversation.setConversationUUID(conversationUUID);
