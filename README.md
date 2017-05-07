@@ -43,23 +43,13 @@ public class MyApp extends Application {
         PPComSDKConfiguration.Builder builder = new PPComSDKConfiguration.Builder();
         sdk.init(builder.setContext(this)
                  .setAppUUID("YOUR_APP_UUID")
-                 .setApiKey("PPCOM_API_KEY")
-                 .setApiSecret("PPCOM_API_SECRET")
                  .setServerUrl("YOUR_SERVER_URL")
 
-                 .setUserFullName("YOUR_USER_FULL_NAME")
-                 .setUserEmail("YOUR_USER_EMAIL")
-                 .setEntUserUUID("YOUR_ENT_USER_UUID")
-                 .setEntUserType("YOUR_ENT_USER_TYPE")
+                 .setEntUserID("YOUR_ENT_USER_ID")
+                 .setEntUserName("YOUR_ENT_USER_NAME")
+                 .setEntUserIcon("YOUR_ENT_USER_ICON")     
 
-                 .setJpushRegistrationId("JPUSH_REGISTRATION_ID");
-                 
-                 .setInputHint("Any questions") // default is ""
-                 .setActionbarBackgroundColor(getResources().getColor(
-                                                                      android.R.color.holo_blue_dark))
-                 .setActionbarTitleColor(Color.WHITE)
-                 .setEnableLog(true) // default is false
-                 .setEnableEnterKeyToSendText(true) // default is false
+                 .setGcmPushRegistrationId("GCM_PUSM_REGISTRATION_ID");                 
                  .build());
 
     }
@@ -86,11 +76,11 @@ public class MainActivity extends ConversationsActivity {
 
         // Optional !
         sdk.update(new PPComSDKConfiguration.Builder()
-        
-                   .setUserFullName("YOUR_USER_FULL_NAME")
-                   .setUserIcon("YOUR_USER_ICON_URL")
-                   .setEntUserData("YOUR_ENT_USER_DATA")
-                   .setJpushRegistrationId("YOUR_JPUSH_REGISTRATION_ID")
+
+                 .setEntUserID("YOUR_ENT_USER_ID")
+                 .setEntUserName("YOUR_ENT_USER_NAME")
+                 .setEntUserIcon("YOUR_ENT_USER_ICON")     
+
                  
                    .build());
 
