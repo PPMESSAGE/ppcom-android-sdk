@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
-version = "0.0.24"
+version = "0.0.25"
 def siteUrl = 'https://www.ppmessage.com' 
 def gitUrl = 'https://github.com/PPMESSAGE/ppmessage.git' 
 group = "com.ppmessage"
