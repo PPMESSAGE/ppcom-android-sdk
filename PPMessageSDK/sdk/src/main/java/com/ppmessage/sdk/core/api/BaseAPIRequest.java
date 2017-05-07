@@ -31,7 +31,17 @@ public class BaseAPIRequest extends BaseHttpRequest {
     }
 
     public void post(String urlSegment, JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
-        post(urlSegment, requestParam.toString(), completedCallback);
+        String url = String.format(Locale.getDefault(), "%s/ppquery/PP_QUERY", sdk.getHostInfo().getHttpHost());
+        final JSONObject param = new JSONObject();
+
+        try {
+            param.put("api_data", requestParam);
+            param.put("api_url", urlSegment);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        post(url, param.toString(), completedCallback);
     }
 
     public void post(String urlSegment, String requestString, OnAPIRequestCompleted completedCallback) {
@@ -63,8 +73,8 @@ public class BaseAPIRequest extends BaseHttpRequest {
         };
     }
 
-    private void finalPost(String urlSegment, String requestString, final OnAPIRequestCompleted completedCallback) {
-        String url = String.format(Locale.getDefault(), "%s/api%s", sdk.getHostInfo().getHttpHost(), urlSegment);
+    private void finalPost(String url, String requestString, final OnAPIRequestCompleted completedCallback) {
+
         super.post(url, requestString, new OnHttpRequestCompleted() {
 
             @Override

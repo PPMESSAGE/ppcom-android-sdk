@@ -141,7 +141,7 @@ public class PPComStartupHelper {
         PPMessageSDK messageSDK = sdk.getPPMessageSDK();
         final INotification notification = messageSDK.getNotification();
 
-        messageSDK.getToken().getApiToken(sdk.getConfiguration().getAppUUID(), new IToken.OnRequestTokenEvent() {
+        messageSDK.getToken().getApiToken(sdk.getConfiguration().getAppUuid(), new IToken.OnRequestTokenEvent() {
             @Override
             public void onGetToken(String accessToken) {
                 if (accessToken == null) {
@@ -164,7 +164,7 @@ public class PPComStartupHelper {
         notification.config(new INotification.Config() {
             @Override
             public String getAppUUID() {
-                return sdk.getConfiguration().getAppUUID();
+                return sdk.getConfiguration().getAppUuid();
             }
 
             @Override
@@ -180,6 +180,8 @@ public class PPComStartupHelper {
 
         publishState(StartupState.STARTUP_SUCCESS);
         notification.start();
+
+
     }
 
     private boolean isInnerStateOk() {

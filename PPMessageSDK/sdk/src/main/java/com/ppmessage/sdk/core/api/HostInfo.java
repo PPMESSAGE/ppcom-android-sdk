@@ -30,8 +30,8 @@ public final class HostInfo {
         }
         setHttpHost(urlPrefix + host);
 
-        setDownloadHost(getHttpHost() + "/download/download/");
-        setUploadHost(getHttpHost() + "/upload/upload/");
+        setDownloadHost(getHttpHost() + "/ppdownload/ppdownload/");
+        setUploadHost(getHttpHost() + "/ppupload/ppupload/");
     }
 
     public String getUploadHost() {

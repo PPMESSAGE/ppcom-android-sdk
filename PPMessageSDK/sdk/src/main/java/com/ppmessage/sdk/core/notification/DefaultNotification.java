@@ -1,5 +1,9 @@
 package com.ppmessage.sdk.core.notification;
 
+import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -253,6 +257,20 @@ public class DefaultNotification implements INotification, INotificationHandler.
 
     private JSONObject getWSAuthObject() {
         JSONObject wsAuthObject = new JSONObject();
+        JSONObject extraData = new JSONObject();
+
+        Context context = this.sdk.getContext();
+        PackageManager manager = context.getPackageManager();
+        PackageInfo pInfo = null;
+        try {
+            pInfo = manager.getPackageInfo(context.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        String appVersion = pInfo.versionName;
+        String appName = pInfo.packageName;
+        String sysVersion = Build.MODEL;
+        String deviceName = Build.MANUFACTURER;
 
         if (config.getActiveUser() == null) {
             L.w(WS_AUTH_ACTIVE_USER_EMPTY);
@@ -260,12 +278,21 @@ public class DefaultNotification implements INotification, INotificationHandler.
         }
 
         try {
+            extraData.put("mobile_app_name", appName);
+            extraData.put("mobile_app_version", appVersion);
+            extraData.put("mobile_app_os", "AND");
+            extraData.put("mobile_app_os_version", sysVersion);
+            extraData.put("mobile_app_page", "");
+            extraData.put("mobile_device_name", deviceName);
+
             wsAuthObject.put("api_token", config.getApiToken());
             wsAuthObject.put("user_uuid", config.getActiveUser().getUuid());
             wsAuthObject.put("device_uuid", config.getActiveUser().getDeviceUUID());
             wsAuthObject.put("is_service_user", config.getActiveUser().isServiceUser());
+            wsAuthObject.put("is_mobile_device", true);
+            wsAuthObject.put("is_sider_device", false);
             wsAuthObject.put("app_uuid", config.getAppUUID());
-            wsAuthObject.put("extra_data", new JSONObject());
+            wsAuthObject.put("extra_data", extraData);
         } catch (JSONException e) {
             L.e(e);
         }

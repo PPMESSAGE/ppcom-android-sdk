@@ -37,7 +37,7 @@ public interface IAPI {
      * @param requestParam
      * @param completedCallback
      */
-    void createDevice(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
+    void createPPComDevice(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
 
     /**
      * Update device
@@ -72,6 +72,14 @@ public interface IAPI {
     void getPPComDefaultConversation(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
 
     /**
+     * create PPCom Default Conversation
+     *
+     * @param requestParam
+     * @param completedCallback
+     */
+    void createPPComDefaultConversation(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
+
+    /**
      * Get App org groups
      *
      * @param requestParam
@@ -79,13 +87,6 @@ public interface IAPI {
      */
     void getAppOrgGroupList(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
 
-    /**
-     * Get AMD Waiting Queue Length
-     *
-     * @param requestParam
-     * @param completedCallback
-     */
-    void getWaitingQueueLength(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
 
     /**
      * Get App Info
@@ -142,14 +143,6 @@ public interface IAPI {
      * @param completedCallback
      */
     void loadMessageHistorys(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
-
-    /**
-     * Cancel waiting create conversation
-     *
-     * @param requestParam
-     * @param completedCallback
-     */
-    void cancelWaitingCreateConversation(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
 
     /**
      * Create PPCom Conversation

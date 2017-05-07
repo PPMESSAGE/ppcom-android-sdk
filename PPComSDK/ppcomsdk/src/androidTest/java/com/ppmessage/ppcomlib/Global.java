@@ -13,7 +13,7 @@ public class Global {
         PPComSDK sdk = PPComSDK.getInstance();
         sdk.init(new PPComSDKConfiguration
                         .Builder(InstrumentationRegistry.getContext())
-                        .setAppUUID(TEST_APP_UUID)
+                        .setAppUuid(TEST_APP_UUID)
                         .setUserEmail(email)
                         .build()
         );

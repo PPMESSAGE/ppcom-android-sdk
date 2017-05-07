@@ -30,7 +30,7 @@ public class Global {
         sdk.init(new PPMessageSDKConfiguration
                 .Builder()
                 .setContext(InstrumentationRegistry.getContext())
-                .setAppUUID(TEST_APP_UUID)
+                .setAppUuid(TEST_APP_UUID)
                 .setEnableDebugLogging(true)
                 .setEnableLogging(true)
                 .build());

@@ -35,20 +35,6 @@ public class ConversationWaitingService {
 
     public void cancel() {
         if (messageSDK.getNotification().getConfig().getActiveUser() == null) return;
-
-        final User user = messageSDK.getNotification().getConfig().getActiveUser();
-        if (user.getUuid() == null) return;
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("app_uuid", sdk.getConfiguration().getAppUUID());
-            jsonObject.put("user_uuid", user.getUuid());
-        } catch (JSONException e) {
-            L.e(e);
-        }
-        // We don't care about the cancel result
-        messageSDK.getAPI().cancelWaitingCreateConversation(jsonObject, null);
-
         polling.cancel();
     }
 
@@ -63,14 +49,16 @@ public class ConversationWaitingService {
 
                 JSONObject jsonObject = new JSONObject();
                 try {
-                    jsonObject.put("app_uuid", sdk.getConfiguration().getAppUUID());
+                    jsonObject.put("app_uuid", sdk.getConfiguration().getAppUuid());
                     jsonObject.put("user_uuid", user.getUuid());
+                    jsonObject.put("device_uuid", user.getDeviceUUID());
+                    jsonObject.put("is_app_user", true);
                 } catch (JSONException e) {
                     L.e(e);
                 }
 
                 // We don't care about the cancel result
-                messageSDK.getAPI().getWaitingQueueLength(jsonObject, new OnAPIRequestCompleted() {
+                messageSDK.getAPI().getPPComDefaultConversation(jsonObject, new OnAPIRequestCompleted() {
                     @Override
                     public void onResponse(JSONObject jsonResponse) {
                         if (jsonResponse.has("error_code")) {
@@ -83,8 +71,8 @@ public class ConversationWaitingService {
                         }
 
                         try {
-                            if (jsonResponse.has("conversation_uuid")) {
-                                String conversation_uuid = jsonResponse.getString("conversation_uuid");
+                            if (jsonResponse.has("uuid")) {
+                                String conversation_uuid = jsonResponse.getString("uuid");
                                 L.d("get conversation uuid: %s", conversation_uuid);
                                 if (conversation_uuid != null && conversation_uuid != "null") {
                                     polling.cancel();

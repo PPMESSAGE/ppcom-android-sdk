@@ -48,6 +48,8 @@ public class Token extends BaseHttpRequest implements IToken {
             return;
         }
 
+
+
         post(getURL(),
                 String.format(Locale.getDefault(), "grant_type=password&user_email=%s&user_password=%s&client_id=%s",
                         userEmail, userPassword, messageSDK.getHostInfo().getPpkefuApiKey()),

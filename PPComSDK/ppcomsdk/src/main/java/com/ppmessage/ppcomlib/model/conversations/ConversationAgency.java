@@ -56,7 +56,7 @@ public class ConversationAgency {
         final User activeUser = messageSDK.getNotification().getConfig().getActiveUser();
         final JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("app_uuid", sdk.getConfiguration().getAppUUID());
+            jsonObject.put("app_uuid", sdk.getConfiguration().getAppUuid());
             jsonObject.put("user_uuid", activeUser.getUuid());
             jsonObject.put("device_uuid", activeUser.getDeviceUUID());
             jsonObject.put("conversation_type", DEFAULT_CONVERSATION_TYPE);

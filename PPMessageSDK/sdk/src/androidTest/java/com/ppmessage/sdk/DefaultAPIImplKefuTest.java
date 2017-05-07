@@ -36,8 +36,8 @@ public class DefaultAPIImplKefuTest {
     public void createSDK() {
         // 40bd001563085fc35165329ea1ff5c5ecbdbbeef is sha1('123')
         sdk = Global.getPPMessageSDK();
-        sdk.init(new PPMessageSDKConfiguration
-                .Builder(InstrumentationRegistry.getContext())
+        sdk.init(new PPMessageSDKConfiguration.Builder()
+                .setContext(InstrumentationRegistry.getContext())
                 .setServiceUserInfo("dingguijin@gmail.com", "40bd001563085fc35165329ea1ff5c5ecbdbbeef")
                 .setEnableLogging(true)
                 .setEnableDebugLogging(true)

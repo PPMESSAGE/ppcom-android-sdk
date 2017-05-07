@@ -76,14 +76,6 @@ public class PPMessageSDK {
         }
     }
 
-    public synchronized void update(PPMessageSDKConfiguration configuration) {
-        if (configuration == null) {
-            throw new PPMessageException(CONFIGURATION_EMPTY_LOG);
-        } else {
-            this.configuration.update(configuration);
-        }
-    }
-
     public IAPI getAPI() {
         checkConfig();
         if (api == null) {
@@ -137,7 +129,7 @@ public class PPMessageSDK {
 
     public String getAppUUID() {
         checkConfig();
-        return this.configuration.appUUID;
+        return this.configuration.appUuid;
     }
 
     public String getUserEmail() {

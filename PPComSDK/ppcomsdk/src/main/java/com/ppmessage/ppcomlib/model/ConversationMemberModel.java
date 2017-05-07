@@ -45,7 +45,7 @@ public class ConversationMemberModel {
 
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("app_uuid", sdk.getConfiguration().getAppUUID());
+            jsonObject.put("app_uuid", sdk.getConfiguration().getAppUuid());
             jsonObject.put("conversation_uuid", conversationUUID);
         } catch (JSONException e) {
             L.e(e);

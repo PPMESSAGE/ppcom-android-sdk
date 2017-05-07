@@ -15,7 +15,7 @@ public class DefaultAPIImpl extends BaseAPIRequest implements IAPI {
 
     @Override
     public void getUserUUID(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
-        super.post("/PP_GET_USER_UUID", requestParam, completedCallback);
+        super.post("/PPCOM_GET_USER_UUID", requestParam, completedCallback);
     }
 
     @Override
@@ -28,9 +28,10 @@ public class DefaultAPIImpl extends BaseAPIRequest implements IAPI {
         super.post("/PP_GET_HISTORY_MESSAGE", requestParam, completedCallback);
     }
 
+
     @Override
-    public void createDevice(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
-        super.post("/PP_CREATE_DEVICE", requestParam, completedCallback);
+    public void createPPComDevice(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
+        super.post("/PPCOM_CREATE_DEVICE", requestParam, completedCallback);
     }
 
     @Override
@@ -40,7 +41,7 @@ public class DefaultAPIImpl extends BaseAPIRequest implements IAPI {
 
     @Override
     public void createAnonymousUser(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
-        super.post("/PP_CREATE_ANONYMOUS", requestParam, completedCallback);
+        super.post("/PPCOM_CREATE_ANONYMOUS", requestParam, completedCallback);
     }
 
     @Override
@@ -54,14 +55,15 @@ public class DefaultAPIImpl extends BaseAPIRequest implements IAPI {
     }
 
     @Override
+    public void createPPComDefaultConversation(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
+        super.post("/PPCOM_CREATE_DEFAULT_CONVERSATION", requestParam, completedCallback);
+    }
+
+    @Override
     public void getAppOrgGroupList(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
         super.post("/PP_GET_APP_ORG_GROUP_LIST", requestParam, completedCallback);
     }
 
-    @Override
-    public void getWaitingQueueLength(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
-        super.post("/PP_GET_AMD_QUEUE_LENGTH", requestParam, completedCallback);
-    }
 
     @Override
     public void getAppInfo(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
@@ -98,10 +100,6 @@ public class DefaultAPIImpl extends BaseAPIRequest implements IAPI {
         super.post("/PP_PAGE_HISTORY_MESSAGE", requestParam, completedCallback);
     }
 
-    @Override
-    public void cancelWaitingCreateConversation(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
-        super.post("/PP_CANCEL_WAITING_CREATE_CONVERSATION", requestParam, completedCallback);
-    }
 
     @Override
     public void createPPComConversation(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {

@@ -75,7 +75,7 @@ public class NormalConversation {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put("user_uuid", comUser.getUuid());
-            jsonObject.put("app_uuid", sdk.getConfiguration().getAppUUID());
+            jsonObject.put("app_uuid", sdk.getConfiguration().getAppUuid());
         } catch (JSONException e) {
             L.e(e);
         }

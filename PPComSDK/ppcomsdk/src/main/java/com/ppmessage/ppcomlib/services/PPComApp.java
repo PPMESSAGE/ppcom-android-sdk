@@ -56,7 +56,7 @@ public class PPComApp {
         }
 
         PPMessageSDK messageSDK = sdk.getPPMessageSDK();
-        String appUUID = sdk.getConfiguration().getAppUUID();
+        String appUUID = sdk.getConfiguration().getAppUuid();
 
         final JSONObject jsonObject = new JSONObject();
         try {

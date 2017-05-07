@@ -67,13 +67,6 @@ public class PPComSDK {
         initPPMessageSDK(config);
     }
 
-    public synchronized void update(PPComSDKConfiguration configuration) {
-        if (configuration == null) {
-            throw new PPComSDKException(CONFIG_ERROR_LOG);
-        }
-        this.configuration.update(configuration);
-        updatePPMessageSDK(configuration);
-    }
 
     public PPMessageSDK getPPMessageSDK() {
         if (this.ppMessageSDK == null) {
@@ -107,18 +100,17 @@ public class PPComSDK {
         this.ppMessageSDK.init(builder
 
                 .setContext(configuration.getContext())
-                .setAppUUID(configuration.getAppUUID())
+                .setAppUuid(configuration.getAppUuid())
                 .setServerUrl(configuration.getServerUrl())
+
                 .setPpcomApiKey(configuration.getApiKey())
                 .setPpcomApiSecret(configuration.getApiSecret())
 
-                .setEntUserUUID(configuration.getEntUserUUID())
-                .setEntUserData(configuration.getEntUserData())
-                .setEntUserType(configuration.getEntUserType())
-
                 .setUserEmail(configuration.getUserEmail())
-                .setUserFullName(configuration.getUserFullName())
-                .setUserIcon(configuration.getUserIcon())
+
+                .setEntUserName(configuration.getEntUserName())
+                .setEntUserIcon(configuration.getEntUserIcon())
+                .setEntUserId(configuration.getEntUserId())
 
                 .setJpushRegistrationId(configuration.getJpushRegistrationId())
                 .setInputHint(configuration.getInputHint())
@@ -130,29 +122,4 @@ public class PPComSDK {
 
     }
 
-    private void updatePPMessageSDK(PPComSDKConfiguration configuration) {
-        if (this.ppMessageSDK == null || this.configuration == null) {
-            throw new PPComSDKException(CONFIG_ERROR_LOG);
-        }
-
-        PPMessageSDKConfiguration.Builder builder = new PPMessageSDKConfiguration.Builder();
-
-        if (builder.getEntUserData() != null) {
-            builder.setEntUserData(builder.getEntUserData());
-        }
-
-        if (configuration.getUserFullName() != null) {
-            builder.setUserFullName(configuration.getUserFullName());
-        }
-
-        if (configuration.getUserIcon() != null) {
-            builder.setUserIcon(configuration.getUserIcon());
-        }
-
-        if (configuration.getJpushRegistrationId() != null) {
-            builder.setJpushRegistrationId(configuration.getJpushRegistrationId());
-        }
-
-        this.ppMessageSDK.update(builder.build());
-    }
 }

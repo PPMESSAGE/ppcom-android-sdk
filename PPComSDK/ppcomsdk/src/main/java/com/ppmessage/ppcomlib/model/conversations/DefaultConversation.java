@@ -57,7 +57,7 @@ public class DefaultConversation {
 
         final JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("app_uuid", sdk.getConfiguration().getAppUUID());
+            jsonObject.put("app_uuid", sdk.getConfiguration().getAppUuid());
             jsonObject.put("user_uuid", ppcomUser.getUuid());
             jsonObject.put("device_uuid", ppcomUser.getDeviceUUID());
         } catch (JSONException e) {

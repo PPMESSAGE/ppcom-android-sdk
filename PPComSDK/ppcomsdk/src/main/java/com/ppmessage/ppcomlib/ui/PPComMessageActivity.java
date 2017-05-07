@@ -186,6 +186,7 @@ public class PPComMessageActivity extends MessageActivity {
     // === WebSocket Message Notification Listener ===
     private void addNotificationListener() {
         notificationEvent = new INotification.SimpleNotificationEvent() {
+
             @Override
             public int getInterestedEvent() {
                 return INotification.EVENT_MESSAGE | INotification.EVENT_MSG_SEND_ERROR;
@@ -211,6 +212,9 @@ public class PPComMessageActivity extends MessageActivity {
                 }
 
             }
+
+
+
         };
         messageSDK.getNotification().addListener(notificationEvent);
     }

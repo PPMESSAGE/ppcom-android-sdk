@@ -21,18 +21,21 @@ public final class PPComSDKConfiguration {
 
     final Context context;
 
-    final String appUUID;
+    final String serverUrl;
+
+    final String appUuid;
     final String apiKey;
     final String apiSecret;
-    final String serverUrl;
-    final String userEmail;
-    final String entUserUUID;
-    final String entUserType;
 
-    private String entUserData;
-    private String userIcon;
-    private String userFullName;
+    final String userEmail;
+
+    final String entUserId;
+    final String entUserName;
+    final String entUserIcon;
+    final double entUserCreateTime;
+
     private String jpushRegistrationId;
+    private String gcmPushRegistrationId;
 
     // View Related
     final String inputHint;
@@ -46,21 +49,22 @@ public final class PPComSDKConfiguration {
         this.builder = builder;
 
         this.context = this.builder.context;
-        this.appUUID = this.builder.appUUID;
-        this.apiKey = this.builder.apiKey;
-        this.apiSecret = this.builder.apiSecret;
 
         this.serverUrl = this.builder.serverUrl;
 
-        this.userEmail = this.builder.userEmail;
-        this.userIcon = this.builder.userIcon;
-        this.userFullName = this.builder.userFullName;
+        this.appUuid = this.builder.appUuid;
+        this.apiKey = this.builder.apiKey;
+        this.apiSecret = this.builder.apiSecret;
 
-        this.entUserType = this.builder.entUserType;
-        this.entUserUUID = this.builder.entUserUUID;
-        this.entUserData = this.builder.entUserData;
+
+        this.userEmail = this.builder.userEmail;
+        this.entUserIcon = this.builder.entUserIcon;
+        this.entUserName = this.builder.entUserName;
+        this.entUserId = this.builder.entUserId;
+        this.entUserCreateTime = this.builder.entUserCreateTime;
 
         this.jpushRegistrationId = this.builder.jpushRegistrationId;
+        this.gcmPushRegistrationId = this.builder.gcmPushRegistrationId;
 
         this.inputHint = builder.inputHint;
         this.actionbarBackgroundColor = builder.actionbarBackgroundColor;
@@ -71,44 +75,19 @@ public final class PPComSDKConfiguration {
     }
 
     public void update(PPComSDKConfiguration configuration) {
-
-        JSONObject jsonObject = new JSONObject();
-        try {
-            if (configuration.getUserFullName() != null) {
-                this.userFullName = configuration.getUserFullName();
-                jsonObject.put("user_fullname", this.userFullName);
-            }
-
-            if (configuration.getUserIcon() != null) {
-                this.userIcon = configuration.getUserIcon();
-                jsonObject.put("user_icon", this.userIcon);
-            }
-
-            if (configuration.getEntUserData() != null) {
-                this.entUserData = configuration.getEntUserData();
-                jsonObject.put("ent_user_data", this.entUserData);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        if (jsonObject.length() > 0) {
-            PPComSDK.getInstance().getStartupHelper().getComUser().updateUserInfo(jsonObject);
-        }
-
-        if (configuration.getJpushRegistrationId() != null) {
-            this.jpushRegistrationId = configuration.getJpushRegistrationId();
-            PPComSDK.getInstance().getStartupHelper().getComUser().updateDeviceJpushRegistrationId();
-        }
-
     }
 
     public Context getContext() {
         return context;
     }
 
-    public String getAppUUID() {
-        return appUUID;
+
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
+    public String getAppUuid() {
+        return appUuid;
     }
 
     public String getApiKey() {
@@ -119,36 +98,34 @@ public final class PPComSDKConfiguration {
         return apiSecret;
     }
 
-    public String getServerUrl() {
-        return serverUrl;
-    }
-
     public String getUserEmail() {
         return userEmail;
     }
 
-    public String getUserIcon() {
-        return userIcon;
+    public String getEntUserId() {
+        return entUserId;
     }
 
-    public String getUserFullName() {
-        return userFullName;
+    public String getEntUserIcon() {
+        return entUserIcon;
     }
 
-    public String getEntUserType() {
-        return entUserType;
+    public String getEntUserName() {
+        return entUserName;
     }
 
-    public String getEntUserData() {
-        return entUserData;
+    public double getEntUserCreateTime() {
+        return entUserCreateTime;
     }
 
-    public String getEntUserUUID() {
-        return entUserUUID;
-    }
 
     public String getJpushRegistrationId() {
         return jpushRegistrationId;
+    }
+
+
+    public String getGcmPushRegistrationId() {
+        return gcmPushRegistrationId;
     }
 
     public String getInputHint() {
@@ -171,22 +148,23 @@ public final class PPComSDKConfiguration {
 
         private Context context;
 
-        private String appUUID;
-
-        private String entUserUUID;
-        private String entUserData;
-        private String entUserType;
-
-        private String jpushRegistrationId;
-
-        private String userEmail;
-        private String userIcon;
-        private String userFullName;
-
         private String serverUrl;
 
-        private String apiKey;
-        private String apiSecret;
+        private String appUuid;
+        private String apiSecret = "ZThmMTM1ZDM4ZmI2NjE1YWE0NWEwMGM3OGNkMzY5MzVjOTQ2MGU0NQ==";
+        private String apiKey = "M2E2OTRjZTQ5Mzk4ZWUxYzRjM2FlZDM2NmE4MjA4MzkzZjFjYWQyOA==";
+
+        private String userEmail;
+
+        private String entUserId;
+        private String entUserName;
+        private String entUserIcon;
+
+        private double entUserCreateTime;
+
+        private String jpushRegistrationId;
+        private String gcmPushRegistrationId;
+
 
         private String inputHint;
         private int actionbarBackgroundColor;
@@ -211,8 +189,13 @@ public final class PPComSDKConfiguration {
             return this;
         }
 
-        public PPComSDKConfiguration.Builder setAppUUID(String appUUID) {
-            this.appUUID = appUUID;
+        public PPComSDKConfiguration.Builder setServerUrl(String serverUrl) {
+            this.serverUrl = serverUrl;
+            return this;
+        }
+
+        public PPComSDKConfiguration.Builder setAppUuid(String appUuid) {
+            this.appUuid = appUuid;
             return this;
         }
 
@@ -221,54 +204,38 @@ public final class PPComSDKConfiguration {
             return this;
         }
 
-        public PPComSDKConfiguration.Builder setUserIcon(String userIcon) {
-            this.userIcon = userIcon;
+        public PPComSDKConfiguration.Builder setEntUserId(String entUserId) {
+            this.entUserId = entUserId;
             return this;
         }
 
-        public PPComSDKConfiguration.Builder setUserFullName(String userFullName) {
-            this.userFullName = userFullName;
+        public PPComSDKConfiguration.Builder setEntUserIcon(String entUserIcon) {
+            this.entUserIcon = entUserIcon;
             return this;
         }
 
-        public PPComSDKConfiguration.Builder setServerUrl(String serverUrl) {
-            this.serverUrl = serverUrl;
+        public PPComSDKConfiguration.Builder setEntUserName(String entUserName) {
+            this.entUserName = entUserName;
             return this;
         }
 
-        public PPComSDKConfiguration.Builder setApiKey(String apiKey) {
-            this.apiKey = apiKey;
+        public PPComSDKConfiguration.Builder setEntUserCreateTime(double entUserCreateTime) {
+            this.entUserCreateTime = entUserCreateTime;
             return this;
         }
 
-        public PPComSDKConfiguration.Builder setApiSecret(String apiSecret) {
-            this.apiSecret = apiSecret;
+        public PPComSDKConfiguration.Builder setGcmPushRegistrationId(String gcmPushRegistrationId) {
+            this.gcmPushRegistrationId = gcmPushRegistrationId;
             return this;
         }
 
-        public PPComSDKConfiguration.Builder setEntUserType(String entUserType) {
-            this.entUserType = entUserType;
-            return this;
-        }
-
-        public PPComSDKConfiguration.Builder setEntUserUUID(String entUserUUID) {
-            this.entUserUUID = entUserUUID;
-            return this;
-        }
-
-        public PPComSDKConfiguration.Builder setEntUserData(String entUserData) {
-            this.entUserData = entUserData;
-            return this;
-        }
-
-        public PPComSDKConfiguration.Builder setJpushRegistrationId(String jpushRegistrationId) {
-            this.jpushRegistrationId = jpushRegistrationId;
+        public PPComSDKConfiguration.Builder setJPushRegistrationId(String jPushRegistrationId) {
+            this.jpushRegistrationId = jPushRegistrationId;
             return this;
         }
 
         /**
          * Set input hint, deault is null <br>
-         * 设置聊天时的输入框提示信息,默认为 null
          *
          * @param inputHint
          * @return
@@ -280,7 +247,6 @@ public final class PPComSDKConfiguration {
 
         /**
          * Set Activity actionBar's title color. Default is white color <br>
-         * 设置 Activity ActionBar 标题颜色, 默认是白色
          *
          * @param actionbarTitleColor
          * @return
@@ -297,7 +263,6 @@ public final class PPComSDKConfiguration {
 
         /**
          * Set Activity actionBar's background color. Default is BLUE<br>
-         * 设置 Activity ActionBar 背景颜色, 默认为蓝色
          *
          * @param actionbarBackgroundColor
          * @return
@@ -309,7 +274,7 @@ public final class PPComSDKConfiguration {
 
         /**
          * Enable enterKey to send text message <br>
-         * 是否使用回车键发送文本消息
+         *
          * @param enableEnterKeyToSendText
          * @return
          */
@@ -318,21 +283,6 @@ public final class PPComSDKConfiguration {
             return this;
         }
 
-        public String getEntUserData() {
-            return entUserData;
-        }
-
-        public String getJpushRegistrationId() {
-            return jpushRegistrationId;
-        }
-
-        public String getUserIcon() {
-            return userIcon;
-        }
-
-        public String getUserFullName() {
-            return userFullName;
-        }
 
         public PPComSDKConfiguration build() {
             return new PPComSDKConfiguration(this);
