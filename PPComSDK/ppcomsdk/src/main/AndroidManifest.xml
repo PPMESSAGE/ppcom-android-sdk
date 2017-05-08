@@ -12,7 +12,8 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.ConversationsActivity"
-                ></meta-data>
+                >
+            </meta-data>
         </activity>
 
         <activity android:name=".ui.ConversationMemberActivity"
@@ -21,7 +22,8 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.PPComMessageActivity"
-                ></meta-data>
+                >
+            </meta-data>
 
         </activity>
 

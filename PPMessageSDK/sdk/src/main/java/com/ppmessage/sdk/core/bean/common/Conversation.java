@@ -270,7 +270,7 @@ public class Conversation implements Comparable<Conversation>, Parcelable {
         try {
 
             if (jsonObject.has("latest_message")) {
-                JSONObject latest = jsonObject.getJSONObject('latest_message');
+                JSONObject latest = jsonObject.getJSONObject("latest_message");
                 if (latest == null) return null;
 
                 jsonMessageBody = latest.getString("message_body");
