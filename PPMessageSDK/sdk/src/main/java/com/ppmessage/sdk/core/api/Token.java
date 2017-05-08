@@ -80,7 +80,6 @@ public class Token extends BaseHttpRequest implements IToken {
                 try {
                     JSONObject jsonObj = new JSONObject(response);
                     accessToken = jsonObj.getString("access_token");
-
                     Token.this.cachedToken = accessToken;
                 } catch (JSONException e) {
                     L.e(e);

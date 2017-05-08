@@ -145,4 +145,11 @@ public class DefaultAPIImpl extends BaseAPIRequest implements IAPI {
     public void pageUnackedMessages(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
         super.post("/PP_PAGE_UNACKED_MESSAGE", requestParam, completedCallback);
     }
+
+    @Override
+    public void emailValid(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
+        super.post("/PP_IS_EMAIL_VALID", requestParam, completedCallback);
+    }
+
+
 }

@@ -45,6 +45,12 @@ public class BaseAPIRequest extends BaseHttpRequest {
     }
 
     public void post(String urlSegment, String requestString, OnAPIRequestCompleted completedCallback) {
+        if (!sdk.getHostInfo().getPpcomApiKey() && !sdk.getHostInfo().getPpkefuApiKey()) {
+            // directly return null token
+            onGetAccessToken(urlSegment, requestString, completedCallback);
+            return;
+        }
+        
         if (useAppUUIDGetAccessToken) {
             token.getApiToken(sdk.getAppUUID(), onGetAccessToken(urlSegment, requestString, completedCallback));
         } else {
@@ -55,9 +61,8 @@ public class BaseAPIRequest extends BaseHttpRequest {
     @Override
     protected void setup(HttpURLConnection conn) {
         super.setup(conn);
-
+        conn.addRequestProperty("Content-Type", "application/json;charset=utf-8");
         if (token.getCachedToken() != null) {
-            conn.addRequestProperty("Content-Type", "application/json;charset=utf-8");
             conn.addRequestProperty("Authorization", String.format(Locale.getDefault(), "OAuth %s", token.getCachedToken()));
         }
 

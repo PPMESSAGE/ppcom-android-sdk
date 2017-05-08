@@ -113,8 +113,11 @@ public class BaseHttpRequest {
     private String makeRequest(String url, Object anyObj, String method) throws Exception {
         URL uri = new URL(url);
         HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
+
+        // set json and token
         setup(conn);
         L.d(REQUEST_LOG_FORMAT, url, anyObj, conn.getRequestProperty("Authorization"));
+
         conn.setReadTimeout(REQUEST_READ_TIMEOUT);
         conn.setConnectTimeout(REQUEST_CONNECT_TIMEOUT);
         conn.setRequestMethod(method);

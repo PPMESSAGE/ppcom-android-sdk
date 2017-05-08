@@ -6,9 +6,7 @@ package com.ppmessage.sdk.core.api;
 public interface IToken {
 
     interface OnRequestTokenEvent {
-
         void onGetToken(String accessToken);
-
     }
 
     /**

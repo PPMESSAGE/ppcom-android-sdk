@@ -216,4 +216,13 @@ public interface IAPI {
      */
     void pageUnackedMessages(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
 
+
+    /**
+     * email valid
+     *
+     * @param requestParam
+     * @param completedCallback
+     */
+    public void emailValid(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
+
 }
