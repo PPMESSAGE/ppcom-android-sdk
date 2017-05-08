@@ -56,14 +56,10 @@ public class MyApp extends Application {
 }
 ```
 
-> If enterprise user uuid is set, the user is identified by this uuid; if user email is set, the user is identified by email. If you want to set the user type, must set here, not update() of PPComSDK.
+> If enterprise user id is set, the user is identified by your own system, otherwise the user is anonymous.
 
 - Extend `ConversationsActivity` to start conversation
 
-> `sdk.update()` is optional and only `user full name`, `user icon url` and `ent user data` could be update.
-If you want to clear data, set it to an empty string.
-
-`sdk.update()` must called after sdk.init() success, otherwise `RuntimeException` will be throwed.
 
 ```java
 public class MainActivity extends ConversationsActivity {
@@ -72,18 +68,7 @@ public class MainActivity extends ConversationsActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        PPComSDK sdk = PPComSDK.getInstance();
-
-        // Optional !
-        sdk.update(new PPComSDKConfiguration.Builder()
-
-                 .setEntUserID("YOUR_ENT_USER_ID")
-                 .setEntUserName("YOUR_ENT_USER_NAME")
-                 .setEntUserIcon("YOUR_ENT_USER_ICON")     
-
-                 
-                   .build());
-
+        // call super startUp()
         startUp();
     }
 
