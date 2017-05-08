@@ -33,7 +33,7 @@ import com.ppmessage.sdk.core.utils.IImageLoader;
  */
 public class PPMessageSDK {
 
-    private static final String SDK_VERSION = "0.0.1";
+    private static final String SDK_VERSION = "0.0.25";
 
     public static final String TAG = "[" + PPMessageSDK.class.getSimpleName() + "]";
     private static final String CONFIGURATION_EMPTY_LOG = "[PPMessageSDK] can not be initialized with empty configuration";
@@ -146,10 +146,6 @@ public class PPMessageSDK {
         return configuration;
     }
 
-    /**
-     * <li>Close WebSocket</li>
-     * <li>Clear ImageLoader Memory</li>
-     */
     public void shutdown() {
         L.d(LOG_SHUTDOWN);
         getNotification().stop();

@@ -17,10 +17,8 @@ public interface IImageLoader {
         void onError();
     }
 
-    /** Bitmap in memory **/
     @Nullable Bitmap inMemory(String imageUri, int width, int height);
 
-    /** Image file in disk **/
     @Nullable File imageFile(String imageUri);
 
     void loadImage(String imageUri, ImageView target);
@@ -35,7 +33,6 @@ public interface IImageLoader {
 
     void loadImage(String imageUri, int width, int height, boolean asGif, Drawable placeHolder, ImageView target, Callback callback);
 
-    /** Clear memory **/
     void clearMemory();
 
 }

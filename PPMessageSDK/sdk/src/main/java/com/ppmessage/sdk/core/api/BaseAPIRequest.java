@@ -45,7 +45,7 @@ public class BaseAPIRequest extends BaseHttpRequest {
     }
 
     public void post(String urlSegment, String requestString, OnAPIRequestCompleted completedCallback) {
-        if (!sdk.getHostInfo().getPpcomApiKey() && !sdk.getHostInfo().getPpkefuApiKey()) {
+        if (sdk.getHostInfo().getPpcomApiKey() == null && sdk.getHostInfo().getPpkefuApiKey() == null) {
             // directly return null token
             onGetAccessToken(urlSegment, requestString, completedCallback);
             return;

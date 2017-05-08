@@ -109,10 +109,6 @@ public class PPComStartupHelper {
         return comApp;
     }
 
-    /**
-     * <li>Set {@link #state} to {@link StartupState#NULL}</li>
-     * <li>Call {@link PPMessageSDK#shutdown()}</li>
-     */
     public void shutdown() {
         L.d(LOG_SHUTDOWN);
         state = StartupState.NULL;
