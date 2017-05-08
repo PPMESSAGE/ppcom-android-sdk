@@ -22,7 +22,8 @@ public class User implements Parcelable {
     private boolean serviceUser;
     private String email;
     private String signature;
-
+    private String serverUrl;
+    
     public User() {
 
     }
@@ -36,6 +37,7 @@ public class User implements Parcelable {
         serviceUser = in.readByte() != 0;
         email = in.readString();
         signature = in.readString();
+        serverUrl = in.readString();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -114,6 +116,16 @@ public class User implements Parcelable {
         this.signature = signature;
     }
 
+    public String getServerUrl() {
+        return serverUrl;
+    }
+
+    public void setServerUrl(String serverUrl) {
+        this.serverUrl = serverUrl;
+    }
+
+    
+
     @Override
     public String toString() {
         return "User{" +
@@ -191,5 +203,6 @@ public class User implements Parcelable {
         dest.writeByte((byte) (serviceUser ? 1 : 0));
         dest.writeString(email);
         dest.writeString(signature);
+        dest.writeString(serverUrl);
     }
 }
