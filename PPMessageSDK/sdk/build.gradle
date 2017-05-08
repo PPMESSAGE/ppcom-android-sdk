@@ -4,7 +4,7 @@ apply plugin: 'com.jfrog.bintray'
 
 version = "0.0.26"
 def siteUrl = 'https://www.ppmessage.com' 
-def gitUrl = 'https://github.com/PPMESSAGE/ppmessage.git' 
+def gitUrl = 'https://github.com/PPMESSAGE/ppcom-android-sdk.git' 
 group = "com.ppmessage"
 
 android {
@@ -12,10 +12,10 @@ android {
     buildToolsVersion '25.0.3'
 
     defaultConfig {
-        minSdkVersion 15
+        minSdkVersion 61
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode 26 
+        versionName "0.0.26"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
