@@ -24,14 +24,6 @@ public interface IAPI {
     void ackMessage(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
 
     /**
-     * Get Message Historys
-     *
-     * @param requestParam
-     * @param completedCallback
-     */
-    void getMessageHistory(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
-
-    /**
      * Create a device
      *
      * @param requestParam

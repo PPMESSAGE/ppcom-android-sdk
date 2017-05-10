@@ -17,17 +17,16 @@ public class BaseAPIRequest extends BaseHttpRequest {
     private static final String GET_API_ACCESS_TOKEN_FORMAT = "get access_token %s";
     private static final String USE_APP_UUID_GET_ACCESS_TOKEN = "use app_uuid to get access_token: %s";
 
+    private static final int ERROR_CODE_NO_TOKEN = 3;
+    private static final int ERROR_CODE_INVALID_TOKEN = 4;
+
     private PPMessageSDK sdk;
 
     private IToken token;
-    private boolean useAppUUIDGetAccessToken;
 
     public BaseAPIRequest(PPMessageSDK sdk) {
         this.sdk = sdk;
         token = sdk.getToken();
-
-        useAppUUIDGetAccessToken = this.sdk.getAppUUID() != null;
-        L.d(USE_APP_UUID_GET_ACCESS_TOKEN, useAppUUIDGetAccessToken);
     }
 
     public void post(String urlSegment, JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
@@ -45,17 +44,25 @@ public class BaseAPIRequest extends BaseHttpRequest {
     }
 
     public void post(String urlSegment, String requestString, OnAPIRequestCompleted completedCallback) {
-        if (sdk.getHostInfo().getPpcomApiKey() == null && sdk.getHostInfo().getPpkefuApiKey() == null) {
-            // directly return null token
-            onGetAccessToken(urlSegment, requestString, completedCallback);
+
+        if (token.getCachedToken() != null) {
+            finalPost(urlSegment, requestString, completedCallback);
             return;
         }
         
-        if (useAppUUIDGetAccessToken) {
-            token.getApiToken(sdk.getAppUUID(), onGetAccessToken(urlSegment, requestString, completedCallback));
-        } else {
-            token.getApiToken(sdk.getUserEmail(), sdk.getUserPassword(), onGetAccessToken(urlSegment, requestString, completedCallback));
+        if (sdk.getHostInfo().getPpcomApiKey() != null && sdk.getHostInfo().getPpcomApiSecret() != null) {
+            token.getApiToken(onGetAccessToken(urlSegment, requestString, completedCallback));
+            return;
         }
+
+        if (sdk.getHostInfo().getPpkefuApiKey() != null && sdk.getUserEmail() != null && sdk.getUserPassword() != null) {
+            token.getApiToken(sdk.getUserEmail(), sdk.getUserPassword(), onGetAccessToken(urlSegment, requestString, completedCallback));
+            return;
+        }
+
+        // directly return null token
+        L.d("No api key, directly request: %s", requestString);
+        finalPost(urlSegment, requestString, completedCallback);
     }
 
     @Override
@@ -100,6 +107,9 @@ public class BaseAPIRequest extends BaseHttpRequest {
 
             @Override
             public void onError(int errorCode) {
+                if (errorCode == ERROR_CODE_INVALID_TOKEN || errorCode == ERROR_CODE_NO_TOKEN) {
+                    token.clearCachedToken();
+                }
                 if (completedCallback != null) completedCallback.onError(errorCode);
             }
 

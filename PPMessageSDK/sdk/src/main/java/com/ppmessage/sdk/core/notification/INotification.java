@@ -59,6 +59,7 @@ public interface INotification {
     int EVENT_UNKNOWN = 0x0040;
     int EVENT_MSG_SEND_OK = 0x0080;
     int EVENT_MSG_SEND_ERROR = 0x100;
+    int EVENT_PING = 0x200;
 
     /**
      * Config INotification
@@ -127,6 +128,7 @@ public interface INotification {
          *     - INotification.EVENT_ONKNOWN
          *     - INotification.EVENT_MSG_SEND_OK
          *     - INotification.EVENT_MSG_SEND_ERROR
+         *     - INotification.EVENT_PING
          * </pre>
          *
          * and you can interested on mutiple event at the same time like this:
@@ -200,6 +202,14 @@ public interface INotification {
          */
         void onMessageSendError(WSMessageAckNotificationHandler.MessageSendResult messageSendResult);
 
+
+        /**
+         * On PING
+         *
+         * @param jsonObject
+         */
+        void onPingArrived(Object jsonObject);
+
     }
 
     /**
@@ -229,6 +239,8 @@ public interface INotification {
 
     void sendMessage(PPMessage message);
 
+    void sendMessage(String jsonString);
+
     void notify(String notifyInfo);
 
     void addListener(OnNotificationEvent event);
@@ -252,6 +264,11 @@ public interface INotification {
         }
 
         @Override
+        public void onPingArrived(Object jsonObject) {
+
+        }
+
+        @Override
         public void onUnknownInfoArrived(Object unknownInfo) {
 
         }
@@ -260,6 +277,7 @@ public interface INotification {
         public void onAuthInfoArrived(Object authInfo) {
 
         }
+
 
         @Override
         public void onMessageInfoArrived(PPMessage message) {

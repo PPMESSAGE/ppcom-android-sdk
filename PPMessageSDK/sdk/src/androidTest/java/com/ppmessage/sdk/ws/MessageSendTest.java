@@ -43,7 +43,7 @@ public class MessageSendTest {
 
     @Test
     public void testMessageSend() {
-        sdk.getToken().getApiToken(Global.TEST_APP_UUID, new IToken.OnRequestTokenEvent() {
+        sdk.getToken().getApiToken(new IToken.OnRequestTokenEvent() {
             @Override
             public void onGetToken(final String accessToken) {
                 configNotification(accessToken);

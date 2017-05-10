@@ -43,7 +43,7 @@ public class DefaultAPIImplTest {
     @Test
     public void assertWeCanGetAccessToken() {
         IToken token = new Token(sdk);
-        token.getApiToken(sdk.getAppUUID(), new IToken.OnRequestTokenEvent() {
+        token.getApiToken(new IToken.OnRequestTokenEvent() {
             @Override
             public void onGetToken(String accessToken) {
                 assertThat(accessToken, Matchers.notNullValue());

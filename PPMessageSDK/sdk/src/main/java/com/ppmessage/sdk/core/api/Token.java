@@ -29,7 +29,7 @@ public class Token extends BaseHttpRequest implements IToken {
     }
 
     @Override
-    public void getApiToken(String appUUID, final OnRequestTokenEvent completedCallback) {
+    public void getApiToken(final OnRequestTokenEvent completedCallback) {
         if (cachedToken != null) {
             if (completedCallback != null) completedCallback.onGetToken(cachedToken);
             return;

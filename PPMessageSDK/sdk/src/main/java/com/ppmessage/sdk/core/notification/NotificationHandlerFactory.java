@@ -20,25 +20,31 @@ public class NotificationHandlerFactory {
         handlerMap.put(INotification.EVENT_UNKNOWN, new UnknownNotificationHandler());
         handlerMap.put(INotification.EVENT_AUTH, new AuthNotificationHandler());
         handlerMap.put(INotification.EVENT_MESSAGE, new MessageNotificationHandler(sdk));
+        handlerMap.put(INotification.EVENT_PING, new PingNotificationHandler(sdk));
         handlerMap.put(INotification.EVENT_SYS, new SysNotificationHandler());
         handlerMap.put(INotification.EVENT_MSG_SEND_OK, new WSMessageAckNotificationHandler());
     }
 
     public void handle(String message, INotificationHandler.OnNotificationHandleEvent event) {
 
+        L.d("HANDLE ARRIVED MESSAAGE: %s", message);
         JSONObject jsonObject = null;
-            try {
-                jsonObject = new JSONObject(message);
-            } catch (JSONException e) {
-                L.e(e);
-            }
-
-            if (jsonObject != null) {
-                INotificationHandler handler = handlerMap.get(findNotificationType(jsonObject));
-                if (handler != null) {
-                    handler.handle(jsonObject, event);
-                }
+        try {
+            jsonObject = new JSONObject(message);
+        } catch (JSONException e) {
+            L.e(e);
         }
+
+        if (jsonObject != null) {
+            INotificationHandler handler = handlerMap.get(findNotificationType(jsonObject));
+            if (handler != null) {
+                L.d("HANDLE ARRIVED MESSAAGE: %s", handler.toString());
+                handler.handle(jsonObject, event);
+                return;
+            }
+        }
+
+        L.d("NO HANDLER FOR ARRIVED MESSAAGE: %s", message);
 
     }
 
@@ -75,6 +81,8 @@ public class NotificationHandlerFactory {
             }
 
             if (type.equals("MSG")) return INotification.EVENT_MESSAGE;
+
+            if (type.equals("PING")) return INotification.EVENT_PING;
         }
 
         return INotification.EVENT_UNKNOWN;

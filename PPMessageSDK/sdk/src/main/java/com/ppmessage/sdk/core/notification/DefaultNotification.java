@@ -184,6 +184,14 @@ public class DefaultNotification implements INotification, INotificationHandler.
         }
     }
 
+    public void sendMessage(String jsonString) {
+        if (webSocket != null && webSocket.isOpen()) {
+            sendDataByWebSocket(jsonString);
+        } else {
+            L.d(WS_NOT_OPEN_LOG);
+        }
+    }
+
     @Override
     public void notify(String notifyInfo) {
         if (notifyInfo != null) {

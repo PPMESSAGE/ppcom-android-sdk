@@ -30,7 +30,6 @@ public class MessageHistoryLoader {
 
     public void loadHistorys(final MessageHistorysModel.MessageHistoryRequestParam requestParam, final MessageHistorysModel.OnLoadHistoryEvent event) {
         L.d(LOG_LOAD, requestParam.pageOffset, requestParam.maxUUID);
-
         final String conversationUUID = requestParam.conversationUUID;
         historysModel.loadHistorys(requestParam, new MessageHistorysModel.OnLoadHistoryEvent() {
             @Override

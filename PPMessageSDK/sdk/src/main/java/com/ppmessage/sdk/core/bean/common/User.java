@@ -173,6 +173,7 @@ public class User implements Parcelable {
             String mobileDeviceUUID = userJsonObject.has("mobile_device_uuid") ? Utils.safeNull(userJsonObject.getString("mobile_device_uuid")) : null;
             String userEmail = userJsonObject.has("user_email") ? Utils.safeNull(userJsonObject.getString("user_email")) : null;
             String userSignature = userJsonObject.has("user_signature") ? Utils.safeNull(userJsonObject.getString("user_signature")) : null;
+            String password = userJsonObject.has("user_password") ? Utils.safeNull(userJsonObject.getString("user_password")) : null;
 
             user.setName(userName);
             user.setIcon(userIcon);
@@ -180,6 +181,7 @@ public class User implements Parcelable {
             user.setDeviceUUID(mobileDeviceUUID);
             user.setEmail(userEmail);
             user.setSignature(userSignature);
+            user.setSha1Password(password);
 
         } catch (JSONException e) {
             L.e(e);

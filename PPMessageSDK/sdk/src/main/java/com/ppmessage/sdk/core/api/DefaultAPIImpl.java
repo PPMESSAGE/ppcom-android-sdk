@@ -1,8 +1,10 @@
 package com.ppmessage.sdk.core.api;
 
 import com.ppmessage.sdk.core.PPMessageSDK;
+import com.ppmessage.sdk.core.L;
 
 import org.json.JSONObject;
+
 
 /**
  * Created by ppmessage on 5/5/16.
@@ -21,11 +23,6 @@ public class DefaultAPIImpl extends BaseAPIRequest implements IAPI {
     @Override
     public void ackMessage(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
         super.post("/ACK_MESSAGE", requestParam, completedCallback);
-    }
-
-    @Override
-    public void getMessageHistory(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
-        super.post("/PP_GET_HISTORY_MESSAGE", requestParam, completedCallback);
     }
 
 
@@ -123,7 +120,7 @@ public class DefaultAPIImpl extends BaseAPIRequest implements IAPI {
 
     @Override
     public void getServiceUserList(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
-        super.post("/PP_GET_APP_SERVICE_USER_LIST", requestParam, completedCallback);
+        super.post("/PPKEFU_GET_APP_SERVICE_USER_LIST", requestParam, completedCallback);
     }
 
     @Override

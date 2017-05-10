@@ -12,10 +12,9 @@ public interface IToken {
     /**
      * Get api token by appUUID, generally this is used by `PPCOM`
      *
-     * @param appUUID
      * @param completedCallback
      */
-    void getApiToken(String appUUID, OnRequestTokenEvent completedCallback);
+    void getApiToken(OnRequestTokenEvent completedCallback);
 
     /**
      * Get api token by userEmail and userPassword, generally this is used by `PPKEFU`

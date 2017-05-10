@@ -91,6 +91,8 @@ public class MessageHistorysModel {
     public void loadHistorys(final MessageHistoryRequestParam requestParam, final OnLoadHistoryEvent event) {
         JSONObject jsonObject = new JSONObject();
         try {
+            jsonObject.put("app_uuid", messageSDK.getNotification().getConfig().getAppUUID());
+            jsonObject.put("user_uuid", messageSDK.getNotification().getConfig().getActiveUser().getUuid());
             jsonObject.put("conversation_uuid", requestParam.conversationUUID);
             jsonObject.put("page_offset", requestParam.pageOffset);
             jsonObject.put("page_size", requestParam.pageSize);

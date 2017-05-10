@@ -57,16 +57,12 @@ public class MessageNotificationHandler implements INotificationHandler {
     private void ackMessage(PPMessage message) {
         JSONObject jsonObject = new JSONObject();
         try {
-            JSONArray jsonArray = new JSONArray();
-            jsonArray.put(message.getMessagePushID());
-
-            jsonObject.put("list", jsonArray );
+            jsonObject.put("type", "ACK");
+            jsonObject.put("push_uuid", message.getMessagePushID());
         } catch (JSONException e) {
             L.e(e);
         }
-
-        // Ignore ack error
-        sdk.getAPI().ackMessage(jsonObject, null);
+        sdk.getNotification().sendMessage(jsonObject.toString());
     }
 
 }

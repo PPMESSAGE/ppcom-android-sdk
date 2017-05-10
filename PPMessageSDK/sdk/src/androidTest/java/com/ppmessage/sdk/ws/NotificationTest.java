@@ -67,7 +67,7 @@ public class NotificationTest {
             }
         });
 
-        sdk.getToken().getApiToken(Global.TEST_APP_UUID, new IToken.OnRequestTokenEvent() {
+        sdk.getToken().getApiToken(new IToken.OnRequestTokenEvent() {
 
             @Override
             public void onGetToken(final String accessToken) {

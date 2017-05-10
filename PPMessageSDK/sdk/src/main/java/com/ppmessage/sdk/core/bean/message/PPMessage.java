@@ -531,12 +531,6 @@ public class PPMessage implements Parcelable {
 
         private String determineType() {
             if (mediaItem == null) {
-                if (Utils.isTextLargeThan128(this.messageBody)) {
-                    PPMessageTxtMediaItem txtMediaItem = new PPMessageTxtMediaItem();
-                    txtMediaItem.setTextContent(this.messageBody);
-                    this.mediaItem = txtMediaItem;
-                    return TYPE_TXT;
-                }
                 return TYPE_TEXT;
             }
             if (mediaItem instanceof PPMessageTxtMediaItem) return TYPE_TXT;

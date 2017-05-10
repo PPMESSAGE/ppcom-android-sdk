@@ -2,6 +2,7 @@ package com.ppmessage.sdk.core;
 
 import android.content.Context;
 
+import com.ppmessage.sdk.core.notification.INotification;
 import com.ppmessage.sdk.core.utils.GlideImageLoader;
 import com.ppmessage.sdk.core.utils.IImageLoader;
 
@@ -22,6 +23,8 @@ public final class PPMessageSDKConfiguration {
 
 
     private String gcmPushRegistrationId;
+    private String fcmPushRegistrationId;
+    private String txPushRegistrationId;
     private String jpushRegistrationId;
 
     private String userFullName;
@@ -59,6 +62,8 @@ public final class PPMessageSDKConfiguration {
 
         this.jpushRegistrationId = builder.jpushRegistrationId;
         this.gcmPushRegistrationId = builder.gcmPushRegistrationId;
+        this.fcmPushRegistrationId = builder.fcmPushRegistrationId;
+        this.txPushRegistrationId = builder.txPushRegistrationId;
 
         this.userFullName = builder.userFullName;
         this.userIcon = builder.userIcon;
@@ -112,6 +117,8 @@ public final class PPMessageSDKConfiguration {
 
         private String jpushRegistrationId;
         private String gcmPushRegistrationId;
+        private String fcmPushRegistrationId;
+        private String txPushRegistrationId;
 
         private String userEmail;
         private String userSha1Password;
@@ -230,10 +237,21 @@ public final class PPMessageSDKConfiguration {
         }
 
 
+        public Builder setFcmPushRegistrationId(String id) {
+            this.fcmPushRegistrationId = id;
+            return this;
+        }
+
+        public Builder setTxPushRegistrationId(String id) {
+            this.txPushRegistrationId = id;
+            return this;
+        }
+
         public Builder setJpushRegistrationId(String jpushRegistrationId) {
             this.jpushRegistrationId = jpushRegistrationId;
             return this;
         }
+
 
         public Builder setInputHint(String inputHint) {
             this.inputHint = inputHint;
