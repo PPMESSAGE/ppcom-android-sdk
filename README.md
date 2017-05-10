@@ -75,6 +75,25 @@ public class MainActivity extends ConversationsActivity {
 }
 
 ```
+
+
+> Firebase token maybe not ready when you init PPComSDK
+
+```java
+            String deviceUUID = PPComSDK.getInstance().getMessageSDK().getNotification().getConfig().getActiveUser().getDeviceUUID();
+
+            JSONObject object = new JSONObject();
+            try {
+                object.put("device_uuid", deviceUUID);
+                object.put("android_fcm_token", token);
+            } catch (JSONException e) {
+                L.d(e.toString());
+                return;
+            }
+
+        PPComSDK.getInstance().getMessageSDK().getAPI().updateDevice(object, null);
+```
+
 ### Build with PPComSDK 
 
 In your module build.gradle add the following in dependencies
