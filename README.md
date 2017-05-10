@@ -75,15 +75,21 @@ public class MainActivity extends ConversationsActivity {
 }
 
 ```
+### Build with PPComSDK 
 
-## PPMessageSDK
-
-`PPMessageSDK` is core lib and distributed with gradle.
-
-In your module build.gradle add
+In your module build.gradle add the following in dependencies
 
 ```
 compile 'com.ppmessage:ppcomsdk:0.0.26'
 ```
 
 Please see [PPComDemo](PPComDemo/app/build.gradle.jcenter)
+
+
+## PPMessageSDK
+
+`PPMessageSDK` is core lib and distributed with gradle.
+
+PPComSDK will automatically include PPMessageSDK
+
+
