@@ -49,7 +49,7 @@ public class MyApp extends Application {
                  .setEntUserName("YOUR_ENT_USER_NAME")
                  .setEntUserIcon("YOUR_ENT_USER_ICON")     
 
-                 .setGcmPushRegistrationId("GCM_PUSM_REGISTRATION_ID");                 
+                 .setFcmPushRegistrationId("FCM_PUSH_REGISTRATION_ID");                 
                  .build());
 
     }
