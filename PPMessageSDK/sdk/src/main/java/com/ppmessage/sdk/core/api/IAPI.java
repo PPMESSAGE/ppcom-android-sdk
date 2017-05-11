@@ -217,4 +217,12 @@ public interface IAPI {
      */
     public void emailValid(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
 
+    /**
+     * device valid to check the device is still logined or not
+     *
+     * @param requestParam
+     * @param completedCallback
+     */
+    public void deviceValid(JSONObject requestParam, OnAPIRequestCompleted completedCallback);
+
 }

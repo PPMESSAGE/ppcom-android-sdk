@@ -77,7 +77,8 @@ public class MessageActivity extends AppCompatActivity {
     protected MessageListView messageListView;
     protected SwipeRefreshLayout swipeRefreshLayout;
     protected MessageAdapter messageAdapter;
-    protected TextView sendButton;
+    //protected TextView sendButton;
+    protected ImageView sendImageButton;
     protected EditText inputEt;
     protected ViewGroup inputEtContainer;
     protected TextView holdToTalkButton;
@@ -124,7 +125,8 @@ public class MessageActivity extends AppCompatActivity {
 
         messageListView = (MessageListView) findViewById(R.id.pp_chat_lv);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.pp_chat_swipe_refresh_layout);
-        sendButton = (TextView) findViewById(R.id.pp_chat_tools_send_btn);
+        //sendButton = (TextView) findViewById(R.id.pp_chat_tools_send_btn);
+        sendImageButton = (ImageView) findViewById(R.id.pp_chat_tools_send_image_btn);
         inputEt = (EditText) findViewById(R.id.pp_chat_tools_input_et);
         inputEtContainer = (ViewGroup) findViewById(R.id.pp_chat_tools_input_et_container);
         holdToTalkButton = (TextView) findViewById(R.id.pp_chat_tools_hold_voice_btn);
@@ -135,9 +137,11 @@ public class MessageActivity extends AppCompatActivity {
         recordingViewStub = (ViewStub) findViewById(R.id.pp_recording_view_import);
         largeImageView = (ImageView) findViewById(R.id.pp_large_imageview);
 
-        sendButton.setVisibility(View.GONE);
+        sendImageButton.setVisibility(View.GONE);
+        //sendButton.setVisibility(View.GONE);
         moreButton.setVisibility(View.VISIBLE);
-        sendButton.setEnabled(false);
+
+        //sendButton.setEnabled(false);
         swipeRefreshLayout.setEnabled(false);
 
         holdToTalkButton.setVisibility(View.GONE);
@@ -253,7 +257,16 @@ public class MessageActivity extends AppCompatActivity {
     // === MessageActivity Business Logic ===
 
     private void initEvent() {
-        sendButton.setOnClickListener(new View.OnClickListener() {
+
+//        sendButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                sendText(inputEt.getText().toString());
+//                inputEt.getText().clear();
+//            }
+//        });
+
+        sendImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendText(inputEt.getText().toString());
@@ -285,7 +298,7 @@ public class MessageActivity extends AppCompatActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (sdk != null && sdk.getConfiguration().isEnableEnterKeyToSendText()) {
                     if (s != null && s.toString().endsWith("\n")) {
-                        if (sendButton != null && inputEt != null) {
+                        if (sendImageButton != null && inputEt != null) {
                             // "\n".length() is 1, so at least 2 character
                             if (s.toString().length() > 1) {
                                 sendText(s.toString().substring(0, s.toString().length() - 1));
@@ -298,13 +311,13 @@ public class MessageActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                sendButton.setEnabled(
+                sendImageButton.setEnabled(
                         conversation != null &&
                                 sdk != null &&
                                 s.toString().length() > 0
                 );
-                moreButton.setVisibility(sendButton.isEnabled() ? View.GONE : View.VISIBLE);
-                sendButton.setVisibility(sendButton.isEnabled() ? View.VISIBLE : View.GONE);
+                moreButton.setVisibility(sendImageButton.isEnabled() ? View.GONE : View.VISIBLE);
+                sendImageButton.setVisibility(sendImageButton.isEnabled() ? View.VISIBLE : View.GONE);
             }
         });
 

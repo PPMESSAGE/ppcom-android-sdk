@@ -149,4 +149,10 @@ public class DefaultAPIImpl extends BaseAPIRequest implements IAPI {
     }
 
 
+    @Override
+    public void deviceValid(JSONObject requestParam, OnAPIRequestCompleted completedCallback) {
+        super.post("/PP_VALIDATE_ONLINE_DEVICE", requestParam, completedCallback);
+    }
+
+
 }
