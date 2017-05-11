@@ -137,7 +137,7 @@ public class PPComStartupHelper {
         PPMessageSDK messageSDK = sdk.getPPMessageSDK();
         final INotification notification = messageSDK.getNotification();
 
-        messageSDK.getToken().getApiToken(sdk.getConfiguration().getAppUuid(), new IToken.OnRequestTokenEvent() {
+        messageSDK.getToken().getApiToken(new IToken.OnRequestTokenEvent() {
             @Override
             public void onGetToken(String accessToken) {
                 if (accessToken == null) {
